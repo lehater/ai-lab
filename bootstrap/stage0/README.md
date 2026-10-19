@@ -1,40 +1,47 @@
-# Stage 0 — VMware USB bootstrap (initial test version)
+# Stage 0 — Offline Bootstrap (Ubuntu 24.04 Desktop, VMware)
 
-Target: **Ubuntu 24.04 Desktop amd64, VMware**. Stage 0 is runnable offline before Git/apt networking is configured.
+**The folder structure in GitHub and on USB is identical.** Download or copy
+`bootstrap/` to a USB stick without moving or renaming directories.
 
-## Separation
-
-- **GitHub:** source code for `bootstrap/stage0`, `bootstrap/proxy` and `bootstrap/host`. No secret settings.
-- **USB program bundle:** `bootstrap.sh`, `install.sh`, `configure.sh`, `v2rayN-linux-64.deb`, `checksums.sha256`.
-- **Private local directory:** `v2rayn-data.tar.gz` and `v2rayn-data.sha256`. These files contain **real credentials and proxy profiles**. Keep on trusted removable media, never commit, publish or synchronize to public storage.
-
-## Package
-
-From the cloned repo on an already-working machine:
-
-```bash
-bash bootstrap/stage0/package.sh ~/proxy-migration ~/stage0-usb
+```text
+bootstrap/
+└── stage0/
+    ├── bootstrap.sh
+    ├── README.md
+    ├── proxy/
+    │   ├── install.sh
+    │   ├── configure.sh
+    │   ├── verify.sh
+    │   └── README.md
+    └── private-proxy/
+        ├── README.md                   # this placeholder is in Git
+        ├── v2rayN-linux-64.deb         # add locally (NOT in Git)
+        ├── v2rayn-data.tar.gz          # add locally (SECRET; NOT in Git)
+        └── v2rayn-data.sha256          # add locally (NOT in Git)
 ```
 
-The USB program bundle contains no proxy configuration. Copy the private configuration separately to a second directory on the removable drive, for example `private-proxy/`.
+## Prepare the USB
 
-## Run on a clean VMware Ubuntu Desktop
+1. Download the GitHub `bootstrap/` directory from the approved revision.
+2. From protected offline storage copy the three files listed in
+   `stage0/private-proxy/README.md` directly to
+   `USB/bootstrap/stage0/private-proxy/`.
+3. Nothing needs to be packaged, renamed, decrypted or moved to another path.
+
+## Run on clean Ubuntu
 
 ```bash
-bash /media/.../stage0-usb/bootstrap.sh /media/.../private-proxy
+bash /media/USER/USB/bootstrap/stage0/bootstrap.sh
 ```
 
-Stage 0 verifies the public program bundle, verifies the private archive, installs v2rayN and restores its configuration, installs GNOME autostart through `configure.sh`, waits for the user to launch the GUI and select a server, confirms HTTPS through the proxy, configures APT, installs Git/curl/OpenSSH client and VMware Tools, and clones the public repo through HTTPS using an explicit Git proxy.
+No command arguments required. Stage 0 installs offline v2rayN from
+`private-proxy/`, restores the user configuration, sets GNOME autostart,
+waits for the operator to start the GUI and select the proxy server, checks
+GitHub via HTTP proxy, configures APT, installs Git, curl, SSH client and
+VMware Tools, verifies HTTP/SOCKS5, then clones the public repository via
+proxied HTTPS. Initial public clone does **not** require an SSH key.
 
-The private archive is copied into a restricted temporary directory because the existing offline `install.sh` expects the archive, checksum and DEB to be colocated. Stage 0 does not upload any private material to GitHub.
-
-## Deliberate omissions and limitations
-
-- Encryption/hardening is **deferred** until the end-to-end flow works. Anyone who obtains the private archive may gain access to its credentials.
-- No automatic GitHub SSH registration; a public clone does not require it.
-- GUI launch requires a logged-in desktop; autostart applies on later logins.
-- No support for bare metal or other hypervisors yet.
-- USB SHA256 file validates internal consistency only. Build and distribute from a trusted workstation.
-- VMware Tools are installed after proxy APT networking works.
-- Existing archive installer requires trusted private tar files; hardening archive extraction is pending.
-- Must be tested with a clean VMware Ubuntu snapshot before merge.
+**Limitations:** unencrypted private archive (protect physical access to USB);
+manual first GUI launch; Ubuntu 24.04 Desktop / VMware only; clean-VM E2E
+still pending. Later stages handle SSH key registration, Docker, firewall and
+hardening. Never commit `private-proxy` payloads.
