@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Offline Stage 0: Ubuntu 24.04 Desktop amd64 on VMware.
-# Bundle has no plaintext proxy data. A separate encrypted secret is required.
+# Public code and private proxy configuration are stored separately.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SECRETS="${1:?Usage: bash bootstrap.sh /path/to/v2rayn-data.tar.gz.age}"
+SECRETS="${1:?Usage: bash bootstrap.sh /path/to/private-proxy-directory}"
+SECRETS="$(realpath "$SECRETS")"
 PROFILE="${AI_LAB_PROFILE:-vmware}"
 DEST="${AI_LAB_DEST:-$HOME/projects/ai-lab}"
 PROXY="http://127.0.0.1:10808"
@@ -12,22 +13,25 @@ PROXY="http://127.0.0.1:10808"
 [[ "$(dpkg --print-architecture)" == "amd64" ]] || { echo "ERROR: only amd64 supported" >&2; exit 1; }
 . /etc/os-release
 [[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 ]] || { echo "ERROR: Ubuntu 24.04 required" >&2; exit 1; }
-[[ -f "$SECRETS" ]] || { echo "ERROR: encrypted secrets not found" >&2; exit 1; }
-for f in install.sh configure.sh v2rayN-linux-64.deb age checksums.sha256; do
+[[ -d "$SECRETS" ]] || { echo "ERROR: private directory not found" >&2; exit 1; }
+for f in v2rayn-data.tar.gz v2rayn-data.sha256; do
+  [[ -f "$SECRETS/$f" ]] || { echo "ERROR: missing private $f" >&2; exit 1; }
+done
+for f in install.sh configure.sh v2rayN-linux-64.deb checksums.sha256; do
   [[ -f "$DIR/$f" ]] || { echo "ERROR: missing $DIR/$f" >&2; exit 1; }
 done
 echo "Checking bundled executable and installer integrity"
 (cd "$DIR" && sha256sum -c checksums.sha256)
-[[ -x "$DIR/age" ]] || chmod u+x "$DIR/age"
 [[ "$(dpkg-deb -f "$DIR/v2rayN-linux-64.deb" Package)" == "v2rayn" ]]
 [[ "$(dpkg-deb -f "$DIR/v2rayN-linux-64.deb" Version)" == "7.20.2" ]]
 if [[ ! -d "$HOME/.local/share/v2rayN" ]]; then
+  # Existing install.sh expects DEB, archive and checksum in one directory.
+  # Secret tarball never gets copied to this public repository.
+  (cd "$SECRETS" && sha256sum -c v2rayn-data.sha256)
   TEMP="$(mktemp -d)"
   chmod 700 "$TEMP"
   trap 'rm -rf -- "$TEMP"' EXIT
-  echo "Decrypting private configuration (passphrase/key requested by age)"
-  "$DIR/age" -d -o "$TEMP/v2rayn-data.tar.gz" "$SECRETS"
-  (cd "$TEMP" && sha256sum v2rayn-data.tar.gz > v2rayn-data.sha256)
+  cp "$SECRETS/v2rayn-data.tar.gz" "$SECRETS/v2rayn-data.sha256" "$TEMP/"
   cp "$DIR/v2rayN-linux-64.deb" "$TEMP/"
   bash "$DIR/install.sh" "$TEMP"
 else
