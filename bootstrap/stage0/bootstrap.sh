@@ -13,7 +13,7 @@ PROXY="http://127.0.0.1:10808"
 . /etc/os-release
 [[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 ]] || { echo "ERROR: Ubuntu 24.04 required" >&2; exit 1; }
 [[ -f "$SECRETS" ]] || { echo "ERROR: encrypted secrets not found" >&2; exit 1; }
-for f in install.sh v2rayN-linux-64.deb age checksums.sha256; do
+for f in install.sh configure.sh v2rayN-linux-64.deb age checksums.sha256; do
   [[ -f "$DIR/$f" ]] || { echo "ERROR: missing $DIR/$f" >&2; exit 1; }
 done
 echo "Checking bundled executable and installer integrity"
@@ -36,15 +36,7 @@ else
   }
   echo "Existing proxy configuration preserved"
 fi
-mkdir -p "$HOME/.config/autostart"
-cat > "$HOME/.config/autostart/v2rayn.desktop" <<'DESKTOP'
-[Desktop Entry]
-Type=Application
-Name=v2rayN
-Exec=/usr/bin/v2rayn
-Terminal=false
-X-GNOME-Autostart-enabled=true
-DESKTOP
+bash "$DIR/configure.sh"
 echo "Start v2rayN in GNOME and select the server. Press Enter when Xray is listening."
 read -r
 (echo > /dev/tcp/127.0.0.1/10808) 2>/dev/null || { echo "ERROR: Xray not listening" >&2; exit 1; }
