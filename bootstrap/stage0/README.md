@@ -1,66 +1,49 @@
-# Stage 0: offline-to-GitHub bootstrap
+# Stage 0 — Offline USB bootstrap (VMware profile)
 
-## Goal
+**Target now:** Ubuntu 24.04 Desktop amd64, VMware only. Bare metal and other hypervisors are not supported/tested yet. This stage does not need Git or online package access before proxy recovery.
 
-Take a **clean Ubuntu 24.04 Desktop amd64** machine with no direct external
-internet access to a working v2rayN proxy, configured APT, installed Git,
-and a checked-out public `lehater/ai-lab` repository.
+## Three separate objects
 
-This is a **host/desktop** bootstrap, not a Docker service. It runs as the
-intended desktop user, never with `sudo bash`.
+1. **Public source in Git**: scripts, docs, builder; versioned in `ai-lab`.
+2. **USB program bundle**: `bootstrap.sh`, `install.sh`, `v2rayN-linux-64.deb`, statically runnable `age` executable, `checksums.sha256`. No secrets.
+3. **Encrypted secret bundle**: `v2rayn-data.tar.gz.age`, stored outside Git, made by encrypting the existing private tarball with age passphrase or recipient key. The recovery passphrase/private key must be available independently.
 
-## Trust and files
+The separate archive is never copied to the code bundle by `package.sh`. Do not check secrets, private SSH identities, original proxy tarballs or passphrases into Git.
 
-Stage 0 is distributed on removable or offline storage and must contain:
+## Build on a trusted workstation
 
-```text
-offline-proxy/
-├── bootstrap.sh            # this directory's stage0 script
-├── install.sh              # existing bootstrap/proxy/install.sh
-├── v2rayN-linux-64.deb     # v2rayN 7.20.2 amd64
-├── v2rayn-data.tar.gz      # private user configuration (SENSITIVE)
-└── v2rayn-data.sha256
+Install a trusted, independently verified Linux amd64 `age` binary on the build machine (it must be executable on Ubuntu 24.04 without needing additional online packages). This is a **build-time input**; this repository intentionally does not download or embed unverified executables.
+
+Example passphrase encryption (interactive password entry):
+
+```bash
+age -p -o ~/v2rayn-data.tar.gz.age ~/proxy-migration/v2rayn-data.tar.gz
+bash bootstrap/stage0/package.sh ~/proxy-migration /path/to/trusted/age ~/stage0-usb
 ```
 
-The existing installer checks the archive hash and package name/version.
-**This is an unencrypted, temporary test format**, not a suitable permanent
-backup. Keep it offline and access-restricted; do not commit it or copy it to
-public shares. The hash is an integrity check, not proof of authenticity.
+Keep `~/v2rayn-data.tar.gz.age` separate from the source repo; copy the executable bundle and encrypted archive to removable media as needed. Test decryption with the same `age` executable prior to wiping original recovery data. The earlier `package-test.sh` is obsolete and intentionally no longer used.
 
-Before production use we must build an encrypted distribution and verify the
-installer DEB digest against a trusted published digest. The decryptor and
-needed dependencies must themselves be available offline.
+## Run on clean VMware Ubuntu
 
-## Run
+```bash
+bash /media/.../stage0-usb/bootstrap.sh /media/.../v2rayn-data.tar.gz.age
+```
 
-1. Install Ubuntu Desktop and log into GNOME as the target user.
-2. Copy the offline bundle to the host.
-3. Run `bash /path/to/offline-proxy/bootstrap.sh /path/to/offline-proxy`.
-4. After installation, start v2rayN from GNOME, select the server, then press
-   Enter in the terminal.
-5. Stage 0 checks GitHub via HTTP proxy, configures APT proxy, installs
-   `git openssh-client curl ca-certificates`, and clones the public repository
-   via HTTPS using an explicit Git proxy.
+Stage 0 checks Ubuntu and bundled file hashes, decrypts archive in a temporary private directory, invokes existing offline proxy installer, configures GNOME autostart, waits for operator to launch v2rayN GUI, verifies GitHub via explicit local proxy, configures APT proxy, installs Git, curl, OpenSSH client, CA certs and VMware tools, then clones the public repo via proxied HTTPS.
 
-Override target clone path if required with `AI_LAB_DEST=/path/to/ai-lab`.
+No GitHub SSH key is needed to clone this public repo. SSH identity for *pushes* is a subsequent host setup step; the user must authorize adding a newly generated public key to their GitHub account.
 
-## Deliberate boundaries
+## Limitations before acceptance
 
-- Public GitHub clone **does not require an SSH key**. Authentication for
-  pushes is a later, separate bootstrap task. Verify GitHub SSH host
-  fingerprints against GitHub documentation before trusting them.
-- v2rayN is started in a graphical user session; autostart applies on next
-  GNOME login. Stage 0 does not claim headless/start-before-login networking.
-- Docker, LAN isolation firewall, interactive Bash proxy functions, GNOME-wide
-  proxy policy, and VMware Tools belong to subsequent host bootstrap stages.
-- APT must have connectivity to Ubuntu mirrors through the proxy.
-- `bootstrap.sh` is re-runnable on an already working environment but does not
-  overwrite existing v2rayN user configuration or an existing clone.
-- Secrets remain outside Git at all times.
+- Fresh-VM execution **not yet tested**; do not merge until validated.
+- GUI application must be launched after login; GNOME autostart applies on later logins.
+- No Docker exposure, firewall, native Ubuntu or other hypervisor support in Stage 0.
+- Checksums in the same USB directory detect accidental changes, **not** malicious tampering. Verify trusted release digests or signed manifest out of band.
+- `age` supports both passphrase-based and identity-based decryption; avoid losing credentials.
+- Existing installer needs further hardening against malicious tar entries; use only the trusted private archive prepared by the user.
+- Current stage decrypts to local temporary disk and erases temporary files on normal exit; this is not a forensic secure deletion guarantee. Avoid untrusted multi-user hosts.
+- VMware tools are installed only after APT connectivity, **not** prerequisites for proxy recovery.
 
-## Acceptance criteria
+## Acceptance checks
 
-On a fresh test VM: offline package installation succeeds; Xray can be
-started; GitHub is reachable through the local proxy; APT installs Git;
-the public repository is cloned successfully. Verify startup and service
-security separately in later stages.
+Clean Ubuntu 24.04 VMware snapshot → run Stage 0 from USB only → manually launch v2rayN → proxied GitHub check → APT install and open-vm-tools-desktop → Git HTTPS clone. Repeat without overwriting existing configuration. Verify all operations use the proxy; direct outbound access may be disabled during the test.
