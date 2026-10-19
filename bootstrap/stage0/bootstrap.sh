@@ -1,34 +1,43 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-# Stage 0: offline local v2rayN installation -> network -> git clone over HTTPS.
-# Run from an extracted offline bundle as a non-root desktop user.
-PACK_DIR="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
-PACK_DIR="$(realpath "$PACK_DIR")"
-PROXY_URL="http://127.0.0.1:10808"
-REPO_URL="https://github.com/lehater/ai-lab.git"
+# Offline Stage 0: Ubuntu 24.04 Desktop amd64 on VMware.
+# Bundle has no plaintext proxy data. A separate encrypted secret is required.
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SECRETS="${1:?Usage: bash bootstrap.sh /path/to/v2rayn-data.tar.gz.age}"
+PROFILE="${AI_LAB_PROFILE:-vmware}"
 DEST="${AI_LAB_DEST:-$HOME/projects/ai-lab}"
-AUTOSTART="$HOME/.config/autostart/v2rayn.desktop"
-
-if [[ "$EUID" -eq 0 ]]; then echo "Run as a regular user, not root" >&2; exit 1; fi
-if [[ ! -f "$PACK_DIR/install.sh" ]]; then echo "Missing install.sh in $PACK_DIR" >&2; exit 1; fi
-for f in v2rayN-linux-64.deb v2rayn-data.tar.gz v2rayn-data.sha256; do
-  [[ -f "$PACK_DIR/$f" ]] || { echo "Missing $f" >&2; exit 1; }
+PROXY="http://127.0.0.1:10808"
+[[ "$EUID" -ne 0 ]] || { echo "ERROR: do not run as root" >&2; exit 1; }
+[[ "$PROFILE" == "vmware" ]] || { echo "ERROR: only vmware profile supported" >&2; exit 1; }
+[[ "$(dpkg --print-architecture)" == "amd64" ]] || { echo "ERROR: only amd64 supported" >&2; exit 1; }
+. /etc/os-release
+[[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 ]] || { echo "ERROR: Ubuntu 24.04 required" >&2; exit 1; }
+[[ -f "$SECRETS" ]] || { echo "ERROR: encrypted secrets not found" >&2; exit 1; }
+for f in install.sh v2rayN-linux-64.deb age checksums.sha256; do
+  [[ -f "$DIR/$f" ]] || { echo "ERROR: missing $DIR/$f" >&2; exit 1; }
 done
-(cd "$PACK_DIR" && sha256sum -c v2rayn-data.sha256)
-echo "Stage 0: installation"
-if ! dpkg-query -W -f='${Status}' v2rayn 2>/dev/null | grep -qx 'install ok installed' || [[ ! -d "$HOME/.local/share/v2rayN" ]]; then
-  if [[ -d "$HOME/.local/share/v2rayN" ]]; then
-    echo "Partial existing configuration; refusing to overwrite: ~/.local/share/v2rayN" >&2
-    exit 1
-  fi
-  bash "$PACK_DIR/install.sh" "$PACK_DIR"
+echo "Checking bundled executable and installer integrity"
+(cd "$DIR" && sha256sum -c checksums.sha256)
+[[ -x "$DIR/age" ]] || chmod u+x "$DIR/age"
+[[ "$(dpkg-deb -f "$DIR/v2rayN-linux-64.deb" Package)" == "v2rayn" ]]
+[[ "$(dpkg-deb -f "$DIR/v2rayN-linux-64.deb" Version)" == "7.20.2" ]]
+if [[ ! -d "$HOME/.local/share/v2rayN" ]]; then
+  TEMP="$(mktemp -d)"
+  chmod 700 "$TEMP"
+  trap 'rm -rf -- "$TEMP"' EXIT
+  echo "Decrypting private configuration (passphrase/key requested by age)"
+  "$DIR/age" -d -o "$TEMP/v2rayn-data.tar.gz" "$SECRETS"
+  (cd "$TEMP" && sha256sum v2rayn-data.tar.gz > v2rayn-data.sha256)
+  cp "$DIR/v2rayN-linux-64.deb" "$TEMP/"
+  bash "$DIR/install.sh" "$TEMP"
 else
-  echo "v2rayN and user configuration already present; skipping restore"
+  dpkg-query -W -f='${Status}' v2rayn 2>/dev/null | grep -qx 'install ok installed' || {
+    echo "ERROR: configuration exists but v2rayN package is missing" >&2; exit 1;
+  }
+  echo "Existing proxy configuration preserved"
 fi
-
-mkdir -p "$(dirname "$AUTOSTART")"
-cat > "$AUTOSTART" <<'DESKTOP'
+mkdir -p "$HOME/.config/autostart"
+cat > "$HOME/.config/autostart/v2rayn.desktop" <<'DESKTOP'
 [Desktop Entry]
 Type=Application
 Name=v2rayN
@@ -36,41 +45,24 @@ Exec=/usr/bin/v2rayn
 Terminal=false
 X-GNOME-Autostart-enabled=true
 DESKTOP
-chmod 644 "$AUTOSTART"
-
-echo "Start v2rayN in the graphical desktop and select the working server."
-echo "Then return here and press Enter. The proxy must already listen at 127.0.0.1:10808."
-read -r -p "Press Enter to test the proxy... "
-if ! (echo > /dev/tcp/127.0.0.1/10808) 2>/dev/null; then
-  echo "Proxy port 10808 is not listening" >&2
-  exit 1
-fi
-# wget ships on the target Ubuntu Desktop image; explicit HTTP proxy avoids
-# dependence on GNOME proxy settings or interactive shell configuration.
-command -v wget >/dev/null || { echo "wget missing; offline check requires wget" >&2; exit 1; }
-https_proxy="$PROXY_URL" http_proxy="$PROXY_URL" \
-  wget -q --spider -T 20 https://github.com || {
-    echo "Could not reach GitHub through Xray" >&2; exit 1;
-  }
-
-echo "Configuring APT proxy"
-sudo install -d -m 0755 /etc/apt/apt.conf.d
-printf 'Acquire::http::Proxy "%s/";\nAcquire::https::Proxy "%s/";\n' "$PROXY_URL" "$PROXY_URL" | \
-  sudo tee /etc/apt/apt.conf.d/80proxy >/dev/null
+echo "Start v2rayN in GNOME and select the server. Press Enter when Xray is listening."
+read -r
+(echo > /dev/tcp/127.0.0.1/10808) 2>/dev/null || { echo "ERROR: Xray not listening" >&2; exit 1; }
+https_proxy="$PROXY" http_proxy="$PROXY" wget -q --spider -T 20 https://github.com || {
+  echo "ERROR: proxied GitHub connectivity failed" >&2; exit 1;
+}
+printf 'Acquire::http::Proxy "%s/";\nAcquire::https::Proxy "%s/";\n' "$PROXY" "$PROXY" |
+ sudo tee /etc/apt/apt.conf.d/80proxy >/dev/null
 sudo apt-get update
-sudo apt-get install -y git openssh-client curl ca-certificates
-
-echo "Verifying explicit HTTPS proxy"
-curl --noproxy "" --proxy "$PROXY_URL" -fsS -o /dev/null \
-  --connect-timeout 10 --max-time 30 https://github.com
-
-echo "Cloning public repository over proxied HTTPS"
-mkdir -p "$(dirname "$DEST")"
-if [[ -e "$DEST/.git" ]]; then
-  echo "Repository directory already exists: $DEST (not overwriting)"
-elif [[ -e "$DEST" ]]; then
-  echo "Destination exists and is not a git repository: $DEST" >&2; exit 1
+# open-vm-tools desktop is a post-proxy VMware dependency, not required to establish access.
+sudo apt-get install -y git curl openssh-client ca-certificates open-vm-tools open-vm-tools-desktop
+curl --noproxy "" --proxy "$PROXY" -fsS --max-time 30 -o /dev/null https://github.com
+if [[ ! -e "$DEST" ]]; then
+  mkdir -p "$(dirname "$DEST")"
+  git -c http.proxy="$PROXY" clone https://github.com/lehater/ai-lab.git "$DEST"
+elif [[ -d "$DEST/.git" ]]; then
+  echo "Existing Git clone preserved: $DEST"
 else
-  git -c http.proxy="$PROXY_URL" clone "$REPO_URL" "$DEST"
+  echo "ERROR: destination exists and is not a Git checkout: $DEST" >&2; exit 1;
 fi
-echo "Stage 0 complete. Next: cd '$DEST' and run the host bootstrap from Git."
+echo "Stage 0 PASS: proxy, APT, VMware Tools, Git and repository checkout"
