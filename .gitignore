@@ -1,0 +1,23 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.age
+*.key
+*.pem
+id_ed25519*
+
+# Proxy configuration and backups
+v2rayn-data*
+*.tar.gz
+*.deb
+proxy-migration/
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+
+# Local data
+data/
+backups/
