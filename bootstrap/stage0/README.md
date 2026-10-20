@@ -11,7 +11,6 @@ bootstrap/
     ├── proxy/
     │   ├── install.sh
     │   ├── configure.sh
-    │   ├── start.sh
     │   ├── verify.sh
     │   └── README.md
     └── private-proxy/
@@ -37,12 +36,12 @@ bash /media/USER/USB/bootstrap/stage0/bootstrap.sh
 
 No command arguments required. Stage 0 installs offline v2rayN from
 `private-proxy/`, restores the user configuration, sets GNOME autostart,
-starts v2rayN in the current GNOME session, waits up to 180 seconds for Xray (the operator may need to select a server), then checks
+prompts the operator to start v2rayN manually in GNOME and activate a server, then checks
 GitHub via HTTP proxy, configures APT, installs Git, curl, SSH client and
 VMware Tools, verifies HTTP/SOCKS5, then clones the public repository via
 proxied HTTPS. Initial public clone does **not** require an SSH key.
 
 **Limitations:** unencrypted private archive (protect physical access to USB);
-graphical login required for first launch; Ubuntu 24.04 Desktop / VMware only; clean-VM E2E
+manual first launch in graphical session; Ubuntu 24.04 Desktop / VMware only; clean-VM E2E
 still pending. Later stages handle SSH key registration, Docker, firewall and
 hardening. Never commit `private-proxy` payloads.
