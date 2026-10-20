@@ -1,34 +1,17 @@
 # AI Lab
 
-Reproducible Enterprise AI Engineering laboratory.
+Reproducible AI engineering lab. First use case: develop and improve AI Lab itself through independently verified human/agent workflows.
 
-## Project knowledge (source of truth)
+## Project knowledge
 
-- [AGENTS.md](AGENTS.md) — entry point for new chats, agents and contributors.
-- [Current project state](docs/project/state.md) — verified baseline, gaps and handoff.
-- [Execution roadmap](docs/project/roadmap.md) — next tasks and acceptance gates.
-- [Engineering decisions](docs/project/decisions.md) — accepted bootstrap choices.
-- [AI Lab strategy (PROPOSED)](docs/project/strategy.md) — mission, strategic boundaries and principles; review in [PR #2](https://github.com/lehater/ai-lab/pull/2).
-- [Observed development environment](docs/current-environment.md) — manually configured `lab` VM.
-- [Stage 0 offline USB bootstrap](bootstrap/stage0/README.md) — validated VMware recovery.
+- [AGENTS.md](AGENTS.md) — entry point for agents and new work.
+- [Strategy (PROPOSED in PR #2)](docs/project/strategy.md) — mission, boundaries and principles.
+- [Roadmap](docs/project/roadmap.md) — stages and acceptance gates.
+- [State](docs/project/state.md) — verified implementation and next task.
+- [Decisions](docs/project/decisions.md) — accepted engineering choices.
+- [Observed environment](docs/current-environment.md) — manually configured reference VM.
+- [Stage 0 bootstrap](bootstrap/stage0/README.md) — tested offline VMware bootstrap.
 
-The merged `main` branch is authoritative for accepted implementation.
-The strategy in PR #2 is a **proposal, not adopted policy**; the accepted implementation and status remain in merged `main`.
+Only merged `main` is authoritative. The strategy in [PR #2](https://github.com/lehater/ai-lab/pull/2) becomes project policy after merge; milestone status and implementation are not implied by this proposal.
 
-## Environments
-
-- VMware Ubuntu 24.04 LTS — development and validation
-- Native Ubuntu 24.04 LTS — target deployment
-
-## Components
-
-1. Host Bootstrap — Ubuntu, proxy, Docker, networking
-2. AI Platform — infrastructure and model services
-3. AI Application — RAG, agents, integrations
-
-## Principles
-
-- Infrastructure as Code
-- Reproducible deployment
-- Secrets outside Git
-- Incremental implementation
+Infrastructure is built in small, independently testable stages (S0, S1, S1-D, S2), followed by model integration and real engineering workflows. See [roadmap](docs/project/roadmap.md) for current boundaries.
