@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-20.  
 **Purpose:** prioritize the next executable increment. This is an execution
-plan, not the unaccepted [strategy proposal](https://github.com/lehater/ai-lab/pull/2).
+plan and its acceptance gates; the [AI Lab strategy](strategy.md) defines the primary focus and principles (reviewed in PR #2).
 
 ## Milestones
 
@@ -13,11 +13,34 @@ plan, not the unaccepted [strategy proposal](https://github.com/lehater/ai-lab/p
 | S1-D | Docker/Compose Bootstrap | Install/configure Docker through the proxy; test image pull and container networking through Xray on clean VM. |
 | S2 | Infrastructure Core | Versioned service configuration, persistent-data placement, secret handling, diagnostics and one representative workload. |
 | S3 | AI runtime | Bring up selected local/cloud model integrations as replaceable components with smoke checks. |
-| S4 | First application experiment | One useful end-to-end software-engineering workflow with observable output and acceptance checks. |
+| S4 | First application experiment | One accepted change to AI Lab itself, delivered through a minimal human/agent workflow with predeclared acceptance checks and evidence. |
 | S5 | Broader orchestration/experiments | Compare simplest working execution to richer agent/human workflows before adding complexity. |
 
 These are **engineering milestones**, not a commitment to a specific
 orchestrator, model provider or infrastructure product.
+
+## First vertical slice — develop AI Lab using AI Lab
+
+**Focus:** make the lab its own first consumer (dogfooding), without building a
+universal agent platform first. Target a small real change in this repository
+(e.g., an independently testable S1 Host Bootstrap module), not a toy chat.
+
+- **Contract:** describe the task, inputs, constraints, permitted tools and
+  acceptance checks **before** execution.
+- **Executor:** use the simplest viable human, script or coding-agent route,
+  including approved subscription-based CLI or local model if useful; avoid
+  requiring a new orchestration layer.
+- **Output:** code/documentation in a branch and PR, linked to the task.
+- **Independent gate:** review and reproducible checks on the designated
+  environment before acceptance; no agent self-approval of its own changes.
+- **Evidence:** record result, failures, time/cost where observable, human
+  intervention and whether the next comparable change gets easier.
+
+**Earliest timing:** an exploratory thin slice may proceed alongside S1/S1-D
+when its environment and tests are ready. It **does not** replace the S1/S1-D
+clean-VM gates and cannot mark unfinished infrastructure VERIFIED. S4 is the
+milestone for a **completed, accepted** application workflow, not a prerequisite
+for trying a small task earlier. Keep independent Stage 0 recovery possible.
 
 ## Next iteration — S1 Host Bootstrap
 
@@ -57,5 +80,6 @@ limitations in [state](state.md).
 - Secure encrypted backup of private proxy data, signed/reproducible
   offline payload distribution, tar archive extraction hardening.
 - Other hypervisors, bare-metal support, GPU runtime and model serving.
-- Full CI, platform orchestration, applications and multi-agent workflows
-  before the smallest infrastructure slice is stable.
+- Full platform orchestration, multi-agent automation and broad application
+  development before the smallest infrastructure slice is stable; this does
+  not block the limited, independently checked dogfooding experiment above.
