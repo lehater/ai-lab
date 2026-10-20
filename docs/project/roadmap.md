@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-20.  
 **Purpose:** prioritize the next executable increment. This is an execution
-plan and its acceptance gates; the [AI Lab strategy](strategy.md) defines the primary focus and principles (reviewed in PR #2).
+plan and its acceptance gates; the [accepted AI Lab strategy](strategy.md) defines the primary focus and principles.
 
 ## Milestones
 

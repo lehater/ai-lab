@@ -7,18 +7,13 @@ machine changes are not accepted repository state.
 
 ## Read first (in this order)
 
-1. [Current project state](docs/project/state.md) — implemented, verified, unverified, blocked, next handoff.
-2. [Roadmap](docs/project/roadmap.md) — ordered work and acceptance gates, not a claim of completion.
-3. [Decisions](docs/project/decisions.md) — accepted decisions and known deferrals.
-4. [Observed development environment](docs/current-environment.md) — configuration observed on `lab`, **not** proof of Infrastructure as Code.
-5. [Stage 0 instructions](bootstrap/stage0/README.md) — runnable offline VMware USB bootstrap, if relevant.
-6. [README](README.md) — repository overview.
-
-**Strategy (proposal):** [AI Lab strategy](docs/project/strategy.md) in
-[PR #2](https://github.com/lehater/ai-lab/pull/2) has status **PROPOSED**.
-It is **not binding** and must not be treated as accepted or merged without
-explicit owner approval. After approval and merge, update this reference and
-add the accepted strategy to the reading order above.
+1. [Strategy](docs/project/strategy.md) — accepted purpose, boundaries and engineering principles.
+2. [Current project state](docs/project/state.md) — implemented, verified, unverified, blocked, next handoff.
+3. [Roadmap](docs/project/roadmap.md) — ordered work and acceptance gates, not a claim of completion.
+4. [Decisions](docs/project/decisions.md) — accepted choices and deferrals.
+5. [Observed development environment](docs/current-environment.md) — manually configured `lab`, **not** proof of Infrastructure as Code.
+6. [Stage 0 instructions](bootstrap/stage0/README.md) — offline VMware USB bootstrap, if relevant.
+7. [README](README.md) — repository overview.
 
 ## Before starting work
 

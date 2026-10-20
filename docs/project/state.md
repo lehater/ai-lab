@@ -56,8 +56,9 @@ It is **not** a substitute for code, tests, or evidence.
    baseline, run Stage 0, then execute S1 and verify on that machine.
 4. Optional remaining S0 check: reboot `lab-test`, log into GNOME
    without manually starting v2rayN, verify Xray and proxied GitHub.
-5. [PR #2 — project strategy](https://github.com/lehater/ai-lab/pull/2)
-   remains **PROPOSED**, managed separately; it is not approved policy.
+5. [AI Lab strategy](strategy.md) was accepted by the owner in
+   [PR #2](https://github.com/lehater/ai-lab/pull/2); it does not change the
+   implementation/verification status above.
 
 ## Status vocabulary
 
