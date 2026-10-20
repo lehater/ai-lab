@@ -21,3 +21,7 @@ __pycache__/
 # Local data
 data/
 backups/
+
+# Stage 0 private USB payload: track README only
+/bootstrap/stage0/private-proxy/*
+!/bootstrap/stage0/private-proxy/README.md
