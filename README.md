@@ -1,34 +1,17 @@
 # AI Lab
 
-Reproducible Enterprise AI Engineering laboratory.
+Reproducible AI engineering lab. First use case: develop and improve AI Lab itself through independently verified human/agent workflows.
 
-## Project knowledge (source of truth)
+## Project knowledge
 
-- [AGENTS.md](AGENTS.md) — entry point for new chats, agents and contributors.
-- [Current project state](docs/project/state.md) — verified baseline, gaps and handoff.
-- [Execution roadmap](docs/project/roadmap.md) — next tasks and acceptance gates.
-- [Engineering decisions](docs/project/decisions.md) — accepted bootstrap choices.
-- [Observed development environment](docs/current-environment.md) — manually configured `lab` VM.
-- [Stage 0 offline USB bootstrap](bootstrap/stage0/README.md) — validated VMware recovery.
+- [AGENTS.md](AGENTS.md) — entry point for agents and new work.
+- [Strategy](docs/project/strategy.md) — accepted mission, boundaries and principles.
+- [Roadmap](docs/project/roadmap.md) — stages and acceptance gates.
+- [State](docs/project/state.md) — verified implementation and next task.
+- [Decisions](docs/project/decisions.md) — accepted engineering choices.
+- [Observed environment](docs/current-environment.md) — manually configured reference VM.
+- [Stage 0 bootstrap](bootstrap/stage0/README.md) — tested offline VMware bootstrap.
 
-The merged `main` branch is authoritative for accepted implementation.
-A separate [AI Lab strategy PR #2](https://github.com/lehater/ai-lab/pull/2)
-is **PROPOSED** and is not treated as adopted here.
+Only merged `main` is authoritative. The [strategy accepted in PR #2](https://github.com/lehater/ai-lab/pull/2) guides decisions, but does not imply that planned milestones or capabilities are implemented.
 
-## Environments
-
-- VMware Ubuntu 24.04 LTS — development and validation
-- Native Ubuntu 24.04 LTS — target deployment
-
-## Components
-
-1. Host Bootstrap — Ubuntu, proxy, Docker, networking
-2. AI Platform — infrastructure and model services
-3. AI Application — RAG, agents, integrations
-
-## Principles
-
-- Infrastructure as Code
-- Reproducible deployment
-- Secrets outside Git
-- Incremental implementation
+Infrastructure is built in small, independently testable stages (S0, S1, S1-D, S2), followed by model integration and real engineering workflows. See [roadmap](docs/project/roadmap.md) for current boundaries.
