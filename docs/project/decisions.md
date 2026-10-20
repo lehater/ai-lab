@@ -15,6 +15,7 @@ Entries describe **accepted engineering choices**. New proposals stay in PRs unt
 | D-007 | Encryption/hardening of the protected offline proxy payload is deferred until after the first functional MVP. | Prioritize verified end-to-end path; protect unencrypted storage and never commit secrets. |
 | D-008 | S1 Host Bootstrap and Docker Bootstrap are separate later responsibilities; S0 ends once proxy, APT and Git access work. | Avoid overloading USB recovery with general host/runtime provisioning. |
 | D-009 | [AI Lab strategy](strategy.md) accepted by owner on 2026-10-20 ([PR #2](https://github.com/lehater/ai-lab/pull/2)). | AI Lab first develops itself through independently verified human/agent work; tool choices are evidence-based, security and acceptance gates remain independent. Strategy acceptance does not imply any AI runtime is implemented or any specific framework is selected. |
+| D-010 | Primary AI Lab focus refined to **controlled Agentic SDLC**, approved by owner on 2026-10-20. | Investigate preserved requirements/architecture, traceability, independent verification and continuity over successive changes. A narrow dogfooding slice precedes expansion; infrastructure/frameworks are enabling means, not outcomes. Refines D-009 rather than invalidating its engineering boundaries. |
 
 ## Non-decisions and open proposals
 
