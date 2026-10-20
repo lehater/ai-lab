@@ -2,7 +2,7 @@
 
 **Updated:** 2026-10-20.  
 **Purpose:** prioritize the next executable increment. This is an execution
-plan and its acceptance gates; the [accepted AI Lab strategy](strategy.md) defines the primary focus and principles.
+plan and its acceptance gates; the [accepted AI Lab strategy](strategy.md) defines the Agentic SDLC focus and principles. Infrastructure milestones are enabling work, not a prerequisite for a bounded early SDLC experiment.
 
 ## Milestones
 
@@ -13,35 +13,24 @@ plan and its acceptance gates; the [accepted AI Lab strategy](strategy.md) defin
 | S1-D | Docker/Compose Bootstrap | Install/configure Docker through the proxy; test image pull and container networking through Xray on clean VM. |
 | S2 | Infrastructure Core | Versioned service configuration, persistent-data placement, secret handling, diagnostics and one representative workload. |
 | S3 | AI runtime | Bring up selected local/cloud model integrations as replaceable components with smoke checks. |
-| S4 | Repeatable self-development workflow | Reuse the thin-slice process on a second real AI Lab change; both changes accepted with independent checks and recorded effort. |
+| S4 | Repeatable Agentic SDLC slice | At least two successive real changes to the same product accepted against a versioned requirements/architecture baseline; preserved prior constraints, traceability, independent checks, deviation handling and recorded effort. A later iteration must be reproducible from repository artifacts in a new context. |
 | S5 | Broader orchestration/experiments | Compare simplest working execution to richer agent/human workflows before adding complexity. |
 
 These are **engineering milestones**, not a commitment to a specific
 orchestrator, model provider or infrastructure product.
 
-## First vertical slice — develop AI Lab using AI Lab
+## First vertical slice — controlled Agentic SDLC on AI Lab itself
 
-**Focus:** make the lab its own first consumer (dogfooding), without building a
-universal agent platform first. Target a small real change in this repository
-(e.g., an independently testable S1 Host Bootstrap module), not a toy chat.
+**Focus:** validate preservation of engineering intent across successive changes to a real repository, **not** demonstrate a chat assistant or create a universal agent platform. Prefer one small, independently testable S1 Host Bootstrap component as the first actual change: the experiment and infrastructure work should be **the same work**, not two competing projects.
 
-- **Contract:** describe the task, inputs, constraints, permitted tools and
-  acceptance checks **before** execution.
-- **Executor:** use the simplest viable human, script or coding-agent route,
-  including approved subscription-based CLI or local model if useful; avoid
-  requiring a new orchestration layer.
-- **Output:** code/documentation in a branch and PR, linked to the task.
-- **Independent gate:** review and reproducible checks on the designated
-  environment before acceptance; no agent self-approval of its own changes.
-- **Evidence:** record result, failures, time/cost where observable, human
-  intervention and whether the next comparable change gets easier.
+1. **Baseline:** record the relevant current requirements, architecture constraints/invariants, baseline revision and independent acceptance/regression checks. Reuse existing repository files; avoid introducing a separate documentation system.
+2. **Change contract:** specify one real desired change, affected requirements, boundaries, permitted actions, protected criteria, human owner and expected evidence **before** implementation.
+3. **Execution:** use the simplest viable human, script or coding-agent approach with available authorized tooling, without imposing a model, framework or orchestration service.
+4. **Independent gate:** review PR/diff and run applicable functional, architectural and regression checks in a suitable environment. The implementer cannot silently relax protected criteria. Failure leads to repair or a separately authorized, recorded deviation.
+5. **Traceability and evidence:** link requirement/decision → change/PR → verification result; record duration/cost where observable, human effort, defects and limitations.
+6. **Continuity test:** repeat on a **second real change** of the same component/product in a new session or with a different executor, deriving context from the repository rather than a prior conversation. Verify that earlier requirements remain satisfied and measure rework.
 
-**Earliest timing:** an exploratory thin slice may proceed alongside S1/S1-D
-when its environment and tests are ready. It **does not** replace the S1/S1-D
-clean-VM gates and cannot mark unfinished infrastructure VERIFIED. S4 is the
-milestone for a **completed, accepted** application workflow, not a prerequisite
-for trying a small task earlier. The early thin slice alone does not complete
-S4: S4 verifies reuse on another task. Keep independent Stage 0 recovery possible.
+**Earliest timing:** the initial controlled experiment may run alongside S1 when its particular checks are available; it does not require completing S1-D, S2 or S3 or deploying a local model. It **does not** replace the clean-VM infrastructure acceptance gates and cannot mark unfinished infrastructure VERIFIED. S4 is reached only after the repeated, accepted and documented change cycle, not after an isolated agent run. Keep independent S0 recovery possible.
 
 ## Next iteration — S1 Host Bootstrap
 
@@ -81,6 +70,5 @@ limitations in [state](state.md).
 - Secure encrypted backup of private proxy data, signed/reproducible
   offline payload distribution, tar archive extraction hardening.
 - Other hypervisors, bare-metal support, GPU runtime and model serving.
-- Full platform orchestration, multi-agent automation and broad application
-  development before the smallest infrastructure slice is stable; this does
-  not block the limited, independently checked dogfooding experiment above.
+- Full platform orchestration, multi-agent automation, broad AI applications
+  and whole-SDLC automation before the smallest **repeatable Agentic SDLC** slice is validated. This does not block the bounded, independently checked experiment above.
