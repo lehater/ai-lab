@@ -1,6 +1,6 @@
 # AI Lab
 
-Reproducible AI engineering lab. First use case: develop and improve AI Lab itself through independently verified human/agent workflows.
+Reproducible engineering lab researching and validating **controlled Agentic SDLC**: preserving requirements, architecture and independent verification across successive AI-assisted software changes. First experimental product: AI Lab itself.
 
 ## Project knowledge
 
@@ -14,4 +14,4 @@ Reproducible AI engineering lab. First use case: develop and improve AI Lab itse
 
 Only merged `main` is authoritative. The [strategy accepted in PR #2](https://github.com/lehater/ai-lab/pull/2) guides decisions, but does not imply that planned milestones or capabilities are implemented.
 
-Infrastructure is built in small, independently testable stages (S0, S1, S1-D, S2), followed by model integration and real engineering workflows. See [roadmap](docs/project/roadmap.md) for current boundaries.
+Infrastructure progresses in small independently testable stages (S0, S1, S1-D, S2); the first bounded Agentic SDLC experiment can reuse S1 development **without waiting for a full AI runtime**. See [roadmap](docs/project/roadmap.md) for scope and acceptance gates.
