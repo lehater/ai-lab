@@ -13,7 +13,7 @@ plan and its acceptance gates; the [AI Lab strategy](strategy.md) defines the pr
 | S1-D | Docker/Compose Bootstrap | Install/configure Docker through the proxy; test image pull and container networking through Xray on clean VM. |
 | S2 | Infrastructure Core | Versioned service configuration, persistent-data placement, secret handling, diagnostics and one representative workload. |
 | S3 | AI runtime | Bring up selected local/cloud model integrations as replaceable components with smoke checks. |
-| S4 | First application experiment | One accepted change to AI Lab itself, delivered through a minimal human/agent workflow with predeclared acceptance checks and evidence. |
+| S4 | Repeatable self-development workflow | Reuse the thin-slice process on a second real AI Lab change; both changes accepted with independent checks and recorded effort. |
 | S5 | Broader orchestration/experiments | Compare simplest working execution to richer agent/human workflows before adding complexity. |
 
 These are **engineering milestones**, not a commitment to a specific
@@ -40,7 +40,8 @@ universal agent platform first. Target a small real change in this repository
 when its environment and tests are ready. It **does not** replace the S1/S1-D
 clean-VM gates and cannot mark unfinished infrastructure VERIFIED. S4 is the
 milestone for a **completed, accepted** application workflow, not a prerequisite
-for trying a small task earlier. Keep independent Stage 0 recovery possible.
+for trying a small task earlier. The early thin slice alone does not complete
+S4: S4 verifies reuse on another task. Keep independent Stage 0 recovery possible.
 
 ## Next iteration — S1 Host Bootstrap
 
