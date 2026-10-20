@@ -45,6 +45,8 @@ its database is not being modified during backup.
 From the repository root:
 
 ```bash
+(
+set -e
 cd ~/projects/ai-lab
 PRIVATE="$PWD/bootstrap/stage0/private-proxy"
 test -d "$HOME/.local/share/v2rayN" || { echo "No v2rayN data"; exit 1; }
@@ -59,6 +61,7 @@ tar -czf "$PRIVATE/v2rayn-data.tar.gz" \
 # Use the exact offline DEB already saved on the trusted host.
 cp ~/proxy-migration/v2rayN-linux-64.deb "$PRIVATE/"
 chmod 600 "$PRIVATE/v2rayn-data.tar.gz" "$PRIVATE/v2rayn-data.sha256"
+)
 ```
 
 If the saved installer does not exist, obtain the **official matching Linux
