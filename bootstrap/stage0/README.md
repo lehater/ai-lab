@@ -41,6 +41,12 @@ GitHub via HTTP proxy, configures APT, installs Git, curl, SSH client and
 VMware Tools, verifies HTTP/SOCKS5, then clones the public repository via
 proxied HTTPS. Initial public clone does **not** require an SSH key.
 
-**Limitations:** unencrypted private archive (protect physical access to USB);
-manual first launch in graphical session; Ubuntu 24.04 Desktop / VMware only.\n\n**MVP validation:** USB deployment from a clean `lab-test` VMware snapshot passed twice: v2rayN installation, proxy HTTP/SOCKS5 verification, APT, Git and repository clone. Autostart after a subsequent GNOME login has not yet been independently confirmed. Later stages handle SSH key registration, Docker, firewall and
-hardening. Never commit `private-proxy` payloads.
+**Limitations:** Unencrypted private archive (protect physical access to
+USB); manual first launch in GNOME; Ubuntu 24.04 Desktop / VMware only.
+Subsequent-login autostart has not yet been independently verified.
+Later stages handle SSH key registration, Docker, firewall and hardening.
+Never commit `private-proxy` payloads.
+
+**MVP validation:** USB installation from a clean `lab-test` VMware
+snapshot passed twice: offline v2rayN install, HTTP and SOCKS5 proxy,
+APT package installation, Git and public repository clone.
