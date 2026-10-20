@@ -9,7 +9,7 @@ PROXY="http://127.0.0.1:10808"
 [[ "$(dpkg --print-architecture)" == amd64 ]] || { echo "ERROR: amd64 required" >&2; exit 1; }
 . /etc/os-release
 [[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 ]] || { echo "ERROR: Ubuntu 24.04 required" >&2; exit 1; }
-for script in install.sh configure.sh verify.sh; do
+for script in install.sh configure.sh start.sh verify.sh; do
   [[ -f "$DIR/proxy/$script" ]] || { echo "ERROR: missing $DIR/proxy/$script" >&2; exit 1; }
 done
 for file in v2rayN-linux-64.deb v2rayn-data.tar.gz v2rayn-data.sha256; do
@@ -26,9 +26,7 @@ else
   echo "Existing configuration preserved."
 fi
 bash "$DIR/proxy/configure.sh"
-echo "Start v2rayN in GNOME and select a working server."
-read -r -p "Press Enter when Xray is running on localhost:10808 ... "
-(echo >/dev/tcp/127.0.0.1/10808) 2>/dev/null || { echo "ERROR: proxy not listening" >&2; exit 1; }
+bash "$DIR/proxy/start.sh"
 command -v wget >/dev/null || { echo "ERROR: wget not installed; cannot validate initial network" >&2; exit 1; }
 wget -q --spider -T 25 -e use_proxy=yes -e https_proxy="$PROXY" https://github.com ||
   { echo "ERROR: GitHub unreachable through proxy" >&2; exit 1; }
