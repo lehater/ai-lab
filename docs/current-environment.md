@@ -1,4 +1,9 @@
-# Validated environment
+# Observed development environment — lab VM
+
+This describes the **previously configured `lab` development VM** and
+manual observations. It is **not evidence** that Host Bootstrap or Docker
+Bootstrap can yet reproduce these settings from clean Ubuntu. See
+[project state](project/state.md) for tested Stage 0 and remaining work.
 
 ## Host
 
