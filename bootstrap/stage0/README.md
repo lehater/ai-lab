@@ -42,6 +42,5 @@ VMware Tools, verifies HTTP/SOCKS5, then clones the public repository via
 proxied HTTPS. Initial public clone does **not** require an SSH key.
 
 **Limitations:** unencrypted private archive (protect physical access to USB);
-manual first launch in graphical session; Ubuntu 24.04 Desktop / VMware only; clean-VM E2E
-still pending. Later stages handle SSH key registration, Docker, firewall and
+manual first launch in graphical session; Ubuntu 24.04 Desktop / VMware only.\n\n**MVP validation:** USB deployment from a clean `lab-test` VMware snapshot passed twice: v2rayN installation, proxy HTTP/SOCKS5 verification, APT, Git and repository clone. Autostart after a subsequent GNOME login has not yet been independently confirmed. Later stages handle SSH key registration, Docker, firewall and
 hardening. Never commit `private-proxy` payloads.
