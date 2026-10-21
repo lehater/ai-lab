@@ -194,6 +194,15 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   need separate no-DNS verification; complete egress/LAN isolation
   remains unproven. `main` unchanged.
 
+- Follow-up candidate `make docker-forwarder-probe` adds a **not yet
+  executed on `lab-test`** transient systemd socket forwarder bound
+  with `BindToDevice` to a newly created temporary internal Docker
+  bridge, forwarding to loopback Xray. It attempts proxied HTTPS and
+  DNS-independent direct-IP HTTPS from the container, then removes
+  the socket/service and network. It changes temporary Docker-managed
+  firewall state and opens a scoped temporary listener while active.
+  No permanent forwarder, Xray listener change or LAN proof yet.
+
 ## Known environments
 
 - **`lab`**: Ubuntu 24.04.5 Desktop / VMware, 8 vCPU, 16 GB RAM,
