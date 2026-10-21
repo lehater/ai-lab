@@ -85,7 +85,7 @@ as explicit new acceptance work, not an undefined collection of tools.
 The next concrete implementation work is therefore S1-D, while S1
 formal milestone closure may be reviewed separately.
 
-The first S1-D candidate installs Docker Engine/Compose from the official
+[Draft PR #6](https://github.com/lehater/ai-lab/pull/6) proposes the first S1-D candidate: install Docker Engine/Compose from the official
 signed APT repository, configures the **host daemon** to use the existing
 S0 loopback proxy, and tests an image pull. No test of bridge-container
 network routing or LAN firewall isolation is implied by a working
