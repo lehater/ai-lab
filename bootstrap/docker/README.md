@@ -16,6 +16,7 @@ make docker-setup           # rerun / idempotence
 make docker-verify
 make docker-pull-test       # docker pull + run hello-world
 make docker-net-diagnose    # bridge network diagnostics (no host network edits)
+make docker-internal-probe   # temporary isolated bridge; direct HTTPS denied?
 ```
 
 `docker-setup` invokes `bootstrap/docker/setup.sh`. It uses S0's
@@ -71,6 +72,53 @@ To determine LAN isolation, a separate, controlled test from another
 machine on the LAN will be required. Loopback socket checks alone
 cannot prove that Docker port publishing or other rules never expose
 services. No external LAN test is performed by this diagnostic.
+
+## Controlled second experiment — Docker internal-only network
+
+The first bridge test on `lab-test` gave these **observed** results:
+
+- Xray listens on `127.0.0.1:10808`; the default Docker bridge gateway
+  is `172.17.0.1`.
+- Container proxy request via `host.docker.internal:10808` failed
+  (HTTP 000, curl exit 7).
+- Container **direct** HTTPS to GitHub succeeded (HTTP 200).
+
+As a next **experimental** check, run `make docker-internal-probe`.
+It creates a new, uniquely named **temporary Docker bridge with
+`--internal`**, verifies Docker reports `Internal=true`, and attempts
+direct HTTPS to GitHub with all proxy use disabled. The temporary bridge
+and its **Docker-managed firewall rules** are removed by an EXIT trap.
+The script downloads `curlimages/curl:8.16.0` via the daemon only when
+not already cached; no images or containers are published. If cleanup
+fails, it reports the exact network ID for operator cleanup.
+
+**This is not read-only:** Docker temporarily creates a network/interface
+and firewall rules during this test. It does **not** change the host Xray
+listener, host firewall policy, systemd units or Docker daemon configuration.
+A failed direct HTTPS probe supports this specific isolation observation,
+but does **not alone prove all egress paths are blocked** or LAN safety.
+
+According to [Docker's `--internal` contract](https://docs.docker.com/reference/cli/docker/network/create/),
+containers on internal networks do not have a default external route,
+while the host gateway remains reachable. The **candidate next design**:
+
+1. Create a dedicated, versioned internal Docker network with a
+   controlled subnet and stable bridge interface, avoiding collisions.
+2. Expose a small **local TCP forwarder only on that bridge interface**
+   (for example, systemd socket with `BindToDevice` and
+   `systemd-socket-proxyd`) forwarding traffic to existing
+   `127.0.0.1:10808`. Never bind Xray itself to `0.0.0.0`.
+3. Explicitly configure app/container `HTTP_PROXY` and `HTTPS_PROXY`
+   to the dedicated bridge-gateway listener, not to the unreachable
+   loopback socket.
+4. Independently test positive proxied HTTPS, negative **direct**
+   egress, service unavailability when Xray stops, host listener scope,
+   and LAN access from another device. Reboot and rerun. Do not claim
+   security from a single negative curl or from Docker `--internal`
+   alone.
+
+Do not install a permanent forwarder or alter firewall rules until the
+internal network test and the security model have been reviewed.
 
 ## Security boundaries
 
