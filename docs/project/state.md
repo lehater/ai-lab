@@ -70,6 +70,18 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
   regression success on that machine (the mock test does not prove GUI
   clipboard/browser behavior or a clean-snapshot S0→S1 run).
 
+- Owner reported reverting `lab-test` to the known `vmware-tools-ready`
+  VMware snapshot, then followed the S0 → S1 test instructions. The final
+  post-reboot log shows `make host-verify` with
+  `S1 local config and proxied HTTPS: PASS`; `make github-verify`
+  showed `Hi lehater! You've successfully authenticated`, followed by
+  another local HTTPS PASS and `S1 GitHub SSH authentication: PASS`.
+  This confirms the target end-state on the recovered VM and working
+  post-reboot SSH transport. The full S0/S1 installation output,
+  current checked-out revision, and absence of manual proxy startup
+  were not supplied in that log; these remain to be confirmed before
+  certifying the whole replay.
+
 **Limits:** no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, no completed full S1 provisioning, and independent confirmation of proxy *automatic* launch after reboot still depends on observing that no manual start occurred. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
 
 ## Known environments
