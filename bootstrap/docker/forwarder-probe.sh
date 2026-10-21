@@ -84,6 +84,21 @@ if ! sudo docker image inspect "$image" >/dev/null 2>&1; then
     sudo docker image pull "$image"
 fi
 
+# Positive control: prove that this exact literal IP and URL are reachable
+# directly from the existing non-internal bridge before using a failure
+# inside an internal bridge as evidence of its routing restriction.
+echo '=== Direct-IP HTTPS positive control from default bridge ==='
+sudo docker run --rm --network bridge \
+    --cap-drop ALL --security-opt no-new-privileges \
+    "$image" --noproxy '*' --insecure \
+    --head --silent --show-error \
+    --connect-timeout 5 --max-time 12 \
+    --output /dev/null --write-out 'default-bridge direct-IP HTTP status: %{http_code}\\n' \
+    https://1.1.1.1/ || {
+        echo 'INCONCLUSIVE: public-IP direct HTTPS baseline failed; no temporary network or socket was created.' >&2
+        exit 1
+    }
+
 tmp="$(mktemp -d)"
 echo '=== Create disposable Docker internal bridge ==='
 network_id="$(sudo docker network create \
