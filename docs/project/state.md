@@ -15,7 +15,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test`** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. Owner-reported verification recorded in [PR #5](https://github.com/lehater/ai-lab/pull/5). |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
-| Docker/Compose bootstrap | **S1-D FIRST SLICE PROPOSED (DRAFT PR), NOT VERIFIED** | Candidate scripts install official Docker Engine/Compose via signed APT repo and configure host daemon HTTP(S) proxy; offline syntax/template checks only until on-VM evidence is supplied. Bridge container routing and LAN isolation remain outside this first slice. Docker on manually configured `lab` is not clean-VM evidence. |
+| Docker/Compose bootstrap | **S1-D FIRST SLICE PROPOSED ([DRAFT PR #6](https://github.com/lehater/ai-lab/pull/6)), NOT VERIFIED** | Candidate scripts install official Docker Engine/Compose via signed APT repo and configure host daemon HTTP(S) proxy; offline syntax/template checks only until on-VM evidence is supplied. Bridge container routing and LAN isolation remain outside this first slice. Docker on manually configured `lab` is not clean-VM evidence. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -104,7 +104,7 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   has owner-provided clean-VM setup, rerun, GitHub SSH and post-reboot evidence.
   Do not invent unspecified development tool requirements solely to keep S1
   open; milestone closure can be reviewed separately.
-- Proposed `bootstrap/docker/` candidate introduces official Docker Engine /
+- [Draft PR #6](https://github.com/lehater/ai-lab/pull/6) proposes `bootstrap/docker/`: official Docker Engine /
   Compose installation with verified APT signing-key fingerprint, a
   dedicated systemd proxy drop-in, and `docker-test`, `docker-setup`,
   `docker-verify`, `docker-pull-test` Make targets.
