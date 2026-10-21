@@ -13,13 +13,17 @@ name="ai-lab-internal-probe-$$"
 network_id=''
 
 cleanup() {
+    status=$?
+    trap - EXIT
     if [[ -n "$network_id" ]]; then
         if sudo docker network rm "$network_id" >/dev/null; then
             echo 'CLEANUP: temporary internal network removed.'
         else
-            echo "WARNING: failed to remove temporary network $network_id; remove it manually." >&2
+            echo "ERROR: temporary network $network_id remains; remove it manually." >&2
+            status=1
         fi
     fi
+    exit "$status"
 }
 trap cleanup EXIT
 
