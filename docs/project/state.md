@@ -15,7 +15,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test`** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. Owner-reported verification recorded in [PR #5](https://github.com/lehater/ai-lab/pull/5). |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
-| Docker/Compose bootstrap | **NOT IMPLEMENTED IN REPOSITORY** | Docker and container proxy operation were tested manually on `lab`, not automated for clean `lab-test`. |
+| Docker/Compose bootstrap | **S1-D FIRST SLICE PROPOSED (DRAFT PR), NOT VERIFIED** | Candidate scripts install official Docker Engine/Compose via signed APT repo and configure host daemon HTTP(S) proxy; offline syntax/template checks only until on-VM evidence is supplied. Bridge container routing and LAN isolation remain outside this first slice. Docker on manually configured `lab` is not clean-VM evidence. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -98,6 +98,25 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
 
 **Limits:** owner confirmed full clean-snapshot S0 → S1 completion and automatic proxy launch but did not provide the complete installation command/output transcript; the GitHub browser's actual page load and first-time new-key generation were not independently observed. First SSH transport slice is accepted via PR #5; complete S1 host provisioning and S1-D are not implemented/accepted by this evidence. Evidence derives from the owner's observations and logs, not remote execution by the assistant.
 
+## Next work — S1-D Docker host candidate
+
+- After accepted PR #5, the roadmap's **narrow functional S1 exit criterion**
+  has owner-provided clean-VM setup, rerun, GitHub SSH and post-reboot evidence.
+  Do not invent unspecified development tool requirements solely to keep S1
+  open; milestone closure can be reviewed separately.
+- Proposed `bootstrap/docker/` candidate introduces official Docker Engine /
+  Compose installation with verified APT signing-key fingerprint, a
+  dedicated systemd proxy drop-in, and `docker-test`, `docker-setup`,
+  `docker-verify`, `docker-pull-test` Make targets.
+- Its render/syntax tests passed in an isolated development container,
+  **not** on `lab-test`. Installation, rerun, daemon restart, image pull,
+  firewall impact, GUI-login timing and exact package versions remain
+  unverified. No user or Docker group privileges were changed by authoring
+  this PR; `main` is unchanged.
+- Next acceptance action: inspect the draft PR, run mock tests and then
+  provision only `lab-test` under operator supervision. Keep bridge
+  container connectivity and LAN isolation as explicit later S1-D gates.
+
 ## Known environments
 
 - **`lab`**: Ubuntu 24.04.5 Desktop / VMware, 8 vCPU, 16 GB RAM,
@@ -130,9 +149,9 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
 
 1. S0 functional MVP is merged in `main`; avoid reopening its design
    without a demonstrated regression or requirement.
-2. Next implementation milestone: **S1 Host Bootstrap** with small,
-   independently testable modules; scope and gates are in
-   [roadmap](roadmap.md).
+2. Next concrete candidate: **S1-D Docker Bootstrap** with a host
+   daemon/registry slice, followed by separate bridge-container proxy
+   and LAN security verification. Scope and gates are in [roadmap](roadmap.md).
 3. Before claiming S1 acceptance, reset `lab-test` to the agreed
    baseline, run Stage 0, then execute S1 and verify on that machine.
 4. S0 subsequent-login proxy autostart was confirmed by owner on clean-snapshot
