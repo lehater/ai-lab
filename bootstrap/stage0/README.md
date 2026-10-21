@@ -4,7 +4,6 @@
 Этот файл описывает только детали S0. При копировании всего `bootstrap/` на
 флешку основной маршрут будет в `USB/bootstrap/README.md`.
 
-
 **The folder structure in GitHub and on USB is identical.** Download or copy
 `bootstrap/` to a USB stick without moving or renaming directories.
 
