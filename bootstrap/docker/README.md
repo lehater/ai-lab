@@ -1,6 +1,6 @@
 # S1-D — Docker Engine/Compose + proxy for dockerd (first candidate)
 
-**Status:** proposal; not accepted in `main`. This is the **host daemon/registry
+**Status:** [draft PR #6](https://github.com/lehater/ai-lab/pull/6), proposal; not accepted in `main`. This is the **host daemon/registry
 slice only**, not the whole S1-D milestone. Run it on `lab-test` after
 accepted S0 + S1; do not run on a production host or the manually
 configured reference `lab`.
