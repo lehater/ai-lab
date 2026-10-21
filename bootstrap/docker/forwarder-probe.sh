@@ -93,7 +93,7 @@ sudo docker run --rm --network bridge \
     "$image" --noproxy '*' --insecure \
     --head --silent --show-error \
     --connect-timeout 5 --max-time 12 \
-    --output /dev/null --write-out 'default-bridge direct-IP HTTP status: %{http_code}\\n' \
+    --output /dev/null --write-out 'default-bridge direct-IP HTTP status: %{http_code}\n' \
     https://1.1.1.1/ || {
         echo 'INCONCLUSIVE: public-IP direct HTTPS baseline failed; no temporary network or socket was created.' >&2
         exit 1
