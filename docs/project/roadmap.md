@@ -75,6 +75,22 @@ and passes its stated checks; configuration survives reboot where relevant;
 rerun does not damage existing settings. Record exact commands, output and
 limitations in [state](state.md).
 
+## Current next candidate — S1-D Docker
+
+S1's *stated* functional exit gate (versioned and rerunnable host
+configuration with GitHub access on S0-completed clean `lab-test`) has
+owner-reported evidence in merged PR #5. The current status deliberately
+accepts its first GitHub SSH slice; any broader S1 scope should be named
+as explicit new acceptance work, not an undefined collection of tools.
+The next concrete implementation work is therefore S1-D, while S1
+formal milestone closure may be reviewed separately.
+
+The first S1-D candidate installs Docker Engine/Compose from the official
+signed APT repository, configures the **host daemon** to use the existing
+S0 loopback proxy, and tests an image pull. No test of bridge-container
+network routing or LAN firewall isolation is implied by a working
+daemon registry pull.
+
 ## Then — S1-D Docker
 
 - Script Docker Engine/Compose installation and daemon proxy setup.
