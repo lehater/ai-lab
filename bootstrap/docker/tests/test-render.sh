@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-for script in "$DIR"/{setup.sh,verify.sh,render.sh,net-diagnose.sh,internal-probe.sh}; do bash -n "$script"; done
+for script in "$DIR"/{setup.sh,verify.sh,render.sh,net-diagnose.sh,internal-probe.sh,forwarder-probe.sh}; do bash -n "$script"; done
 scratch="$(mktemp -d)"
 trap 'rm -rf "$scratch"' EXIT
 bash "$DIR/render.sh" sources > "$scratch/one"
@@ -23,4 +23,10 @@ grep -Fq -- '--driver bridge --internal' "$DIR/internal-probe.sh"
 grep -Fq -- 'trap cleanup EXIT' "$DIR/internal-probe.sh"
 grep -Fq -- '--noproxy' "$DIR/internal-probe.sh"
 grep -Fq -- '--cap-drop ALL' "$DIR/internal-probe.sh"
-echo 'PASS: Docker Shell syntax, APT/daemon-proxy templates, bridge and internal-network diagnostic contracts.'
+grep -Fq -- '--driver bridge --internal' "$DIR/forwarder-probe.sh"
+grep -Fq -- 'BindToDevice=$bridge_iface' "$DIR/forwarder-probe.sh"
+grep -Fq -- 'systemd-socket-proxyd' "$DIR/forwarder-probe.sh"
+grep -Fq -- '--proxy "http://$gateway:$port"' "$DIR/forwarder-probe.sh"
+grep -Fq -- 'https://1.1.1.1/' "$DIR/forwarder-probe.sh"
+grep -Fq -- 'trap cleanup EXIT' "$DIR/forwarder-probe.sh"
+echo 'PASS: Docker Shell syntax, APT/daemon-proxy templates and bridge/internal/forwarder diagnostic contracts.'
