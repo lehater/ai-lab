@@ -15,7 +15,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test`** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. Owner-reported verification recorded in [PR #5](https://github.com/lehater/ai-lab/pull/5). |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
-| Docker/Compose bootstrap | **FIRST S1-D HOST/COMPOSE SLICE ACCEPTED ([PR #6](https://github.com/lehater/ai-lab/pull/6)); OWNER-VERIFIED ON `lab-test`** | Docker Engine 29.9.2, Compose v5.6.1, daemon proxy, rerun, image pull, post-reboot checks and default Compose service/cleanup PASS. Full integrated clean-snapshot replay and external LAN test not performed; full S1-D remains open. |
+| S1-D: Docker/Compose Bootstrap | **FUNCTIONAL INTEGRATED REPLAY OWNER-VERIFIED on `lab-test`** | Owner explicitly confirmed restoring `vmware-tools-ready`, reinstalling S0 → S1 → S1-D from repository scripts, and providing the final PASS logs. Docker Engine 29.9.2, Compose v5.6.1, GitHub SSH, daemon proxy, image pulls and Compose lifecycle succeeded. Operator-assisted reproducibility on the specified VMware baseline; not unattended automation, external LAN isolation or package pinning. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -218,9 +218,9 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
 - The proposed S1-D **host/Compose functional slice is now owner-tested**
   on `lab-test`: initial/repeat setup, docker daemon proxy, image pull,
   Compose, and post-reboot daemon/registry checks. **Still pending:**
-  complete clean-snapshot S0 → S1 → S1-D replay and explicit inspection
-  of unrelated Docker-published ports/host network exposure. Restricted
-  egress and custom forwarders remain deferred under D-011. First slice accepted in PR #6; full milestone open.
+  external LAN access checks, which are not needed for the documented
+  functional acceptance but remain necessary for LAN-safety claims. Restricted
+  egress and custom forwarders remain deferred under D-011. First slice accepted in PR #6; integrated functional replay later owner-verified.
 
 - Final local port inspection after Compose smoke on `lab-test`:
   `sudo docker ps` showed no running containers and therefore no
@@ -231,22 +231,55 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   LAN negative test** and says nothing about ports that later
   workloads might publish. First Docker/Compose bootstrap slice
   accepted through [PR #6](https://github.com/lehater/ai-lab/pull/6);
-  clean-snapshot whole-chain proof is still outstanding.
+  this was the earlier checkpoint; a subsequent clean-snapshot
+  full replay is owner-confirmed in the integrated evidence above.
 
-## Integrated replay plan (not yet executed)
+## Integrated replay evidence — owner-confirmed clean snapshot
 
-The remaining S1-D integration gate is documented in the
-[USB operator runbook](../../bootstrap/README.md):
-preserve the currently working `lab-test` snapshot; restore/clone
-`vmware-tools-ready`; confirm updated USB/private payload; follow S0,
-S1 SSH transport and GitHub key enrollment, Docker/Compose install,
-repeat/setup checks and post-reboot verification; record exact `main`
-commit SHA, success/failure and manual interventions.
+**Environment and provenance.** On 2026-10-22 the owner explicitly
+confirmed restoring `lab-test` to `vmware-tools-ready` and then
+running the **entire S0 → S1 → S1-D installation sequence using the
+repository scripts**, followed by the final tests provided in the chat.
+This is not simply a validation of a preconfigured machine.
+The snapshot includes VMware Tools but originally had no installed
+S0/S1/Docker AI Lab stack. Intermediate setup stdout and the exact
+`git rev-parse HEAD` from that run were not pasted, so the full
+sequence is **owner-attested**, while end-state tests are evidenced
+by the supplied terminal output.
 
-**This is a plan, not fresh evidence.** Do not mark full S1-D verified
-until owner reports results. No new custom container egress controls
-are proposed under D-011. The repository itself cannot update USB
-media or VMware snapshots remotely.
+**Final terminal observations from that replay:**
+
+- `make host-verify`: `S1 local config and proxied HTTPS: PASS`.
+- `make github-verify`: GitHub authenticated the `lehater` user,
+  followed by `S1 GitHub SSH authentication: PASS`.
+- `make docker-verify`: Docker Engine `29.9.2`, CLI build `a82e528`,
+  Compose `v5.6.1` and daemon proxy PASS.
+- `make docker-pull-test`: Docker Hub `hello-world:latest` image
+  successfully retrieved; the container printed `Hello from
+  Docker!` and the registry/container test passed.
+- `make docker-compose-test`: created `ailab-composesmoke-7366_default`
+  network and `ailab-composesmoke-7366-smoke-1` container, exited
+  successfully with code `0`, confirmed `bridge/internal=false` and
+  no published ports, and removed both objects. Compose smoke PASS.
+- Final `docker ps` showed no running containers; the filtered
+  `ss -lntp` output showed Xray on `127.0.0.1:10808` only, with
+  no Docker API listener on 2375/2376.
+
+**Acceptance:** The functional, operator-assisted S0 → S1 → S1-D
+installation is **reproducible on the declared Ubuntu 24.04 Desktop
+/ VMware test baseline**, based on the owner's confirmed clean
+snapshot restoration plus supplied final PASS evidence. S1-D's
+functional milestone gate is satisfied on that platform. Earlier
+owner reports independently documented setup reruns and post-reboot
+checks; the most recent output contains end-state tests, not a
+separate reboot transcript.
+
+**Limitations:** not a fully unattended first launch (v2rayN GUI and
+GitHub SSH enrollment are operator steps), not a bare-metal or other
+hypervisor test, no externally verified LAN isolation, no mandatory
+container proxy-only egress (D-011), no package pinning, and no
+Enterprise-grade certification. The complete USB replay procedure
+is retained in [bootstrap/README.md](../../bootstrap/README.md).
 
 ## Known environments
 
@@ -278,20 +311,15 @@ media or VMware snapshots remotely.
 
 ## Active work / handoff
 
-1. S0 functional MVP is merged in `main`; avoid reopening its design
-   without a demonstrated regression or requirement.
-2. Next concrete candidate: **S1-D Docker Bootstrap** with a host
-   daemon/registry slice, followed by separate bridge-container proxy
-   and LAN security verification. Scope and gates are in [roadmap](roadmap.md).
-3. Before claiming S1 acceptance, reset `lab-test` to the agreed
-   baseline, run Stage 0, then execute S1 and verify on that machine.
-4. S0 subsequent-login proxy autostart was confirmed by owner on clean-snapshot
-   `lab-test` replay ([PR #5](https://github.com/lehater/ai-lab/pull/5)); keep the tested limits explicit.
-5. [AI Lab strategy](strategy.md) was updated to the scenario-independent
-   Enterprise-grade aspiration in [PR #4](https://github.com/lehater/ai-lab/pull/4)
-   (superseding the scope from [PR #2](https://github.com/lehater/ai-lab/pull/2));
-   this does not change any implementation/verification status above.
-
+1. S0, the first S1 GitHub SSH module, and Docker/Compose S1-D have
+   owner-verified functional replay evidence from restored `lab-test`.
+   Their specific accepted scopes and manual steps remain documented.
+2. Full S1-D functional installation has been demonstrated; do not
+   continue researching mandatory container proxy-only networking
+   without a concrete workload (D-011).
+3. Evaluate the next infrastructure increment S2 against an actual
+   research requirement. Preserve repeatability and explicit
+   qualification of all security and portability claims.
 ## Status vocabulary
 
 - **NOT STARTED / NOT IMPLEMENTED**: no committed, verified implementation.
