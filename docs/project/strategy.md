@@ -1,6 +1,6 @@
 # AI Lab — стратегия
 
-**Статус:** целевой ориентир Enterprise-grade подтверждён владельцем 2026-10-21; данная редакция — предложение в [PR #4](https://github.com/lehater/ai-lab/pull/4), до слияния действующая редакция находится в `main`. Предыдущая стратегия принята в [PR #2](https://github.com/lehater/ai-lab/pull/2).
+**Статус:** ACCEPTED, 2026-10-21 ([PR #4](https://github.com/lehater/ai-lab/pull/4)). Предыдущая редакция принята в [PR #2](https://github.com/lehater/ai-lab/pull/2). **Enterprise-grade остаётся долгосрочной целью, а не подтверждённым уровнем текущей реализации.**
 
 ## 1. Миссия
 
