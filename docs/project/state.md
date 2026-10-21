@@ -233,6 +233,21 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   accepted through [PR #6](https://github.com/lehater/ai-lab/pull/6);
   clean-snapshot whole-chain proof is still outstanding.
 
+## Integrated replay plan (not yet executed)
+
+The remaining S1-D integration gate is documented in the
+[USB operator runbook](../../bootstrap/README.md#7-финальная-проверка-воспроизводимости-s0--s1--s1-d):
+preserve the currently working `lab-test` snapshot; restore/clone
+`vmware-tools-ready`; confirm updated USB/private payload; follow S0,
+S1 SSH transport and GitHub key enrollment, Docker/Compose install,
+repeat/setup checks and post-reboot verification; record exact `main`
+commit SHA, success/failure and manual interventions.
+
+**This is a plan, not fresh evidence.** Do not mark full S1-D verified
+until owner reports results. No new custom container egress controls
+are proposed under D-011. The repository itself cannot update USB
+media or VMware snapshots remotely.
+
 ## Known environments
 
 - **`lab`**: Ubuntu 24.04.5 Desktop / VMware, 8 vCPU, 16 GB RAM,
