@@ -1,6 +1,6 @@
 # Accepted engineering decisions — AI Lab
 
-**Updated:** 2026-10-21.  
+**Updated:** 2026-10-22.  
 This is a lightweight decision log, not a second strategy document.
 Entries describe **accepted engineering choices**. New proposals stay in PRs until approved.
 
@@ -17,11 +17,13 @@ Entries describe **accepted engineering choices**. New proposals stay in PRs unt
 | D-009 | [AI Lab strategy](strategy.md) accepted by owner on 2026-10-20 ([PR #2](https://github.com/lehater/ai-lab/pull/2)). | AI Lab first develops itself through independently verified human/agent work; tool choices are evidence-based, security and acceptance gates remain independent. Strategy acceptance does not imply any AI runtime is implemented or any specific framework is selected. |
 | D-010 | AI Lab is a **scenario-independent AI research infrastructure lab**; **Enterprise-grade is the long-term target**, approved by owner on 2026-10-21 ([PR #4](https://github.com/lehater/ai-lab/pull/4)). | Prioritize IaC, versioned and command-driven deployment, reusable modules/templates, reproducible verification, security and observability in incremental, independently checked stages. No current overall Enterprise-grade claim. Specific research areas including Agentic SDLC are consumers, not mission. Supersedes the scenario-specific focus of D-009 while preserving its engineering governance. |
 
+| D-011 | **Standard Docker Compose bridge networking is the default**. The S1-D baseline installs Docker/Compose and configures the **Docker daemon** proxy for registry access, not universal container-level proxy routing. Do not implement `--internal` + bridge forwarding, forced proxy-only egress or a custom networking layer without a specific consumer and threat model. | Owner accepted scope reduction on 2026-10-22 after normal-bridge and `--internal` experiments in [PR #6](https://github.com/lehater/ai-lab/pull/6). Keep configuration compatible with ordinary Compose; preserve minimum safety controls for privileged daemon access and published ports. A workload requiring restricted egress needs separate design, verification and acceptance. |
+
 ## Non-decisions and open proposals
 
 - The [strategy](strategy.md) sets the enterprise-engineering direction for reusable research infrastructure; specific AI scenarios, runtime, model, agent, workflow and integration choices remain open.
-- Specific S1 module contracts, Docker networking strategy and persistent
-  secret handling need implementation-level review.
+- Scenario-specific restricted-egress Docker networking and persistent
+  secret handling need implementation-level review only when required.
 - Do not infer architectural decisions for AI agents or orchestration from
   successful S0 infrastructure tests.
 

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help host-setup host-verify host-test github-setup github-verify docker-setup docker-verify docker-pull-test docker-test docker-net-diagnose docker-internal-probe docker-forwarder-probe
+.PHONY: help host-setup host-verify host-test github-setup github-verify docker-setup docker-verify docker-pull-test docker-test
 
 HOST_DIR := bootstrap/host
 DOCKER_DIR := bootstrap/docker
@@ -16,9 +16,6 @@ help:
 	  '  make docker-verify   Check Docker/Compose and daemon proxy' \
 	  '  make docker-pull-test  Pull/run hello-world through daemon proxy' \
 	  '  make docker-test     Run offline Docker render/syntax checks' \
-	  '  make docker-net-diagnose  Inspect bridge HTTPS and host proxy (no network edits)' \
-	  '  make docker-internal-probe  Temporary isolated bridge; test direct egress denial' \
-	  '  make docker-forwarder-probe  Temporary systemd bridge-only proxy test (sudo)' \
 	  '' \
 	  'S0 remains independent: run bootstrap/stage0/bootstrap.sh from USB.' \
 	  'If make is missing after S0, run: bash bootstrap/host/bootstrap.sh'
@@ -51,15 +48,3 @@ docker-pull-test:
 
 docker-test:
 	@bash $(DOCKER_DIR)/tests/test-render.sh
-
-# Diagnostic only: pulls a curl test image and uses ephemeral containers.
-docker-net-diagnose:
-	@bash $(DOCKER_DIR)/net-diagnose.sh
-
-# Experimental: creates/removes a temporary Docker --internal bridge.
-docker-internal-probe:
-	@bash $(DOCKER_DIR)/internal-probe.sh
-
-# Experimental, creates temporary network and transient systemd socket/service.
-docker-forwarder-probe:
-	@bash $(DOCKER_DIR)/forwarder-probe.sh

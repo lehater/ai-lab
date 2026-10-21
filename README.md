@@ -33,11 +33,14 @@ and accepted in [PR #5](https://github.com/lehater/ai-lab/pull/5).
 
 ## Next candidate: S1-D Docker Bootstrap
 
-[Docker first slice](bootstrap/docker/README.md) provides proposed
-`make docker-setup`, `make docker-verify`, `make docker-pull-test`,
-`make docker-test`. These commands configure Engine/Compose and the
-**daemon** proxy only. This work is in a separate draft PR; it is **not yet
-verified on `lab-test` or merged into `main`**. Bridge-container proxy
-routing and LAN isolation remain separate acceptance conditions.
+[Draft PR #6](https://github.com/lehater/ai-lab/pull/6) provides
+`make docker-setup`, `make docker-verify`, `make docker-pull-test`
+and `make docker-test`. Owner-reported installation, rerun,
+image pull and post-reboot checks passed on `lab-test`.
+The Docker **daemon** uses S0 Xray for registry access.
+Ordinary Compose networking remains the default; container-only
+forced proxy egress is deferred (D-011) until a real scenario calls
+for it. Clean-S0→S1→S1-D validation and exposure review are not yet
+complete; the candidate is not accepted in `main`.
 
 Only merged `main` is authoritative. The verified Stage 0 MVP is a first step toward the target, not evidence of full unattended deployment or Enterprise-grade compliance. See [roadmap](docs/project/roadmap.md) for the next testable increment.

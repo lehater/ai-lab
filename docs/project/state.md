@@ -1,6 +1,6 @@
 # Project state — AI Lab
 
-**Updated:** 2026-10-21.  
+**Updated:** 2026-10-22.  
 **Authority:** accepted repository state is what has been merged into `main`;
 this file is its human-readable status and handoff index.
 It is **not** a substitute for code, tests, or evidence.
@@ -15,7 +15,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test`** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. Owner-reported verification recorded in [PR #5](https://github.com/lehater/ai-lab/pull/5). |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
-| Docker/Compose bootstrap | **S1-D FIRST SLICE PROPOSED ([DRAFT PR #6](https://github.com/lehater/ai-lab/pull/6)), NOT VERIFIED** | Candidate scripts install official Docker Engine/Compose via signed APT repo and configure host daemon HTTP(S) proxy; offline syntax/template checks only until on-VM evidence is supplied. Bridge container routing and LAN isolation remain outside this first slice. Docker on manually configured `lab` is not clean-VM evidence. |
+| Docker/Compose bootstrap | **S1-D HOST SLICE OWNER-VERIFIED ON `lab-test`; DRAFT PR #6** | Docker Engine 29.9.2, Compose v5.6.1, daemon proxy, initial/rerun setup, Docker Hub pull/container start and post-reboot checks passed. No fresh S0 → S1 → S1-D replay; PR not merged. Container app proxy-only network deferred per D-011. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -166,45 +166,30 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   bypass is possible on this Docker network. These are **observations
   on `lab-test`**, not evidence that Docker cannot use a future
   controlled proxy route or that LAN security has been proven.
-- Still **not verified:** bridge-container proxied HTTP(S), enforced
-  restriction of direct egress, negative LAN access from another host,
-  Docker firewall behavior for published ports, or clean-snapshot
-  S0 → S1 → S1-D replay. PR remains draft; `main` unchanged.
-  Next evaluate a dedicated Docker `--internal` bridge with a
-  bridge-interface-only forwarder to loopback Xray; keep the host
-  Xray listener on `127.0.0.1`. Candidate adds
-  `make docker-internal-probe`: it creates a temporary Docker `--internal`
-  bridge, attempts proxy-bypassing HTTPS from an ephemeral test container,
-  and removes the bridge. **This new test has not yet been run on
-  `lab-test`.** Docker creates and removes its own temporary network
-  firewall rules as part of this experiment. Design and test before any
-  permanent bridge listener/firewall change.
-
-- Owner ran `make docker-test` again on `lab-test` after the internal
-  probe change: `PASS: Docker Shell syntax, APT/daemon-proxy templates,
-  bridge and internal-network diagnostic contracts.` Then
-  `make docker-internal-probe` created a disposable
-  `ai-lab-internal-probe-4455` bridge with `internal=true` and gateway
-  `172.18.0.1`. A direct `curl` HTTPS request to `github.com`
-  did not succeed (HTTP 000; `curl: (28) Resolving timed out after
-  5002 milliseconds`); script printed its **limited** PASS and
-  confirmed `CLEANUP: temporary internal network removed`.
-  **Caveat:** this was a DNS timeout, not a demonstrated blocked TCP
-  route to a pre-resolved public IP. Internal routing restrictions
-  need separate no-DNS verification; complete egress/LAN isolation
-  remains unproven. `main` unchanged.
-
-- Follow-up candidate `make docker-forwarder-probe` adds a **not yet
-  executed on `lab-test`** transient systemd socket forwarder bound
-  with `BindToDevice` to a newly created temporary internal Docker
-  bridge, forwarding to loopback Xray. It attempts proxied HTTPS and
-  DNS-independent direct-IP HTTPS from the container, then removes
-  the socket/service and network. A positive direct-IP control is
-  attempted first from the existing default bridge; if it fails, no new
-  network/socket is created, and no internal-route conclusion is possible.
-  It changes temporary Docker-managed firewall state and opens a scoped
-  temporary listener while active. No permanent forwarder, Xray listener
-  change or LAN proof yet.
+- Network exploration on `lab-test` (experimental, **not required for
+  baseline S1-D**): normal bridge container reached `github.com`
+  directly (HTTP 200) and could not reach Xray via
+  `host.docker.internal:10808` (HTTP 000; Xray bound to
+  `127.0.0.1:10808`, bridge gateway `172.17.0.1`).
+  `make docker-internal-probe` created a temporary
+  `--internal` bridge (gateway `172.18.0.1`) and recorded direct
+  HTTPS failure (HTTP 000) caused by a **DNS resolution timeout**;
+  it confirmed temporary network cleanup. DNS failure alone does not
+  prove all IP routes blocked. The unexecuted, bridge-only systemd
+  `forwarder-probe` was only a candidate.
+- **Scope decision D-011 (owner-approved):** defer a universal
+  proxy-only/restricted-egress architecture and corresponding custom
+  Docker networking tests until a real workload requires them.
+  Remove experimental `docker-net-diagnose`,
+  `docker-internal-probe`, `docker-forwarder-probe` scripts and
+  Make targets from the proposed baseline PR; retain the above
+  observations as engineering evidence.
+- **Still not verified:** clean-snapshot S0 → S1 → Docker replay,
+  external LAN-host exposure checks or any claim of enforced
+  container-level HTTP(S) proxy routing. PR #6 remains draft;
+  `main` is unchanged. Next narrow acceptance step: run current
+  `make docker-test` (after pruning) on `lab-test`, then clean-VM
+  bootstrap/reboot checks and service-port review before considering merge.
 
 ## Known environments
 
