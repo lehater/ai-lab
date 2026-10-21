@@ -52,6 +52,20 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
 - No console output for the new `make host-test` target or repeat installation
   after a clean reset has been provided yet.
 
+- Owner ran `make host-test` on `lab-test` for the revised Make workflow:
+  `test-configure.sh` passed, but `test-github-setup.sh` unexpectedly
+  inherited an interactive terminal, prompted for live GitHub verification,
+  then failed `ERROR: run make host-setup first` in its deliberately
+  isolated temporary HOME. **This was an offline test isolation defect,
+  not evidence of a broken host SSH setup.**
+- Fix committed in this draft PR: all mock wizard invocations in
+  `test-github-setup.sh` explicitly use `</dev/null`, preventing TTY
+  prompts and live network checks. On a separate local test environment,
+  running the corrected `make host-test` under a pseudo-TTY as a
+  non-root user produced both `PASS` lines (Shell/config/idempotency and
+  mocked wizard preservation/browser/clipboard checks). **The corrected
+  test has not yet been rerun on `lab-test`.**
+
 **Limits:** no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, no completed full S1 provisioning, and independent confirmation of proxy *automatic* launch after reboot still depends on observing that no manual start occurred. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
 
 ## Known environments
