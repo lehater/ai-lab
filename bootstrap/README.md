@@ -181,12 +181,15 @@ make github-verify
 
 После успешного S0 → S1 можно отдельно тестировать Docker Engine/Compose.
 В **экспериментальной ветке** доступны `make docker-test`,
-`make docker-setup`, `make docker-verify`, `make docker-pull-test`;
+`make docker-setup`, `make docker-verify`, `make docker-pull-test`, `make docker-net-diagnose`;
 подробности в [Docker README](docker/README.md). **Не запускайте
 непринятый Docker-код как часть стабильной установки с USB**. После
 проверок и принятия соответствующего PR обновите `bootstrap/` на
 флешке из `main`. Установка Docker требует `sudo`, а публикация
 контейнерных портов без защиты может открыть доступ из LAN.
+`make docker-net-diagnose` — отдельная диагностика; она загружает тестовый
+образ и запускает временные bridge-контейнеры **без публикации портов**,
+но не изменяет прокси или firewall и не доказывает LAN-изоляцию.
 
 **Безопасность:** приватные SSH-ключи не отправлять в чат и Git;
 `private-proxy` не публиковать. Откат снимка VMware может уничтожить
