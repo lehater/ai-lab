@@ -180,6 +180,20 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   firewall rules as part of this experiment. Design and test before any
   permanent bridge listener/firewall change.
 
+- Owner ran `make docker-test` again on `lab-test` after the internal
+  probe change: `PASS: Docker Shell syntax, APT/daemon-proxy templates,
+  bridge and internal-network diagnostic contracts.` Then
+  `make docker-internal-probe` created a disposable
+  `ai-lab-internal-probe-4455` bridge with `internal=true` and gateway
+  `172.18.0.1`. A direct `curl` HTTPS request to `github.com`
+  did not succeed (HTTP 000; `curl: (28) Resolving timed out after
+  5002 milliseconds`); script printed its **limited** PASS and
+  confirmed `CLEANUP: temporary internal network removed`.
+  **Caveat:** this was a DNS timeout, not a demonstrated blocked TCP
+  route to a pre-resolved public IP. Internal routing restrictions
+  need separate no-DNS verification; complete egress/LAN isolation
+  remains unproven. `main` unchanged.
+
 ## Known environments
 
 - **`lab`**: Ubuntu 24.04.5 Desktop / VMware, 8 vCPU, 16 GB RAM,
