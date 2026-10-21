@@ -14,7 +14,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: offline bootstrap, Ubuntu 24.04 Desktop / VMware | **VERIFIED MVP** | USB → offline v2rayN 7.20.2 install and configuration restore → HTTP/SOCKS5 proxy → APT → Git → public GitHub clone; owner repeated full clean-`lab-test` flow twice. [Merged PR #1](https://github.com/lehater/ai-lab/pull/1). |
 | S0: subsequent-login GNOME autostart | **CONFIGURED, NOT INDEPENDENTLY VERIFIED ON `lab-test`** | `proxy/configure.sh` writes GNOME autostart; full post-reboot test on `lab-test` not reported. Main `lab` autostart was previously observed working. |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
-| S1: reproducible host bootstrap | **IN PROGRESS (draft PR #5), NOT VERIFIED** | First SSH transport candidate exists in `bootstrap/host/`. Owner-provided `lab-test` runs and authenticated Git SSH checks passed; full S1 provisioning, post-reboot verification and clean-baseline S0 → S1 replay are pending. See the PR evidence below. |
+| S1: reproducible host bootstrap | **IN PROGRESS (draft PR #5), NOT VERIFIED** | First SSH transport candidate exists in `bootstrap/host/`. Owner-provided `lab-test` configuration, repeat-run, authenticated Git SSH and post-reboot `--local`/`--auth` checks passed. Full S1 provisioning and clean-baseline S0 → S1 replay remain pending. See the PR evidence below. |
 | Docker/Compose bootstrap | **NOT IMPLEMENTED IN REPOSITORY** | Docker and container proxy operation were tested manually on `lab`, not automated for clean `lab-test`. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
@@ -29,7 +29,9 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
 - Observed server Ed25519 fingerprint `SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU`; it matches the [published GitHub Ed25519 host fingerprint](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints).
 - `bash bootstrap/host/verify.sh --auth` reported `S1 GitHub SSH authentication: PASS`.
 
-**Limits:** no confirmed post-reboot rerun, no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, and no full S1 host provisioning. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
+- After the requested reboot, owner reported `bash bootstrap/host/verify.sh --local` with `S1 local config and proxied HTTPS: PASS`, and `bash bootstrap/host/verify.sh --auth` with `S1 GitHub SSH authentication: PASS`. This verifies **post-reboot SSH configuration, proxied HTTPS and authenticated Git transport** under the observed session. The log alone does not show whether the proxy started without user intervention.
+
+**Limits:** no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, no completed full S1 provisioning, and independent confirmation of proxy *automatic* launch after reboot still depends on observing that no manual start occurred. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
 
 ## Known environments
 
