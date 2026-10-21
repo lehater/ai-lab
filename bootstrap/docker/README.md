@@ -17,6 +17,7 @@ make docker-verify
 make docker-pull-test       # docker pull + run hello-world
 make docker-net-diagnose    # bridge network diagnostics (no host network edits)
 make docker-internal-probe   # temporary isolated bridge; direct HTTPS denied?
+make docker-forwarder-probe  # transient bridge-only systemd proxy (test VM only)
 ```
 
 `docker-setup` invokes `bootstrap/docker/setup.sh`. It uses S0's
@@ -119,6 +120,50 @@ while the host gateway remains reachable. The **candidate next design**:
 
 Do not install a permanent forwarder or alter firewall rules until the
 internal network test and the security model have been reviewed.
+
+## Controlled third experiment — bridge-only forwarder (NOT installed)
+
+The `make docker-internal-probe` test **passed on `lab-test`** with
+a temporary `--internal` bridge, gateway `172.18.0.1`, and clean
+network teardown. The observed direct HTTPS failure was specifically
+a **DNS resolution timeout** and did not independently prove that
+connections to pre-resolved public IPs were blocked.
+
+The next `make docker-forwarder-probe` test creates **another temporary**
+internal bridge and, only while the test runs, uses the **standard**
+`systemd-socket-proxyd` to forward a socket on that bridge gateway's
+TCP port **11080** to the existing Xray loopback listener
+`127.0.0.1:10808`. The systemd socket has `BindToDevice` pointing to
+the temporary bridge interface, so packets arriving on other host
+interfaces must not be accepted by it. The proxy process runs as the
+unprivileged `nobody` user.
+
+The test verifies actual container HTTPS via the bridge-scoped listener
+and then attempts direct HTTPS to a literal public IP (`1.1.1.1`)
+**without any DNS resolution**, ruling out the previous DNS-only
+false assurance. Temporary units live under `/run/systemd/system/`;
+the exit handler stops and removes those units, reloads systemd and
+removes the temporary Docker network. A cleanup failure is reported
+as an error, with the network identifier.
+
+**This is a privileged network experiment**, not a read-only diagnostic:
+during the run it installs a temporary host TCP listener on the new
+bridge, alters Docker-managed temporary networking/firewall rules and
+may briefly allow other containers attached to the same bridge to use
+the proxy. It leaves the Xray bind address, persistent systemd config,
+Docker daemon config and UFW policy unchanged. Only run it on
+`lab-test` with a recoverable snapshot; do not run on production or
+an untrusted LAN.
+
+Even a positive proxied HTTPS + negative direct-IP result is **not proof
+of comprehensive egress or LAN isolation**. A separate test from another
+LAN host, reboot/cleanup checks, IPv6 and routing assessment are needed
+before creating a permanent module. Do **not** enable the temporary
+units at boot.
+
+References: [systemd `BindToDevice=`](https://www.freedesktop.org/software/systemd/man/latest/systemd.socket.html),
+[`systemd-socket-proxyd`](https://www.freedesktop.org/software/systemd/man/257/systemd-socket-proxyd.html),
+[Docker internal network](https://docs.docker.com/reference/cli/docker/network/create/).
 
 ## Security boundaries
 
