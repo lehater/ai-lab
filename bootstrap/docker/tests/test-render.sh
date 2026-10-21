@@ -28,5 +28,7 @@ grep -Fq -- 'BindToDevice=$bridge_iface' "$DIR/forwarder-probe.sh"
 grep -Fq -- 'systemd-socket-proxyd' "$DIR/forwarder-probe.sh"
 grep -Fq -- '--proxy "http://$gateway:$port"' "$DIR/forwarder-probe.sh"
 grep -Fq -- 'https://1.1.1.1/' "$DIR/forwarder-probe.sh"
+grep -Fq -- '--network bridge' "$DIR/forwarder-probe.sh"
+grep -Fq -- 'INCONCLUSIVE: public-IP direct HTTPS baseline failed' "$DIR/forwarder-probe.sh"
 grep -Fq -- 'trap cleanup EXIT' "$DIR/forwarder-probe.sh"
 echo 'PASS: Docker Shell syntax, APT/daemon-proxy templates and bridge/internal/forwarder diagnostic contracts.'
