@@ -123,14 +123,28 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   and daemon proxy configured; container networking/LAN security not yet
   verified`. This is **owner-provided installation and host/daemon-proxy
   success evidence**; complete APT installation logs were not provided.
-- Rerun/idempotence, daemon registry image pull, post-reboot operation,
-  firewall impact, bridge-container networking and LAN isolation are
-  **not yet verified**. No user or Docker group privileges were changed
-  by authoring this PR; `main` is unchanged.
-- Next acceptance action: rerun `make docker-setup` to test repeatability,
-  then `make docker-pull-test` to force a registry pull and run `hello-world`
-  without publishing ports. Reboot persistence and full S1-D network/LAN
-  security verification remain later gates.
+- Owner then reran `make docker-setup` on `lab-test`, receiving
+  `Docker Engine 29.9.2`, `Docker version 29.9.2, build a82e528`,
+  `Docker Compose version v5.6.1`, and
+  `S1-D Docker host and daemon proxy: PASS`. This supports **rerun
+  compatibility** for the observed installed configuration; it is not
+  a formal proof of full idempotency on every possible starting state.
+- Owner immediately ran `make docker-pull-test`. The live daemon
+  downloaded Docker Hub `library/hello-world:latest`, digest
+  `sha256:11a3eb1597e864c51b3f56733cb2e8a90bf0c284bfc05f9444d81c558bc848aa`,
+  and the container printed `Hello from Docker!`; the script reported
+  `S1-D Docker registry pull and hello-world container: PASS.`
+  This verifies authenticated or anonymous registry retrieval through
+  the daemon's configured network path and container process execution,
+  **not outbound HTTP(S) networking from a Docker bridge container**.
+- Still **not verified:** post-reboot daemon/proxy availability,
+  host LAN exposure and Docker firewall interactions, bridge-container
+  network routing, or an end-to-end clean-snapshot S0 → S1 → S1-D replay.
+  This PR remains a draft; `main` is unchanged.
+- Next acceptance action: reboot `lab-test` without manually starting
+  the proxy; repeat `make docker-verify` and `make docker-pull-test`.
+  Keep bridge networking and negative LAN isolation as separate S1-D
+  acceptance gates.
 
 ## Known environments
 
