@@ -172,8 +172,13 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   S0 → S1 → S1-D replay. PR remains draft; `main` unchanged.
   Next evaluate a dedicated Docker `--internal` bridge with a
   bridge-interface-only forwarder to loopback Xray; keep the host
-  Xray listener on `127.0.0.1`. Design and test before any permanent
-  bridge listener/firewall change.
+  Xray listener on `127.0.0.1`. Candidate adds
+  `make docker-internal-probe`: it creates a temporary Docker `--internal`
+  bridge, attempts proxy-bypassing HTTPS from an ephemeral test container,
+  and removes the bridge. **This new test has not yet been run on
+  `lab-test`.** Docker creates and removes its own temporary network
+  firewall rules as part of this experiment. Design and test before any
+  permanent bridge listener/firewall change.
 
 ## Known environments
 
