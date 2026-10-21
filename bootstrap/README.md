@@ -191,6 +191,7 @@ make docker-test
 make docker-setup
 make docker-verify
 make docker-pull-test
+make docker-compose-test  # временный Compose-сервис, без публикации портов
 ```
 
 См. [Docker README](docker/README.md) и результаты в
