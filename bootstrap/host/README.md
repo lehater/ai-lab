@@ -1,9 +1,9 @@
-# S1 — Host Bootstrap: GitHub SSH over S0 proxy (draft candidate)
+# S1 — Host Bootstrap: GitHub SSH over S0 proxy (accepted first slice)
 
 **Непрерывный маршрут от USB до S1:** [bootstrap/README.md](../README.md).
 Здесь — только подробности модуля, требования безопасности и проверки.
 
-This PR implements the **first S1 slice, not the full host milestone**.
+This module implements the **first accepted S1 slice (PR #5), not the full host milestone**.
 Target: Ubuntu 24.04 Desktop/amd64 under VMware after verified S0. The
 host SSH config is isolated at `~/.config/ai-lab/github-ssh.conf`, uses
 `ssh.github.com:443` via S0's `127.0.0.1:10808` proxy and does not edit
@@ -77,7 +77,7 @@ GitHub account entry.
 
 1. Return to the agreed `vmware-tools-ready` snapshot; run S0 from USB
    with its genuine private payload (never copy these files into Git).
-2. Fetch/check out the PR branch through the working S0 HTTPS proxy.
+2. Use the repository cloned from accepted `main` by S0; no PR branch switch is required.
 3. Run `make host-setup` (or the one-time Shell entrypoint if Make is absent),
    then run it again; verify `make host-verify`.
 4. Run `make github-setup`. Observe key generation/reuse, optional clipboard,
@@ -94,5 +94,6 @@ and post-reboot `make host-verify` / `make github-verify` PASS. Both
 `make host-test` offline regression tests also passed after the isolation
 fix. This evidence is owner-reported; a complete recorded install transcript
 and the GUI browser's actual page load are not independently available.
-The first S1 SSH slice remains a draft PR, **not the complete S1 milestone**
-or an Enterprise-grade claim.
+The first S1 SSH slice is accepted through [PR #5](https://github.com/lehater/ai-lab/pull/5),
+but **the full S1 milestone remains IN PROGRESS**, and this is not an
+Enterprise-grade claim.
