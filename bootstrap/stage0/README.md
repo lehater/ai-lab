@@ -50,8 +50,8 @@ proxied HTTPS. Initial public clone does **not** require an SSH key.
 **Limitations:** Unencrypted private archive (protect physical access to
 USB); manual first launch in GNOME; Ubuntu 24.04 Desktop / VMware only.
 Autostart after reboot on `lab-test` was subsequently confirmed by the owner
-following a clean `vmware-tools-ready` snapshot replay (proposed evidence in
-[PR #5](https://github.com/lehater/ai-lab/pull/5)); the first GUI launch
+following a clean `vmware-tools-ready` snapshot replay (recorded in
+[merged PR #5](https://github.com/lehater/ai-lab/pull/5)); the first GUI launch
 remains manual.
 Later stages handle SSH key registration, Docker, firewall and hardening.
 Never commit `private-proxy` payloads.
