@@ -181,7 +181,8 @@ make github-verify
 
 После успешного S0 → S1 можно отдельно тестировать Docker Engine/Compose.
 В **экспериментальной ветке** доступны `make docker-test`,
-`make docker-setup`, `make docker-verify`, `make docker-pull-test`, `make docker-net-diagnose`;
+`make docker-setup`, `make docker-verify`, `make docker-pull-test`,
+`make docker-net-diagnose`, `make docker-internal-probe`;
 подробности в [Docker README](docker/README.md). **Не запускайте
 непринятый Docker-код как часть стабильной установки с USB**. После
 проверок и принятия соответствующего PR обновите `bootstrap/` на
@@ -190,6 +191,10 @@ make github-verify
 `make docker-net-diagnose` — отдельная диагностика; она загружает тестовый
 образ и запускает временные bridge-контейнеры **без публикации портов**,
 но не изменяет прокси или firewall и не доказывает LAN-изоляцию.
+`make docker-internal-probe` отдельно создаёт **временную** сеть
+`--internal` и её правила Docker firewall, проверяет прямой HTTPS
+и удаляет сеть. Это не часть штатного S0 → S1 и не доказательство
+полной изоляции LAN.
 
 **Безопасность:** приватные SSH-ключи не отправлять в чат и Git;
 `private-proxy` не публиковать. Откат снимка VMware может уничтожить
