@@ -19,15 +19,16 @@ The deliverables are reusable infrastructure modules, versioned configurations a
 - [USB quick start](bootstrap/README.md) — ordered S0 → S1 operator runbook, carried on USB with `bootstrap/`.
 - [Stage 0 bootstrap](bootstrap/stage0/README.md) — limited, independently tested offline VMware bootstrap.
 
-## Operational commands (S1 candidate in PR #5)
+## Operational commands (first S1 slice)
 
-After the independent S0 bootstrap and repository checkout, S1 proposes
+After the independent S0 bootstrap and repository checkout, S1 provides
 `make help`, `make host-setup`, `make github-setup`, `make github-verify`,
 `make host-verify` and `make host-test`. If `make` is missing, use
 `bash bootstrap/host/bootstrap.sh` once to install it through S0's APT
 proxy. The [host instructions](bootstrap/host/README.md) cover
 operator-owned SSH key enrollment, browser proxy limitations and acceptance.
-The guided setup and checks were owner-tested after a clean-snapshot replay;
-PR #5 is still **draft pending review/merge**, and full S1 remains incomplete.
+The guided setup and checks were owner-tested after a clean-snapshot replay
+and accepted in [PR #5](https://github.com/lehater/ai-lab/pull/5).
+**Full S1 host provisioning remains incomplete.**
 
 Only merged `main` is authoritative. The verified Stage 0 MVP is a first step toward the target, not evidence of full unattended deployment or Enterprise-grade compliance. See [roadmap](docs/project/roadmap.md) for the next testable increment.
