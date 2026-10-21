@@ -1,5 +1,8 @@
 # S1 — Host Bootstrap: GitHub SSH over S0 proxy (draft candidate)
 
+**Непрерывный маршрут от USB до S1:** [bootstrap/README.md](../README.md).
+Здесь — только подробности модуля, требования безопасности и проверки.
+
 This PR implements the **first S1 slice, not the full host milestone**.
 Target: Ubuntu 24.04 Desktop/amd64 under VMware after verified S0. The
 host SSH config is isolated at `~/.config/ai-lab/github-ssh.conf`, uses
@@ -84,7 +87,12 @@ GitHub account entry.
 6. Record the exact revision, commands, observed output, environment and
    residual limitations in `docs/project/state.md` before proposing merge.
 
-Earlier S1 SSH configuration, authentication, rerun and post-reboot tests
-on `lab-test` refer to an earlier revision of this draft PR. **The
-new Makefile and guided key-enrollment workflow are not verified on
-`lab-test` yet.** No complete S1 provisioning or Enterprise-grade claim.
+Owner-tested S1 SSH setup and authenticated SSH checks passed on `lab-test`.
+After restoring the `vmware-tools-ready` snapshot, the owner confirmed
+successful S0 → S1 replay, proxy autostart without manually starting v2rayN,
+and post-reboot `make host-verify` / `make github-verify` PASS. Both
+`make host-test` offline regression tests also passed after the isolation
+fix. This evidence is owner-reported; a complete recorded install transcript
+and the GUI browser's actual page load are not independently available.
+The first S1 SSH slice remains a draft PR, **not the complete S1 milestone**
+or an Enterprise-grade claim.

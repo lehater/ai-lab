@@ -12,9 +12,9 @@ It is **not** a substitute for code, tests, or evidence.
 | Area | Status | Evidence / qualification |
 | --- | --- | --- |
 | S0: offline bootstrap, Ubuntu 24.04 Desktop / VMware | **VERIFIED MVP** | USB → offline v2rayN 7.20.2 install and configuration restore → HTTP/SOCKS5 proxy → APT → Git → public GitHub clone; owner repeated full clean-`lab-test` flow twice. [Merged PR #1](https://github.com/lehater/ai-lab/pull/1). |
-| S0: subsequent-login GNOME autostart | **CONFIGURED, NOT INDEPENDENTLY VERIFIED ON `lab-test`** | `proxy/configure.sh` writes GNOME autostart; full post-reboot test on `lab-test` not reported. Main `lab` autostart was previously observed working. |
+| S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test` (draft PR #5 evidence)** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. This is owner-reported acceptance evidence proposed in PR #5, not yet merged into `main`. |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
-| S1: reproducible host bootstrap | **IN PROGRESS (draft PR #5), NOT VERIFIED** | First SSH transport candidate exists in `bootstrap/host/`. Owner-provided `lab-test` configuration, repeat-run, authenticated Git SSH and post-reboot `--local`/`--auth` checks passed. Full S1 provisioning and clean-baseline S0 → S1 replay remain pending. See the PR evidence below. |
+| S1: reproducible host bootstrap | **IN PROGRESS (draft PR #5), FIRST SLICE OWNER-VERIFIED** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. PR is not merged. |
 | Docker/Compose bootstrap | **NOT IMPLEMENTED IN REPOSITORY** | Docker and container proxy operation were tested manually on `lab`, not automated for clean `lab-test`. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
@@ -82,7 +82,21 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
   were not supplied in that log; these remain to be confirmed before
   certifying the whole replay.
 
-**Limits:** no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, no completed full S1 provisioning, and independent confirmation of proxy *automatic* launch after reboot still depends on observing that no manual start occurred. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
+- Owner explicitly confirmed after the `vmware-tools-ready` reset
+  that S0 and S1 were completed without errors and **v2rayN autostarted
+  after reboot without manual intervention**. Together with the posted
+  post-reboot `make host-verify` and `make github-verify` PASS logs,
+  this supports the S0 autostart and first S1 SSH slice acceptance paths.
+  The full installation transcript was not provided; distinguish
+  owner attestation from complete retained machine evidence.
+- Operator documentation gap found during replay: commands and their order
+  still depended on reading a chat. The candidate adds
+  `bootstrap/README.md` as the single end-to-end USB-carried S0 → S1
+  runbook, with links from stage-specific and repository READMEs.
+  The owner must recopy the updated `bootstrap/` directory to actual USB
+  media; a repository change cannot physically update an existing stick.
+
+**Limits:** owner confirmed full clean-snapshot S0 → S1 completion and automatic proxy launch but did not provide the complete installation command/output transcript; the GitHub browser's actual page load and first-time new-key generation were not independently observed. First SSH transport slice is proposed in PR #5; complete S1 host provisioning and S1-D are not implemented/accepted by this evidence. Evidence derives from the owner's observations and logs, not remote execution by the assistant.
 
 ## Known environments
 
@@ -121,8 +135,8 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
    [roadmap](roadmap.md).
 3. Before claiming S1 acceptance, reset `lab-test` to the agreed
    baseline, run Stage 0, then execute S1 and verify on that machine.
-4. Optional remaining S0 check: reboot `lab-test`, log into GNOME
-   without manually starting v2rayN, verify Xray and proxied GitHub.
+4. S0 subsequent-login proxy autostart was confirmed by owner on clean-snapshot
+   `lab-test` replay (draft PR #5 evidence); keep the tested limits explicit.
 5. [AI Lab strategy](strategy.md) was updated to the scenario-independent
    Enterprise-grade aspiration in [PR #4](https://github.com/lehater/ai-lab/pull/4)
    (superseding the scope from [PR #2](https://github.com/lehater/ai-lab/pull/2));
