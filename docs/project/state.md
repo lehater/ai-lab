@@ -199,12 +199,28 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   `v5.6.1` and `S1-D Docker host and daemon proxy: PASS`.
   This is live verification of the **reduced current candidate revision**,
   not a fresh clean-snapshot replay or a Compose service smoke test.
-- New candidate adds `make docker-compose-test`, which starts an ephemeral
-  `hello-world` service under the default Compose bridge (no published ports
-  or volumes), checks bridge mode and removes the project. **Not yet run on
-  `lab-test`.** This is the next narrow functional acceptance check, not
-  a test of forced proxy egress. Keep strict egress and
-  bridge forwarders deferred under D-011.
+- Owner fetched the revised Compose-smoke candidate on `lab-test`
+  (`git pull` reported six files changed) and ran `make docker-test`:
+  `PASS: Docker Shell syntax, APT/daemon-proxy templates and Compose
+  smoke contract.` Then ran `make docker-compose-test` with an ephemeral
+  `hello-world` service. Compose created network
+  `ailab-composesmoke-5014_default` and container
+  `ailab-composesmoke-5014-smoke-1`, printed `Hello from Docker!`,
+  reported container exit code `0`, checked
+  `Docker Compose default network: bridge, internal=false; no published
+  ports`, and `docker compose down` removed both service and network.
+  Final output: `PASS: Docker Compose default bridge service and
+  cleanup.` This confirms the default Compose service/network
+  lifecycle on the current test machine. It does **not** confirm
+  container-level proxy routing or independently inspect unrelated
+  running containers and their published ports.
+- The proposed S1-D **host/Compose functional slice is now owner-tested**
+  on `lab-test`: initial/repeat setup, docker daemon proxy, image pull,
+  Compose, and post-reboot daemon/registry checks. **Still pending:**
+  complete clean-snapshot S0 → S1 → S1-D replay and explicit inspection
+  of unrelated Docker-published ports/host network exposure. Restricted
+  egress and custom forwarders remain deferred under D-011. PR #6 is
+  still a draft, not merged; `main` is unchanged.
 
 ## Known environments
 
