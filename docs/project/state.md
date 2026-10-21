@@ -33,6 +33,15 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
 
 - Owner ran `bash bootstrap/host/tests/test-configure.sh` on `lab-test`; output: `PASS: shell syntax, mocked config rendering, idempotency, safe conflict refusal.` This is an offline/mocked regression check, not a live network or new-clean-machine provisioning test.
 
+- Follow-up code update in draft PR #5 added root Makefile tasks, an
+  operator-guided SSH key setup, GitHub settings browser launch/fallback,
+  and offline regression tests. Local mocked wizard tests passed outside
+  `lab-test` (reuse, no overwrite, clipboard/browser actions and refusal
+  of incomplete/symlink key paths); real key generation, GUI browser
+  behavior and Make workflow on `lab-test` remain **NOT VERIFIED** for this
+  newer revision. Earlier operator test evidence refers to the preceding
+  revision and must not be treated as validation of the revised workflow.
+
 **Limits:** no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, no completed full S1 provisioning, and independent confirmation of proxy *automatic* launch after reboot still depends on observing that no manual start occurred. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
 
 ## Known environments
