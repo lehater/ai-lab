@@ -13,9 +13,38 @@
 | S2 | Infrastructure Core | Reusable, versioned module configuration, managed persistent data and secrets, diagnostics and verification of a representative service. |
 | S3 | Pluggable AI capabilities | At least one independently installable/removable optional AI/runtime integration, with declared dependencies and smoke tests; no universal runtime requirement. |
 | S4 | Reusable research environment template | A versioned composition of core/modules can be deployed from a declared baseline, checked and reset or removed; scenario is selected separately, not prescribed by strategy. |
-| S5 | Maturity and portability increments | Evidence-based improvements to isolation, security, diagnostics, recovery and portability on explicitly chosen target environments. Record which properties were verified, not blanket Enterprise-grade status. |
 
-**Milestones are implementation gates, not maturity labels or mandatory adoption of specific technologies.** Full Enterprise-grade maturity is a long-term engineering direction; it is not declared achieved on completion of any single milestone.
+**Milestones are functional delivery gates, not maturity labels or a mandatory technology stack.** Enterprise-grade is the long-term engineering aspiration and applies **across all stages**; completing S4 does not prove it has been achieved.
+
+## Cross-cutting engineering maturity
+
+Develop in **two dimensions**: (1) deliver functional infrastructure increments S0–S4; (2) strengthen the applicable engineering properties **within every increment**. Do not defer baseline quality, security or verification until the infrastructure is feature-complete.
+
+For each new or changed module/template, use a risk- and scope-appropriate acceptance contract:
+
+| Engineering dimension | Minimum expectation, progressing with scope |
+| --- | --- |
+| **IaC & change control** | Version configuration and deployment code in Git; record versions, dependencies and explicitly required manual steps; review changes through PRs. |
+| **Reproducibility & automation** | Provide controlled installation/configuration commands and a clean-baseline verification procedure; test reruns, reboot persistence or teardown where applicable. |
+| **Verification** | Define independent, repeatable acceptance checks and retain results with the environment/revision; do not confuse writing a check with successfully running it. |
+| **Security** | Keep secrets outside Git, minimize privileges and exposed network surfaces, evaluate risk, document deliberate deferrals and test relevant boundaries. |
+| **Operability & recovery** | Provide sufficient diagnostics to identify failures, an appropriate reset/rollback or recovery procedure, and explicit known limitations. |
+| **Portability** | Isolate environment-specific settings; state exactly which operating systems/hypervisors have actually been tested. Extend support only after verification. |
+
+The depth of these controls grows with **risk, complexity and reuse**, not with a calendar or a fixed certification checklist. CI, centralized observability, advanced policy and other enterprise practices are candidates for incremental adoption when a concrete control gap justifies them.
+
+**Stage-specific verification emphasis** (additive, not a replacement for the cross-cutting contract):
+
+| Stage | Additional engineering evidence |
+| --- | --- |
+| **S0** | Existing clean-`lab-test` recovery evidence remains **VERIFIED MVP** only for its specified path; manual first launch, unverified autostart and deferred hardening stay explicit. New maturity requirements do not retroactively invalidate or upgrade S0. |
+| **S1** | Repeatable host configuration, idempotent rerun, reboot checks and safe developer access on clean `lab-test`. |
+| **S1-D** | Reproducible Docker installation, daemon/container proxy routing and negative LAN-exposure tests on clean `lab-test`. |
+| **S2** | Module boundaries, configuration/secrets and persistent-data lifecycle, representative service health/diagnostics and recovery checks. |
+| **S3** | Optional AI integration installs and verifies independently, with explicit dependencies, secrets and clean removal/disable behavior. |
+| **S4** | Compose an environment from reusable modules; reproduce it from a declared baseline, verify isolation and reset/teardown, and record reuse effort. |
+
+Record actual pass/fail evidence and remaining gaps in [state](state.md), not a speculative aggregate Enterprise-grade score. **Maturity work continues after S4** without requiring a new numbered final stage.
 
 ## First infrastructure vertical slice
 
@@ -61,4 +90,4 @@ limitations in [state](state.md).
 - Secure encrypted backup of private proxy data, signed/reproducible offline payload distribution and archive extraction hardening; risk and treatment remain explicit.
 - Other hypervisors, bare-metal support, GPU/runtime hosting and portability checks until targeted and verified.
 - Full orchestration, multi-agent stacks, broad service catalogues and centralized tooling absent a concrete research/infrastructure need.
-- Enterprise-wide controls (advanced policy, centralized observability, comprehensive CI/CD) beyond the validated small infrastructure slices. Introduce them progressively when value and risks warrant; never claim they already exist.
+- Enterprise-wide controls (advanced policy, centralized observability, comprehensive CI/CD) beyond the validated small infrastructure slices. Evaluate each as an incremental cross-cutting improvement when value and risks warrant; never claim it is already implemented.
