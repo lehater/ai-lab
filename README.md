@@ -14,4 +14,14 @@ The deliverables are reusable infrastructure modules, versioned configurations a
 - [Observed environment](docs/current-environment.md) — manually configured reference VM, not clean-VM IaC proof.
 - [Stage 0 bootstrap](bootstrap/stage0/README.md) — limited, independently tested offline VMware bootstrap.
 
+## Operational commands (S1 candidate in PR #5)
+
+After the independent S0 bootstrap and repository checkout, S1 proposes
+`make help`, `make host-setup`, `make github-setup`, `make github-verify`,
+`make host-verify` and `make host-test`. If `make` is missing, use
+`bash bootstrap/host/bootstrap.sh` once to install it through S0's APT
+proxy. The [host instructions](bootstrap/host/README.md) cover
+operator-owned SSH key enrollment, browser proxy limitations and acceptance.
+This workflow is **draft, pending clean-VM validation**.
+
 Only merged `main` is authoritative. The verified Stage 0 MVP is a first step toward the target, not evidence of full unattended deployment or Enterprise-grade compliance. See [roadmap](docs/project/roadmap.md) for the next testable increment.
