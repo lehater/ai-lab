@@ -236,7 +236,7 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
 ## Integrated replay plan (not yet executed)
 
 The remaining S1-D integration gate is documented in the
-[USB operator runbook](../../bootstrap/README.md#7-финальная-проверка-воспроизводимости-s0--s1--s1-d):
+[USB operator runbook](../../bootstrap/README.md):
 preserve the currently working `lab-test` snapshot; restore/clone
 `vmware-tools-ready`; confirm updated USB/private payload; follow S0,
 S1 SSH transport and GitHub key enrollment, Docker/Compose install,
