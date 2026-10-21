@@ -114,15 +114,23 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   proxy template.` This validates **offline syntax/templates on the test VM**,
   not package installation, proxy/network reachability from Docker or daemon
   operation. Earlier local development-container test results remain separate.
-- Installation, rerun, daemon restart, image pull, firewall impact,
-  GUI-login timing and installed package versions are **not yet verified**.
-  No user or Docker group privileges were changed by authoring this PR;
-  `main` is unchanged.
-- Next acceptance action: after taking a recoverable test-VM snapshot,
-  run `make docker-setup` on `lab-test` and inspect its first live output.
-  Continue with `make docker-verify`, repeated setup and pull test only
-  after the installation succeeds. Keep bridge-container connectivity and
-  LAN isolation as explicit later S1-D gates.
+- Owner then ran `make docker-setup` on `lab-test` and provided
+  successful final output: `Docker Engine 29.9.2`,
+  `Docker version 29.9.2, build a82e528`,
+  `Docker Compose version v5.6.1`,
+  `S1-D Docker host and daemon proxy: PASS (no image pull or container
+  network checked)`, followed by `S1-D candidate: Docker Engine/Compose
+  and daemon proxy configured; container networking/LAN security not yet
+  verified`. This is **owner-provided installation and host/daemon-proxy
+  success evidence**; complete APT installation logs were not provided.
+- Rerun/idempotence, daemon registry image pull, post-reboot operation,
+  firewall impact, bridge-container networking and LAN isolation are
+  **not yet verified**. No user or Docker group privileges were changed
+  by authoring this PR; `main` is unchanged.
+- Next acceptance action: rerun `make docker-setup` to test repeatability,
+  then `make docker-pull-test` to force a registry pull and run `hello-world`
+  without publishing ports. Reboot persistence and full S1-D network/LAN
+  security verification remain later gates.
 
 ## Known environments
 
