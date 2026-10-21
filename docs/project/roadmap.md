@@ -75,7 +75,7 @@ and passes its stated checks; configuration survives reboot where relevant;
 rerun does not damage existing settings. Record exact commands, output and
 limitations in [state](state.md).
 
-## S1-D — accepted Docker first slice; full-chain verification open
+## S1-D — functional integrated replay verified on lab-test
 
 The first S1 GitHub SSH transport slice is accepted in PR #5, with owner
 evidence for its stated functional criteria. Do not invent host tooling
@@ -94,11 +94,19 @@ daemon proxy, image pulls, normal Compose bridge lifecycle/cleanup
 and reboot checks on `lab-test`. A final local port check found no
 running published containers or Docker API listeners on 2375/2376.
 
-**Remaining full-chain gate:** follow the [USB end-to-end replay runbook](../../bootstrap/README.md)
-from the clean `lab-test` baseline or its clone; record checkout SHA,
-operator steps, install/rerun and post-reboot evidence. Negative LAN
-access must be verified from another host before claiming LAN isolation. App container
-proxy-only routing is not required by the baseline (D-011).
+**Integrated functional acceptance — owner-verified (2026-10-22):**
+After restoring `lab-test` to `vmware-tools-ready`, the owner
+explicitly confirmed running the full scripted S0 → S1 → Docker
+installation, then supplied final GitHub SSH, Docker Engine/Compose,
+registry pull and Compose service/network cleanup PASS outputs.
+Functional reproducibility is established on this VMware/Ubuntu target.
+See [project state](state.md) for evidence and qualifiers.
+
+**Independent limits:** the first Xray GUI start and GitHub key
+enrollment require operator action; no unattended installation,
+package-version pinning, other hypervisor support, or external
+LAN-isolation verification is claimed. No mandatory container
+proxy-only routing is required (D-011).
 
 **Deliberately deferred (D-011):** a forced-proxy-only network,
 Docker `--internal` app egress restrictions, bridge-scoped forwarders

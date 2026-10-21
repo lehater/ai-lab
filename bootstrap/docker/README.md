@@ -1,6 +1,6 @@
-# S1-D — Docker Engine/Compose bootstrap (accepted first slice)
+# S1-D — Docker Engine/Compose bootstrap (integrated functional replay verified)
 
-**Status:** limited first slice accepted via [PR #6](https://github.com/lehater/ai-lab/pull/6), owner-tested on `lab-test`. Full S1-D remains open.
+**Status:** first module accepted via [PR #6](https://github.com/lehater/ai-lab/pull/6); full S0 → S1 → S1-D functional installation subsequently owner-verified from `vmware-tools-ready` on `lab-test`. Scope is operator-assisted Ubuntu 24.04 Desktop / VMware; LAN security and unattended deployment are not claimed.
 Target: Ubuntu 24.04 Desktop/amd64 VMware, after accepted S0/S1.
 This module installs Docker Engine, Docker Compose and the **Docker daemon's**
 HTTP(S) proxy using S0's existing local Xray. It does not change the Xray
@@ -97,19 +97,25 @@ A final local inspection showed no running Docker containers/published
 ports and no listeners on Docker API ports 2375/2376, while Xray
 remained bound to 127.0.0.1:10808. This does not establish remote
 LAN isolation.
-These results do **not** establish a fresh S0 → S1 → S1-D replay,
-package-version pinning, externally tested LAN security, or container
-proxy-routing. Full findings and prior optional network experiments
+The owner subsequently **restored `lab-test` to `vmware-tools-ready`,
+reinstalled the complete S0 → S1 → S1-D stack using the repository
+scripts**, and supplied successful final S1 GitHub SSH, Docker 29.9.2,
+Compose v5.6.1, image pull, Compose cleanup and local port outputs.
+Thus the integrated functional replay is owner-verified. These results
+do **not** establish package-version pinning, fully unattended setup,
+externally tested LAN security or container proxy-only routing. Full findings and prior optional network experiments
 are preserved in [project state](../../docs/project/state.md).
 
-### Remaining integrated full-chain acceptance
+### Repeatability procedure
 
-Follow [the complete USB S0 → S1 → S1-D operator replay](../README.md)
-from the original `vmware-tools-ready` snapshot or a clone.
-It includes the manual first GUI launch and GitHub SSH key registration,
-repeated install, post-reboot tests and a privacy-safe evidence summary.
-Do not claim full-chain reproducibility before that replay has passed.
-A separate LAN-host test is required before claiming LAN isolation.
+The [complete USB S0 → S1 → S1-D operator runbook](../README.md)
+remains available for future repeat runs. Its functional milestone
+was owner-verified after a full reinstall from `vmware-tools-ready`.
+The first GUI proxy launch and GitHub SSH key enrollment may still
+require human interaction. Exact checkout SHA and full installer
+stdout were not included in the newest pasted results; final PASS
+checks were. A separate LAN-host test is required before claiming
+LAN isolation, which is outside this module's baseline scope.
 
 References:
 [Docker Ubuntu installation](https://docs.docker.com/engine/install/ubuntu/),
