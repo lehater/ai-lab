@@ -1,6 +1,6 @@
 # Project state — AI Lab
 
-**Updated:** 2026-10-21.  
+**Updated:** 2026-10-22.  
 **Authority:** accepted repository state is what has been merged into `main`;
 this file is its human-readable status and handoff index.
 It is **not** a substitute for code, tests, or evidence.
@@ -15,7 +15,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test`** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. Owner-reported verification recorded in [PR #5](https://github.com/lehater/ai-lab/pull/5). |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
-| Docker/Compose bootstrap | **NOT IMPLEMENTED IN REPOSITORY** | Docker and container proxy operation were tested manually on `lab`, not automated for clean `lab-test`. |
+| Docker/Compose bootstrap | **FIRST S1-D HOST/COMPOSE SLICE ACCEPTED ([PR #6](https://github.com/lehater/ai-lab/pull/6)); OWNER-VERIFIED ON `lab-test`** | Docker Engine 29.9.2, Compose v5.6.1, daemon proxy, rerun, image pull, post-reboot checks and default Compose service/cleanup PASS. Full integrated clean-snapshot replay and external LAN test not performed; full S1-D remains open. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -98,6 +98,141 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
 
 **Limits:** owner confirmed full clean-snapshot S0 → S1 completion and automatic proxy launch but did not provide the complete installation command/output transcript; the GitHub browser's actual page load and first-time new-key generation were not independently observed. First SSH transport slice is accepted via PR #5; complete S1 host provisioning and S1-D are not implemented/accepted by this evidence. Evidence derives from the owner's observations and logs, not remote execution by the assistant.
 
+## Next work — S1-D Docker host candidate
+
+- After accepted PR #5, the roadmap's **narrow functional S1 exit criterion**
+  has owner-provided clean-VM setup, rerun, GitHub SSH and post-reboot evidence.
+  Do not invent unspecified development tool requirements solely to keep S1
+  open; milestone closure can be reviewed separately.
+- [Draft PR #6](https://github.com/lehater/ai-lab/pull/6) proposes `bootstrap/docker/`: official Docker Engine /
+  Compose installation with verified APT signing-key fingerprint, a
+  dedicated systemd proxy drop-in, and `docker-test`, `docker-setup`,
+  `docker-verify`, `docker-pull-test` Make targets.
+- The owner fetched and checked out `feat/s1d-docker-host-proxy`
+  on `lab-test` after accepted S0/S1; `make docker-test` reported:
+  `PASS: Docker Shell syntax, stable APT repository template and daemon
+  proxy template.` This validates **offline syntax/templates on the test VM**,
+  not package installation, proxy/network reachability from Docker or daemon
+  operation. Earlier local development-container test results remain separate.
+- Owner then ran `make docker-setup` on `lab-test` and provided
+  successful final output: `Docker Engine 29.9.2`,
+  `Docker version 29.9.2, build a82e528`,
+  `Docker Compose version v5.6.1`,
+  `S1-D Docker host and daemon proxy: PASS (no image pull or container
+  network checked)`, followed by `S1-D candidate: Docker Engine/Compose
+  and daemon proxy configured; container networking/LAN security not yet
+  verified`. This is **owner-provided installation and host/daemon-proxy
+  success evidence**; complete APT installation logs were not provided.
+- Owner then reran `make docker-setup` on `lab-test`, receiving
+  `Docker Engine 29.9.2`, `Docker version 29.9.2, build a82e528`,
+  `Docker Compose version v5.6.1`, and
+  `S1-D Docker host and daemon proxy: PASS`. This supports **rerun
+  compatibility** for the observed installed configuration; it is not
+  a formal proof of full idempotency on every possible starting state.
+- Owner immediately ran `make docker-pull-test`. The live daemon
+  downloaded Docker Hub `library/hello-world:latest`, digest
+  `sha256:11a3eb1597e864c51b3f56733cb2e8a90bf0c284bfc05f9444d81c558bc848aa`,
+  and the container printed `Hello from Docker!`; the script reported
+  `S1-D Docker registry pull and hello-world container: PASS.`
+  This verifies authenticated or anonymous registry retrieval through
+  the daemon's configured network path and container process execution,
+  **not outbound HTTP(S) networking from a Docker bridge container**.
+- After a reboot, owner provided `lab-test` console output for
+  `make host-verify` (`S1 local config and proxied HTTPS: PASS`),
+  `make docker-verify` (Docker Engine `29.9.2`, Docker Compose
+  `v5.6.1`, daemon proxy PASS), and `make docker-pull-test`
+  (same daemon PASS, proxy HTTPS PASS, Docker Hub `hello-world`
+  already up to date, container prints `Hello from Docker!`,
+  registry pull / container PASS). This verifies **post-reboot S0
+  proxy connectivity, Docker daemon persistence, registry access and
+  process startup** in the observed session. The latest log itself
+  does not independently establish whether v2rayN was started
+  automatically rather than manually; prior S0 autostart was separately
+  confirmed in PR #5.
+- Owner ran updated `make docker-test` on `lab-test`; it reported
+  `PASS: Docker Shell syntax, stable APT repository template, daemon proxy
+  template and bridge diagnostic contract.` Owner then ran
+  `make docker-net-diagnose`. Observed:
+  `xray` listens on **127.0.0.1:10808** (pid 3407);
+  default Docker `bridge` gateway is **172.17.0.1**;
+  `curlimages/curl:8.16.0` was pulled (digest
+  `sha256:463eaf6072688fe96ac64fa623fe73e1dbe25d8ad6c34404a669ad3ce1f104b6`).
+  Explicit proxy request from a bridge container via
+  `host.docker.internal:10808` **failed** (`curl: (7)`, HTTP 000).
+  A direct proxy-bypassing HTTPS request from the bridge container
+  to `github.com` **succeeded (HTTP 200)**. The difference is
+  consistent with the host listener bound to loopback only rather than
+  to a bridge-reachable IP address, and confirms direct HTTPS
+  bypass is possible on this Docker network. These are **observations
+  on `lab-test`**, not evidence that Docker cannot use a future
+  controlled proxy route or that LAN security has been proven.
+- Network exploration on `lab-test` (experimental, **not required for
+  baseline S1-D**): normal bridge container reached `github.com`
+  directly (HTTP 200) and could not reach Xray via
+  `host.docker.internal:10808` (HTTP 000; Xray bound to
+  `127.0.0.1:10808`, bridge gateway `172.17.0.1`).
+  `make docker-internal-probe` created a temporary
+  `--internal` bridge (gateway `172.18.0.1`) and recorded direct
+  HTTPS failure (HTTP 000) caused by a **DNS resolution timeout**;
+  it confirmed temporary network cleanup. DNS failure alone does not
+  prove all IP routes blocked. The unexecuted, bridge-only systemd
+  `forwarder-probe` was only a candidate.
+- **Scope decision D-011 (owner-approved):** defer a universal
+  proxy-only/restricted-egress architecture and corresponding custom
+  Docker networking tests until a real workload requires them.
+  Remove experimental `docker-net-diagnose`,
+  `docker-internal-probe`, `docker-forwarder-probe` scripts and
+  Make targets from the proposed baseline PR; retain the above
+  observations as engineering evidence.
+- **Still not verified:** clean-snapshot S0 → S1 → Docker replay,
+  external LAN-host exposure checks or any claim of enforced
+  container-level HTTP(S) proxy routing. The first functional
+  Docker slice is accepted via PR #6; full S1-D acceptance remains
+  dependent on the integrated clean-snapshot replay. The reduced
+  `make docker-test` and the local service/port review were completed
+  separately as recorded below.
+
+- After pruning the experimental network tools per D-011, owner ran
+  `git pull` on `lab-test` (reported 10 changed files), then
+  `make docker-test`: `PASS: Docker Shell syntax, stable APT repository
+  template and daemon proxy template.` Also ran `make docker-verify`:
+  Docker Engine `29.9.2`, Docker CLI build `a82e528`, Compose
+  `v5.6.1` and `S1-D Docker host and daemon proxy: PASS`.
+  This is live verification of the **reduced current candidate revision**,
+  not a fresh clean-snapshot replay or a Compose service smoke test.
+- Owner fetched the revised Compose-smoke candidate on `lab-test`
+  (`git pull` reported six files changed) and ran `make docker-test`:
+  `PASS: Docker Shell syntax, APT/daemon-proxy templates and Compose
+  smoke contract.` Then ran `make docker-compose-test` with an ephemeral
+  `hello-world` service. Compose created network
+  `ailab-composesmoke-5014_default` and container
+  `ailab-composesmoke-5014-smoke-1`, printed `Hello from Docker!`,
+  reported container exit code `0`, checked
+  `Docker Compose default network: bridge, internal=false; no published
+  ports`, and `docker compose down` removed both service and network.
+  Final output: `PASS: Docker Compose default bridge service and
+  cleanup.` This confirms the default Compose service/network
+  lifecycle on the current test machine. It does **not** confirm
+  container-level proxy routing or independently inspect unrelated
+  running containers and their published ports.
+- The proposed S1-D **host/Compose functional slice is now owner-tested**
+  on `lab-test`: initial/repeat setup, docker daemon proxy, image pull,
+  Compose, and post-reboot daemon/registry checks. **Still pending:**
+  complete clean-snapshot S0 → S1 → S1-D replay and explicit inspection
+  of unrelated Docker-published ports/host network exposure. Restricted
+  egress and custom forwarders remain deferred under D-011. First slice accepted in PR #6; full milestone open.
+
+- Final local port inspection after Compose smoke on `lab-test`:
+  `sudo docker ps` showed no running containers and therefore no
+  published container ports. The host `ss -lntp` filter for
+  2375, 2376 and 10808 showed only Xray listening at
+  `127.0.0.1:10808`. No Docker API listener on 2375/2376 was
+  observed. This **point-in-time local check is not an external
+  LAN negative test** and says nothing about ports that later
+  workloads might publish. First Docker/Compose bootstrap slice
+  accepted through [PR #6](https://github.com/lehater/ai-lab/pull/6);
+  clean-snapshot whole-chain proof is still outstanding.
+
 ## Known environments
 
 - **`lab`**: Ubuntu 24.04.5 Desktop / VMware, 8 vCPU, 16 GB RAM,
@@ -130,9 +265,9 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
 
 1. S0 functional MVP is merged in `main`; avoid reopening its design
    without a demonstrated regression or requirement.
-2. Next implementation milestone: **S1 Host Bootstrap** with small,
-   independently testable modules; scope and gates are in
-   [roadmap](roadmap.md).
+2. Next concrete candidate: **S1-D Docker Bootstrap** with a host
+   daemon/registry slice, followed by separate bridge-container proxy
+   and LAN security verification. Scope and gates are in [roadmap](roadmap.md).
 3. Before claiming S1 acceptance, reset `lab-test` to the agreed
    baseline, run Stage 0, then execute S1 and verify on that machine.
 4. S0 subsequent-login proxy autostart was confirmed by owner on clean-snapshot

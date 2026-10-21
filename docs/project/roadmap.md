@@ -1,6 +1,6 @@
 # Execution roadmap — AI Lab
 
-**Updated:** 2026-10-21.  
+**Updated:** 2026-10-22.  
 **Purpose:** incremental delivery toward an **Enterprise-grade engineering aspiration**, not a claim of current compliance. The [strategy](strategy.md) defines the scenario-independent infrastructure mission; [state](state.md) records what was actually verified.
 
 ## Milestones
@@ -9,7 +9,7 @@
 | --- | --- | --- |
 | S0 | Offline USB Bootstrap (VMware) | **VERIFIED MVP, limited scope:** clean Ubuntu → proxy with documented manual first launch → APT/Git → GitHub clone. |
 | S1 | Host Bootstrap | Versioned, rerunnable host configuration and GitHub development access verified on clean `lab-test` after S0. |
-| S1-D | Docker/Compose Bootstrap | Reproducible Docker installation/proxy setup with clean-VM image pull and container network checks. |
+| S1-D | Docker/Compose Bootstrap | Reproducible Docker Engine/Compose installation, daemon proxy for registry pulls, container startup and ordinary Compose networking, with clean-VM rerun/reboot evidence; no compulsory container egress proxy. |
 | S2 | Infrastructure Core | Reusable, versioned module configuration, managed persistent data and secrets, diagnostics and verification of a representative service. |
 | S3 | Pluggable AI capabilities | At least one independently installable/removable optional AI/runtime integration, with declared dependencies and smoke tests; no universal runtime requirement. |
 | S4 | Reusable research environment template | A versioned composition of core/modules can be deployed from a declared baseline, checked and reset or removed; scenario is selected separately, not prescribed by strategy. |
@@ -39,7 +39,7 @@ The depth of these controls grows with **risk, complexity and reuse**, not with 
 | --- | --- |
 | **S0** | Existing clean-`lab-test` recovery evidence remains **VERIFIED MVP** only for its specified path; manual first launch, unverified autostart and deferred hardening stay explicit. New maturity requirements do not retroactively invalidate or upgrade S0. |
 | **S1** | Repeatable host configuration, idempotent rerun, reboot checks and safe developer access on clean `lab-test`. |
-| **S1-D** | Reproducible Docker installation, daemon/container proxy routing and negative LAN-exposure tests on clean `lab-test`. |
+| **S1-D** | Reproducible Docker install/daemon proxy, image pull, container and Compose smoke tests, rerun/reboot from clean `lab-test`; negative exposure checks for enabled Docker APIs/published ports, with external LAN verification when making LAN-safety claims. Container proxy-only egress is a separate optional workload requirement. |
 | **S2** | Module boundaries, configuration/secrets and persistent-data lifecycle, representative service health/diagnostics and recovery checks. |
 | **S3** | Optional AI integration installs and verifies independently, with explicit dependencies, secrets and clean removal/disable behavior. |
 | **S4** | Compose an environment from reusable modules; reproduce it from a declared baseline, verify isolation and reset/teardown, and record reuse effort. |
@@ -75,15 +75,36 @@ and passes its stated checks; configuration survives reboot where relevant;
 rerun does not damage existing settings. Record exact commands, output and
 limitations in [state](state.md).
 
-## Then — S1-D Docker
+## S1-D — accepted Docker first slice; full-chain verification open
 
-- Script Docker Engine/Compose installation and daemon proxy setup.
-- Verify daemon image pulls; verify container HTTP(S) access through
-  `host.docker.internal:10808` or the selected explicit bridge route.
-- Prevent LAN exposure of the proxy and validate the firewall rules on
-  the target interface; avoid blindly reusing `lab`-specific interface names.
-- Reset `lab-test`, rerun S0 → S1 → Docker, capture results and
-  update [state](state.md).
+The first S1 GitHub SSH transport slice is accepted in PR #5, with owner
+evidence for its stated functional criteria. Do not invent host tooling
+just to extend the milestone. The first module was accepted in
+[PR #6](https://github.com/lehater/ai-lab/pull/6).
+
+**Scope:** official Docker Engine/Compose APT installation; a dedicated
+systemd daemon proxy using S0's Xray; image pull/container execution,
+rerun, reboot and normal Compose bridge networking.
+Docker's daemon proxy does **not** configure application-level proxying.
+A container's ability to reach the internet directly is not in itself
+a failure of this baseline.
+
+**Owner-verified first slice:** Engine/Compose install and rerun,
+daemon proxy, image pulls, normal Compose bridge lifecycle/cleanup
+and reboot checks on `lab-test`. A final local port check found no
+running published containers or Docker API listeners on 2375/2376.
+
+**Remaining full-chain gate:** clean `lab-test` S0 → S1 → Docker
+replay with recorded evidence. Negative LAN access must be verified
+from another host before claiming LAN isolation. App container
+proxy-only routing is not required by the baseline (D-011).
+
+**Deliberately deferred (D-011):** a forced-proxy-only network,
+Docker `--internal` app egress restrictions, bridge-scoped forwarders
+and general firewall machinery without a concrete consumer and threat
+model. Earlier experiments remain recorded in
+[state](state.md), but their bespoke tools are not part of the
+S1-D bootstrap.
 
 ## Deferred
 

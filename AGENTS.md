@@ -12,7 +12,7 @@ machine changes are not accepted repository state.
 3. [Roadmap](docs/project/roadmap.md) — ordered work and acceptance gates, not a claim of completion.
 4. [Decisions](docs/project/decisions.md) — accepted choices and deferrals.
 5. [Observed development environment](docs/current-environment.md) — manually configured `lab`, **not** proof of Infrastructure as Code.
-6. [USB operator runbook](bootstrap/README.md) — complete S0 → S1 bootstrap sequence on the USB media.
+6. [USB operator runbook](bootstrap/README.md) — accepted S0 → S1 sequence on USB, with proposed S1-D section clearly labeled.
 7. [Stage 0 instructions](bootstrap/stage0/README.md) — offline VMware USB details, if relevant.
 8. [README](README.md) — repository overview.
 
