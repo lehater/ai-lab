@@ -94,7 +94,7 @@ daemon proxy, image pulls, normal Compose bridge lifecycle/cleanup
 and reboot checks on `lab-test`. A final local port check found no
 running published containers or Docker API listeners on 2375/2376.
 
-**Remaining full-chain gate:** follow the [USB end-to-end replay runbook](../../bootstrap/README.md#7-финальная-проверка-воспроизводимости-s0--s1--s1-d)
+**Remaining full-chain gate:** follow the [USB end-to-end replay runbook](../../bootstrap/README.md)
 from the clean `lab-test` baseline or its clone; record checkout SHA,
 operator steps, install/rerun and post-reboot evidence. Negative LAN
 access must be verified from another host before claiming LAN isolation. App container
