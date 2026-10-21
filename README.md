@@ -31,4 +31,13 @@ The guided setup and checks were owner-tested after a clean-snapshot replay
 and accepted in [PR #5](https://github.com/lehater/ai-lab/pull/5).
 **Full S1 host provisioning remains incomplete.**
 
+## Next candidate: S1-D Docker Bootstrap
+
+[Docker first slice](bootstrap/docker/README.md) provides proposed
+`make docker-setup`, `make docker-verify`, `make docker-pull-test`,
+`make docker-test`. These commands configure Engine/Compose and the
+**daemon** proxy only. This work is in a separate draft PR; it is **not yet
+verified on `lab-test` or merged into `main`**. Bridge-container proxy
+routing and LAN isolation remain separate acceptance conditions.
+
 Only merged `main` is authoritative. The verified Stage 0 MVP is a first step toward the target, not evidence of full unattended deployment or Enterprise-grade compliance. See [roadmap](docs/project/roadmap.md) for the next testable increment.
