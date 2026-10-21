@@ -104,7 +104,7 @@ are preserved in [project state](../../docs/project/state.md).
 
 ### Remaining integrated full-chain acceptance
 
-Follow [the complete USB S0 → S1 → S1-D operator replay](../README.md#7-финальная-проверка-воспроизводимости-s0--s1--s1-d)
+Follow [the complete USB S0 → S1 → S1-D operator replay](../README.md)
 from the original `vmware-tools-ready` snapshot or a clone.
 It includes the manual first GUI launch and GitHub SSH key registration,
 repeated install, post-reboot tests and a privacy-safe evidence summary.
