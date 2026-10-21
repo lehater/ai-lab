@@ -191,6 +191,18 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   `make docker-test` (after pruning) on `lab-test`, then clean-VM
   bootstrap/reboot checks and service-port review before considering merge.
 
+- After pruning the experimental network tools per D-011, owner ran
+  `git pull` on `lab-test` (reported 10 changed files), then
+  `make docker-test`: `PASS: Docker Shell syntax, stable APT repository
+  template and daemon proxy template.` Also ran `make docker-verify`:
+  Docker Engine `29.9.2`, Docker CLI build `a82e528`, Compose
+  `v5.6.1` and `S1-D Docker host and daemon proxy: PASS`.
+  This is live verification of the **reduced current candidate revision**,
+  not a fresh clean-snapshot replay or a Compose service smoke test.
+- Next narrow gap: run one ephemeral normal Docker Compose service and
+  verify teardown without published ports. Keep strict egress and
+  bridge forwarders deferred under D-011.
+
 ## Known environments
 
 - **`lab`**: Ubuntu 24.04.5 Desktop / VMware, 8 vCPU, 16 GB RAM,
