@@ -85,10 +85,14 @@ Owner reported successful initial and repeat `make docker-setup` for
 Docker Engine **29.9.2**, Compose **v5.6.1**, daemon proxy
 verification and Docker Hub `hello-world` pull/launch.
 Post-reboot `make host-verify`, `make docker-verify` and
-`make docker-pull-test` also passed. The simplified PR revision's
-`make docker-test` and `make docker-verify` passed again after experimental
-network tools were removed; the new Compose smoke has not yet run on
-`lab-test`.
+`make docker-pull-test` also passed. After experimental networking
+tools were removed, `make docker-test` and `make docker-verify` passed
+again. Owner then ran the revised `make docker-test` (Compose smoke
+contract PASS) and `make docker-compose-test` on `lab-test`:
+the temporary `hello-world` Compose service exited 0, its
+`bridge/internal=false` network had no published ports, and
+both container and network were removed; the test reported
+`PASS: Docker Compose default bridge service and cleanup.`
 These results do **not** establish a fresh S0 → S1 → S1-D replay,
 package-version pinning, externally tested LAN security, or container
 proxy-routing. Full findings and prior optional network experiments
