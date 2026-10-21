@@ -1,11 +1,13 @@
 # Project state — AI Lab
 
-**Updated:** 2026-10-20.  
+**Updated:** 2026-10-21.  
 **Authority:** accepted repository state is what has been merged into `main`;
 this file is its human-readable status and handoff index.
 It is **not** a substitute for code, tests, or evidence.
 
 ## Delivery status
+
+**Long-term target, NOT a verified status:** Enterprise-grade, scenario-independent research infrastructure with repeatable IaC deployment, reusable modules/templates, appropriate security, observability and recovery. The checks below establish only their specific limited scope; Stage 0 still includes a documented manual operator step.
 
 | Area | Status | Evidence / qualification |
 | --- | --- | --- |
