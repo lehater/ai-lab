@@ -186,9 +186,11 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   observations as engineering evidence.
 - **Still not verified:** clean-snapshot S0 → S1 → Docker replay,
   external LAN-host exposure checks or any claim of enforced
-  container-level HTTP(S) proxy routing. the first slice is accepted via PR #6; full S1-D remains open. Next narrow acceptance step: run current
-  `make docker-test` (after pruning) on `lab-test`, then clean-VM
-  bootstrap/reboot checks and service-port review before considering merge.
+  container-level HTTP(S) proxy routing. The first functional
+  Docker slice is accepted via PR #6; full S1-D acceptance remains
+  dependent on the integrated clean-snapshot replay. The reduced
+  `make docker-test` and the local service/port review were completed
+  separately as recorded below.
 
 - After pruning the experimental network tools per D-011, owner ran
   `git pull` on `lab-test` (reported 10 changed files), then
