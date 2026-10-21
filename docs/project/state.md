@@ -199,8 +199,11 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   `v5.6.1` and `S1-D Docker host and daemon proxy: PASS`.
   This is live verification of the **reduced current candidate revision**,
   not a fresh clean-snapshot replay or a Compose service smoke test.
-- Next narrow gap: run one ephemeral normal Docker Compose service and
-  verify teardown without published ports. Keep strict egress and
+- New candidate adds `make docker-compose-test`, which starts an ephemeral
+  `hello-world` service under the default Compose bridge (no published ports
+  or volumes), checks bridge mode and removes the project. **Not yet run on
+  `lab-test`.** This is the next narrow functional acceptance check, not
+  a test of forced proxy egress. Keep strict egress and
   bridge forwarders deferred under D-011.
 
 ## Known environments
