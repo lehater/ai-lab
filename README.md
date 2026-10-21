@@ -4,7 +4,6 @@
 (локально на флешке: `USB/bootstrap/README.md`). Запускать можно без
 доступа к чату; порядок и проверки приведены в одном месте.
 
-
 **AI Lab** — a modular, reproducible infrastructure laboratory for deploying and studying different AI technologies and systems. **Enterprise-grade engineering is the long-term aspiration, not the current verified status.** Development follows Infrastructure as Code, command-driven provisioning, automated checks and evidence-based adoption of mature tools.
 
 The deliverables are reusable infrastructure modules, versioned configurations and tested research-environment templates. AI scenarios (including Agentic SDLC) are independent consumers of this infrastructure, not the repository mission or a mandatory technology stack.
