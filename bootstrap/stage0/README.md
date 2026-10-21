@@ -1,10 +1,16 @@
 # Stage 0 — Offline Bootstrap (Ubuntu 24.04 Desktop, VMware)
 
+**Начало установки и полный порядок S0 → S1:** [README на USB](../README.md).
+Этот файл описывает только детали S0. При копировании всего `bootstrap/` на
+флешку основной маршрут будет в `USB/bootstrap/README.md`.
+
 **The folder structure in GitHub and on USB is identical.** Download or copy
 `bootstrap/` to a USB stick without moving or renaming directories.
 
 ```text
 bootstrap/
+├── README.md                         # USB start here: S0 → S1
+├── host/                             # S1 scripts and instructions
 └── stage0/
     ├── bootstrap.sh
     ├── README.md
@@ -43,7 +49,10 @@ proxied HTTPS. Initial public clone does **not** require an SSH key.
 
 **Limitations:** Unencrypted private archive (protect physical access to
 USB); manual first launch in GNOME; Ubuntu 24.04 Desktop / VMware only.
-Subsequent-login autostart has not yet been independently verified.
+Autostart after reboot on `lab-test` was subsequently confirmed by the owner
+following a clean `vmware-tools-ready` snapshot replay (recorded in
+[merged PR #5](https://github.com/lehater/ai-lab/pull/5)); the first GUI launch
+remains manual.
 Later stages handle SSH key registration, Docker, firewall and hardening.
 Never commit `private-proxy` payloads.
 

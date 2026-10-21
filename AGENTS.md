@@ -12,8 +12,9 @@ machine changes are not accepted repository state.
 3. [Roadmap](docs/project/roadmap.md) — ordered work and acceptance gates, not a claim of completion.
 4. [Decisions](docs/project/decisions.md) — accepted choices and deferrals.
 5. [Observed development environment](docs/current-environment.md) — manually configured `lab`, **not** proof of Infrastructure as Code.
-6. [Stage 0 instructions](bootstrap/stage0/README.md) — offline VMware USB bootstrap, if relevant.
-7. [README](README.md) — repository overview.
+6. [USB operator runbook](bootstrap/README.md) — complete S0 → S1 bootstrap sequence on the USB media.
+7. [Stage 0 instructions](bootstrap/stage0/README.md) — offline VMware USB details, if relevant.
+8. [README](README.md) — repository overview.
 
 ## Before starting work
 
@@ -36,6 +37,9 @@ machine changes are not accepted repository state.
   on which environment, its outcome, and limitations.
 - Update `docs/project/roadmap.md` when priorities, next task or acceptance
   gates change.
+- If bootstrap scripts, Make targets or operator steps change, update
+  `bootstrap/README.md` in the same PR. The USB is a separately copied
+  artifact: document the required re-copy; never delete its private payload.
 - Add an entry to `docs/project/decisions.md` only when a decision is
   explicitly accepted. Keep proposals in their PRs, not as accepted decisions.
 - Do not mark anything VERIFIED/PASS if it was only written, reviewed,

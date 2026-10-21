@@ -12,12 +12,91 @@ It is **not** a substitute for code, tests, or evidence.
 | Area | Status | Evidence / qualification |
 | --- | --- | --- |
 | S0: offline bootstrap, Ubuntu 24.04 Desktop / VMware | **VERIFIED MVP** | USB → offline v2rayN 7.20.2 install and configuration restore → HTTP/SOCKS5 proxy → APT → Git → public GitHub clone; owner repeated full clean-`lab-test` flow twice. [Merged PR #1](https://github.com/lehater/ai-lab/pull/1). |
-| S0: subsequent-login GNOME autostart | **CONFIGURED, NOT INDEPENDENTLY VERIFIED ON `lab-test`** | `proxy/configure.sh` writes GNOME autostart; full post-reboot test on `lab-test` not reported. Main `lab` autostart was previously observed working. |
+| S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test`** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. Owner-reported verification recorded in [PR #5](https://github.com/lehater/ai-lab/pull/5). |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
-| S1: reproducible host bootstrap | **NOT IMPLEMENTED IN REPOSITORY** | Manual setup exists on `lab`; scripts/tests for full S1 still need to be written. |
+| S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
 | Docker/Compose bootstrap | **NOT IMPLEMENTED IN REPOSITORY** | Docker and container proxy operation were tested manually on `lab`, not automated for clean `lab-test`. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
+
+## First S1 GitHub SSH slice — owner-reported validation (accepted via PR #5)
+
+Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://github.com/lehater/ai-lab/pull/5):
+
+- Fetched `feat/s1-host-ssh-transport` through S0 HTTP proxy; checked out branch.
+- Ran `bash bootstrap/host/bootstrap.sh` twice: first created `~/.config/ai-lab/github-ssh.conf`, second reported existing configuration already matched. Each run reported `S1 local config and proxied HTTPS: PASS`.
+- Registered a newly created SSH public key in GitHub via owner action; ran `ssh -F ~/.config/ai-lab/github-ssh.conf -T ai-lab-github`. GitHub replied `Hi lehater! You've successfully authenticated`.
+- Observed server Ed25519 fingerprint `SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU`; it matches the [published GitHub Ed25519 host fingerprint](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints).
+- `bash bootstrap/host/verify.sh --auth` reported `S1 GitHub SSH authentication: PASS`.
+
+- After the requested reboot, owner reported `bash bootstrap/host/verify.sh --local` with `S1 local config and proxied HTTPS: PASS`, and `bash bootstrap/host/verify.sh --auth` with `S1 GitHub SSH authentication: PASS`. This verifies **post-reboot SSH configuration, proxied HTTPS and authenticated Git transport** under the observed session. The log alone does not show whether the proxy started without user intervention.
+
+- Owner ran `bash bootstrap/host/tests/test-configure.sh` on `lab-test`; output: `PASS: shell syntax, mocked config rendering, idempotency, safe conflict refusal.` This is an offline/mocked regression check, not a live network or new-clean-machine provisioning test.
+
+- Follow-up code update in PR #5 added root Makefile tasks, an
+  operator-guided SSH key setup, GitHub settings browser launch/fallback,
+  and offline regression tests. Local mocked wizard tests passed outside
+  `lab-test` (reuse, no overwrite, clipboard/browser actions and refusal
+  of incomplete/symlink key paths). Earlier S1 configuration evidence refers
+  to the preceding revision, not proof of this new Make/wizard workflow.
+- Owner then ran the revised guided GitHub setup on `lab-test` (2026-10-21,
+  partial console output provided). Wizard reported `Clipboard tool
+  unavailable` (non-fatal), printed `https://github.com/settings/keys`,
+  and reported that it sent the URL to the desktop browser; successful
+  opening/loading of that page was not independently observed. Owner
+  continued after GitHub key-registration prompt. Live SSH response:
+  `Hi lehater! You've successfully authenticated`; proxied HTTPS PASS,
+  authenticated Git SSH check PASS. This verifies the **revised wizard's
+  interactive existing-key authentication path**, not first-time key creation,
+  clipboard integration, or a clean-snapshot deployment.
+- No complete S0→S1 installation trace after a clean reset has been provided yet.
+
+- Owner ran `make host-test` on `lab-test` for the revised Make workflow:
+  `test-configure.sh` passed, but `test-github-setup.sh` unexpectedly
+  inherited an interactive terminal, prompted for live GitHub verification,
+  then failed `ERROR: run make host-setup first` in its deliberately
+  isolated temporary HOME. **This was an offline test isolation defect,
+  not evidence of a broken host SSH setup.**
+- Fix committed in PR #5: all mock wizard invocations in
+  `test-github-setup.sh` explicitly use `</dev/null`, preventing TTY
+  prompts and live network checks. On a separate local test environment,
+  running the corrected `make host-test` under a pseudo-TTY as a
+  non-root user produced both `PASS` lines (Shell/config/idempotency and
+  mocked wizard preservation/browser/clipboard checks). Owner subsequently
+  reran `make host-test` on `lab-test` and reported both expected PASS lines:
+  `shell syntax, mocked config rendering, idempotency, safe conflict refusal`
+  and `SSH wizard reuse, clipboard/browser guidance, no overwrite,
+  incomplete/symlink protection, interactive opt-in`. This establishes
+  regression success on that machine (the mock test does not prove GUI
+  clipboard/browser behavior or a clean-snapshot S0→S1 run).
+
+- Owner reported reverting `lab-test` to the known `vmware-tools-ready`
+  VMware snapshot, then followed the S0 → S1 test instructions. The final
+  post-reboot log shows `make host-verify` with
+  `S1 local config and proxied HTTPS: PASS`; `make github-verify`
+  showed `Hi lehater! You've successfully authenticated`, followed by
+  another local HTTPS PASS and `S1 GitHub SSH authentication: PASS`.
+  This confirms the target end-state on the recovered VM and working
+  post-reboot SSH transport. The full S0/S1 installation output,
+  current checked-out revision, and absence of manual proxy startup
+  were not supplied in that log; these remain to be confirmed before
+  certifying the whole replay.
+
+- Owner explicitly confirmed after the `vmware-tools-ready` reset
+  that the S0 bootstrap and first S1 SSH slice completed without errors and **v2rayN autostarted
+  after reboot without manual intervention**. Together with the posted
+  post-reboot `make host-verify` and `make github-verify` PASS logs,
+  this supports the S0 autostart and first S1 SSH slice acceptance paths.
+  The full installation transcript was not provided; distinguish
+  owner attestation from complete retained machine evidence.
+- Operator documentation gap found during replay: commands and their order
+  still depended on reading a chat. PR #5 adds `bootstrap/README.md`
+  as the single end-to-end USB-carried S0 → S1 runbook, with links from
+  stage-specific and repository READMEs. Owner confirmed the physical USB
+  was updated with the candidate runbook before merge; the final accepted
+  revision will require a new copy to bring the on-disk guide up to date.
+
+**Limits:** owner confirmed full clean-snapshot S0 → S1 completion and automatic proxy launch but did not provide the complete installation command/output transcript; the GitHub browser's actual page load and first-time new-key generation were not independently observed. First SSH transport slice is accepted via PR #5; complete S1 host provisioning and S1-D are not implemented/accepted by this evidence. Evidence derives from the owner's observations and logs, not remote execution by the assistant.
 
 ## Known environments
 
@@ -56,8 +135,8 @@ It is **not** a substitute for code, tests, or evidence.
    [roadmap](roadmap.md).
 3. Before claiming S1 acceptance, reset `lab-test` to the agreed
    baseline, run Stage 0, then execute S1 and verify on that machine.
-4. Optional remaining S0 check: reboot `lab-test`, log into GNOME
-   without manually starting v2rayN, verify Xray and proxied GitHub.
+4. S0 subsequent-login proxy autostart was confirmed by owner on clean-snapshot
+   `lab-test` replay ([PR #5](https://github.com/lehater/ai-lab/pull/5)); keep the tested limits explicit.
 5. [AI Lab strategy](strategy.md) was updated to the scenario-independent
    Enterprise-grade aspiration in [PR #4](https://github.com/lehater/ai-lab/pull/4)
    (superseding the scope from [PR #2](https://github.com/lehater/ai-lab/pull/2));
