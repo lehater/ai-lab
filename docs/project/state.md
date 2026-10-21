@@ -108,14 +108,21 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   Compose installation with verified APT signing-key fingerprint, a
   dedicated systemd proxy drop-in, and `docker-test`, `docker-setup`,
   `docker-verify`, `docker-pull-test` Make targets.
-- Its render/syntax tests passed in an isolated development container,
-  **not** on `lab-test`. Installation, rerun, daemon restart, image pull,
-  firewall impact, GUI-login timing and exact package versions remain
-  unverified. No user or Docker group privileges were changed by authoring
-  this PR; `main` is unchanged.
-- Next acceptance action: inspect the draft PR, run mock tests and then
-  provision only `lab-test` under operator supervision. Keep bridge
-  container connectivity and LAN isolation as explicit later S1-D gates.
+- The owner fetched and checked out `feat/s1d-docker-host-proxy`
+  on `lab-test` after accepted S0/S1; `make docker-test` reported:
+  `PASS: Docker Shell syntax, stable APT repository template and daemon
+  proxy template.` This validates **offline syntax/templates on the test VM**,
+  not package installation, proxy/network reachability from Docker or daemon
+  operation. Earlier local development-container test results remain separate.
+- Installation, rerun, daemon restart, image pull, firewall impact,
+  GUI-login timing and installed package versions are **not yet verified**.
+  No user or Docker group privileges were changed by authoring this PR;
+  `main` is unchanged.
+- Next acceptance action: after taking a recoverable test-VM snapshot,
+  run `make docker-setup` on `lab-test` and inspect its first live output.
+  Continue with `make docker-verify`, repeated setup and pull test only
+  after the installation succeeds. Keep bridge-container connectivity and
+  LAN isolation as explicit later S1-D gates.
 
 ## Known environments
 
