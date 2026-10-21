@@ -22,6 +22,7 @@ machine changes are not accepted repository state.
   `docs/project/state.md`; use `docs/project/roadmap.md` for the next task.
 - Inspect existing source files before editing. Keep scope small and
   reproducible; prefer a feature branch and PR for review.
+- Treat Enterprise-grade as an **aspirational target**, never as current verification status. Prefer Infrastructure as Code, reusable templates, documented operator steps, and clean-environment checks; do not embed a specific research scenario into the core by default.
 - Use the tested `lab-test` VMware snapshot for validation of bootstrap
   changes. Do not mistake results from manually configured `lab` for
   clean-machine reproduction.
@@ -38,7 +39,7 @@ machine changes are not accepted repository state.
 - Add an entry to `docs/project/decisions.md` only when a decision is
   explicitly accepted. Keep proposals in their PRs, not as accepted decisions.
 - Do not mark anything VERIFIED/PASS if it was only written, reviewed,
-  installed manually, or tested on a different environment.
+  installed manually, or tested on a different environment. Do not describe a partially interactive install as fully unattended.
 - If a test fails, preserve the failure and a reproducible next step instead
   of overwriting it with an optimistic status.
 - After merge, `main` takes precedence over stale PR descriptions and

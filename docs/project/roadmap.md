@@ -1,47 +1,56 @@
 # Execution roadmap — AI Lab
 
-**Updated:** 2026-10-20.  
-**Purpose:** prioritize the next executable increment. This is an execution
-plan and its acceptance gates; the [accepted AI Lab strategy](strategy.md) defines the primary focus and principles.
+**Updated:** 2026-10-21.  
+**Purpose:** incremental delivery toward an **Enterprise-grade engineering aspiration**, not a claim of current compliance. The [strategy](strategy.md) defines the scenario-independent infrastructure mission; [state](state.md) records what was actually verified.
 
 ## Milestones
 
 | Order | Milestone | Exit criterion |
 | --- | --- | --- |
-| S0 | Offline USB Bootstrap (VMware) | **VERIFIED MVP**: clean Ubuntu → proxy → APT/Git → GitHub clone. |
-| S1 | Host Bootstrap | Reproducible baseline host configuration and GitHub development access, verified on `lab-test` after S0. |
-| S1-D | Docker/Compose Bootstrap | Install/configure Docker through the proxy; test image pull and container networking through Xray on clean VM. |
-| S2 | Infrastructure Core | Versioned service configuration, persistent-data placement, secret handling, diagnostics and one representative workload. |
-| S3 | AI runtime | Bring up selected local/cloud model integrations as replaceable components with smoke checks. |
-| S4 | Repeatable self-development workflow | Reuse the thin-slice process on a second real AI Lab change; both changes accepted with independent checks and recorded effort. |
-| S5 | Broader orchestration/experiments | Compare simplest working execution to richer agent/human workflows before adding complexity. |
+| S0 | Offline USB Bootstrap (VMware) | **VERIFIED MVP, limited scope:** clean Ubuntu → proxy with documented manual first launch → APT/Git → GitHub clone. |
+| S1 | Host Bootstrap | Versioned, rerunnable host configuration and GitHub development access verified on clean `lab-test` after S0. |
+| S1-D | Docker/Compose Bootstrap | Reproducible Docker installation/proxy setup with clean-VM image pull and container network checks. |
+| S2 | Infrastructure Core | Reusable, versioned module configuration, managed persistent data and secrets, diagnostics and verification of a representative service. |
+| S3 | Pluggable AI capabilities | At least one independently installable/removable optional AI/runtime integration, with declared dependencies and smoke tests; no universal runtime requirement. |
+| S4 | Reusable research environment template | A versioned composition of core/modules can be deployed from a declared baseline, checked and reset or removed; scenario is selected separately, not prescribed by strategy. |
 
-These are **engineering milestones**, not a commitment to a specific
-orchestrator, model provider or infrastructure product.
+**Milestones are functional delivery gates, not maturity labels or a mandatory technology stack.** Enterprise-grade is the long-term engineering aspiration and applies **across all stages**; completing S4 does not prove it has been achieved.
 
-## First vertical slice — develop AI Lab using AI Lab
+## Cross-cutting engineering maturity
 
-**Focus:** make the lab its own first consumer (dogfooding), without building a
-universal agent platform first. Target a small real change in this repository
-(e.g., an independently testable S1 Host Bootstrap module), not a toy chat.
+Develop in **two dimensions**: (1) deliver functional infrastructure increments S0–S4; (2) strengthen the applicable engineering properties **within every increment**. Do not defer baseline quality, security or verification until the infrastructure is feature-complete.
 
-- **Contract:** describe the task, inputs, constraints, permitted tools and
-  acceptance checks **before** execution.
-- **Executor:** use the simplest viable human, script or coding-agent route,
-  including approved subscription-based CLI or local model if useful; avoid
-  requiring a new orchestration layer.
-- **Output:** code/documentation in a branch and PR, linked to the task.
-- **Independent gate:** review and reproducible checks on the designated
-  environment before acceptance; no agent self-approval of its own changes.
-- **Evidence:** record result, failures, time/cost where observable, human
-  intervention and whether the next comparable change gets easier.
+For each new or changed module/template, use a risk- and scope-appropriate acceptance contract:
 
-**Earliest timing:** an exploratory thin slice may proceed alongside S1/S1-D
-when its environment and tests are ready. It **does not** replace the S1/S1-D
-clean-VM gates and cannot mark unfinished infrastructure VERIFIED. S4 is the
-milestone for a **completed, accepted** application workflow, not a prerequisite
-for trying a small task earlier. The early thin slice alone does not complete
-S4: S4 verifies reuse on another task. Keep independent Stage 0 recovery possible.
+| Engineering dimension | Minimum expectation, progressing with scope |
+| --- | --- |
+| **IaC & change control** | Version configuration and deployment code in Git; record versions, dependencies and explicitly required manual steps; review changes through PRs. |
+| **Reproducibility & automation** | Provide controlled installation/configuration commands and a clean-baseline verification procedure; test reruns, reboot persistence or teardown where applicable. |
+| **Verification** | Define independent, repeatable acceptance checks and retain results with the environment/revision; do not confuse writing a check with successfully running it. |
+| **Security** | Keep secrets outside Git, minimize privileges and exposed network surfaces, evaluate risk, document deliberate deferrals and test relevant boundaries. |
+| **Operability & recovery** | Provide sufficient diagnostics to identify failures, an appropriate reset/rollback or recovery procedure, and explicit known limitations. |
+| **Portability** | Isolate environment-specific settings; state exactly which operating systems/hypervisors have actually been tested. Extend support only after verification. |
+
+The depth of these controls grows with **risk, complexity and reuse**, not with a calendar or a fixed certification checklist. CI, centralized observability, advanced policy and other enterprise practices are candidates for incremental adoption when a concrete control gap justifies them.
+
+**Stage-specific verification emphasis** (additive, not a replacement for the cross-cutting contract):
+
+| Stage | Additional engineering evidence |
+| --- | --- |
+| **S0** | Existing clean-`lab-test` recovery evidence remains **VERIFIED MVP** only for its specified path; manual first launch, unverified autostart and deferred hardening stay explicit. New maturity requirements do not retroactively invalidate or upgrade S0. |
+| **S1** | Repeatable host configuration, idempotent rerun, reboot checks and safe developer access on clean `lab-test`. |
+| **S1-D** | Reproducible Docker installation, daemon/container proxy routing and negative LAN-exposure tests on clean `lab-test`. |
+| **S2** | Module boundaries, configuration/secrets and persistent-data lifecycle, representative service health/diagnostics and recovery checks. |
+| **S3** | Optional AI integration installs and verifies independently, with explicit dependencies, secrets and clean removal/disable behavior. |
+| **S4** | Compose an environment from reusable modules; reproduce it from a declared baseline, verify isolation and reset/teardown, and record reuse effort. |
+
+Record actual pass/fail evidence and remaining gaps in [state](state.md), not a speculative aggregate Enterprise-grade score. **Maturity work continues after S4** without requiring a new numbered final stage.
+
+## First infrastructure vertical slice
+
+Use current S1 Host Bootstrap as the next *small independently testable infrastructure improvement*: configuration in Git → command-driven provisioning → repeat/reboot checks → verification on `lab-test` → saved evidence. Document any necessary operator step rather than describing it as fully unattended IaC.
+
+Reusable modules and templates should be built from observed needs, not from a preselected AI scenario. A research project may independently use the lab at any stage for which its prerequisites and checks are available; such use does not change the laboratory mission or prematurely complete a milestone.
 
 ## Next iteration — S1 Host Bootstrap
 
@@ -78,9 +87,7 @@ limitations in [state](state.md).
 
 ## Deferred
 
-- Secure encrypted backup of private proxy data, signed/reproducible
-  offline payload distribution, tar archive extraction hardening.
-- Other hypervisors, bare-metal support, GPU runtime and model serving.
-- Full platform orchestration, multi-agent automation and broad application
-  development before the smallest infrastructure slice is stable; this does
-  not block the limited, independently checked dogfooding experiment above.
+- Secure encrypted backup of private proxy data, signed/reproducible offline payload distribution and archive extraction hardening; risk and treatment remain explicit.
+- Other hypervisors, bare-metal support, GPU/runtime hosting and portability checks until targeted and verified.
+- Full orchestration, multi-agent stacks, broad service catalogues and centralized tooling absent a concrete research/infrastructure need.
+- Enterprise-wide controls (advanced policy, centralized observability, comprehensive CI/CD) beyond the validated small infrastructure slices. Evaluate each as an incremental cross-cutting improvement when value and risks warrant; never claim it is already implemented.

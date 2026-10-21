@@ -1,6 +1,6 @@
 # Accepted engineering decisions — AI Lab
 
-**Updated:** 2026-10-20.  
+**Updated:** 2026-10-21.  
 This is a lightweight decision log, not a second strategy document.
 Entries describe **accepted engineering choices**. New proposals stay in PRs until approved.
 
@@ -15,10 +15,11 @@ Entries describe **accepted engineering choices**. New proposals stay in PRs unt
 | D-007 | Encryption/hardening of the protected offline proxy payload is deferred until after the first functional MVP. | Prioritize verified end-to-end path; protect unencrypted storage and never commit secrets. |
 | D-008 | S1 Host Bootstrap and Docker Bootstrap are separate later responsibilities; S0 ends once proxy, APT and Git access work. | Avoid overloading USB recovery with general host/runtime provisioning. |
 | D-009 | [AI Lab strategy](strategy.md) accepted by owner on 2026-10-20 ([PR #2](https://github.com/lehater/ai-lab/pull/2)). | AI Lab first develops itself through independently verified human/agent work; tool choices are evidence-based, security and acceptance gates remain independent. Strategy acceptance does not imply any AI runtime is implemented or any specific framework is selected. |
+| D-010 | AI Lab is a **scenario-independent AI research infrastructure lab**; **Enterprise-grade is the long-term target**, approved by owner on 2026-10-21 ([PR #4](https://github.com/lehater/ai-lab/pull/4)). | Prioritize IaC, versioned and command-driven deployment, reusable modules/templates, reproducible verification, security and observability in incremental, independently checked stages. No current overall Enterprise-grade claim. Specific research areas including Agentic SDLC are consumers, not mission. Supersedes the scenario-specific focus of D-009 while preserving its engineering governance. |
 
 ## Non-decisions and open proposals
 
-- The accepted [strategy](strategy.md) sets project direction; specific runtime, model, agent, workflow and integration choices remain open.
+- The [strategy](strategy.md) sets the enterprise-engineering direction for reusable research infrastructure; specific AI scenarios, runtime, model, agent, workflow and integration choices remain open.
 - Specific S1 module contracts, Docker networking strategy and persistent
   secret handling need implementation-level review.
 - Do not infer architectural decisions for AI agents or orchestration from
