@@ -138,9 +138,13 @@ the temporary bridge interface, so packets arriving on other host
 interfaces must not be accepted by it. The proxy process runs as the
 unprivileged `nobody` user.
 
-The test verifies actual container HTTPS via the bridge-scoped listener
-and then attempts direct HTTPS to a literal public IP (`1.1.1.1`)
-**without any DNS resolution**, ruling out the previous DNS-only
+Before creating the new network, the test checks that the **same
+literal public IP is reachable over direct HTTPS from the existing
+non-internal default bridge**. If that positive control fails, the
+experiment stops as inconclusive without creating a network or socket.
+Then it verifies actual container HTTPS via the bridge-scoped listener
+and attempts direct HTTPS to that literal IP (`1.1.1.1`)
+**without DNS resolution**, addressing the previous DNS-only
 false assurance. Temporary units live under `/run/systemd/system/`;
 the exit handler stops and removes those units, reloads systemd and
 removes the temporary Docker network. A cleanup failure is reported
