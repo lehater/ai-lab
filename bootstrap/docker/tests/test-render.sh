@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-for script in "$DIR"/{setup.sh,verify.sh,render.sh,net-diagnose.sh}; do bash -n "$script"; done
+for script in "$DIR"/{setup.sh,verify.sh,render.sh,net-diagnose.sh,internal-probe.sh}; do bash -n "$script"; done
 scratch="$(mktemp -d)"
 trap 'rm -rf "$scratch"' EXIT
 bash "$DIR/render.sh" sources > "$scratch/one"
@@ -19,4 +19,8 @@ fi
 grep -Fq -- '--network bridge' "$DIR/net-diagnose.sh"
 grep -Fq -- '--add-host host.docker.internal:host-gateway' "$DIR/net-diagnose.sh"
 grep -Fq -- '--noproxy' "$DIR/net-diagnose.sh"
-echo 'PASS: Docker Shell syntax, stable APT repository template, daemon proxy template and bridge diagnostic contract.'
+grep -Fq -- '--driver bridge --internal' "$DIR/internal-probe.sh"
+grep -Fq -- 'trap cleanup EXIT' "$DIR/internal-probe.sh"
+grep -Fq -- '--noproxy' "$DIR/internal-probe.sh"
+grep -Fq -- '--cap-drop ALL' "$DIR/internal-probe.sh"
+echo 'PASS: Docker Shell syntax, APT/daemon-proxy templates, bridge and internal-network diagnostic contracts.'
