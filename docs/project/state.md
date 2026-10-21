@@ -37,10 +37,20 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
   operator-guided SSH key setup, GitHub settings browser launch/fallback,
   and offline regression tests. Local mocked wizard tests passed outside
   `lab-test` (reuse, no overwrite, clipboard/browser actions and refusal
-  of incomplete/symlink key paths); real key generation, GUI browser
-  behavior and Make workflow on `lab-test` remain **NOT VERIFIED** for this
-  newer revision. Earlier operator test evidence refers to the preceding
-  revision and must not be treated as validation of the revised workflow.
+  of incomplete/symlink key paths). Earlier S1 configuration evidence refers
+  to the preceding revision, not proof of this new Make/wizard workflow.
+- Owner then ran the revised guided GitHub setup on `lab-test` (2026-10-21,
+  partial console output provided). Wizard reported `Clipboard tool
+  unavailable` (non-fatal), printed `https://github.com/settings/keys`,
+  and reported that it sent the URL to the desktop browser; successful
+  opening/loading of that page was not independently observed. Owner
+  continued after GitHub key-registration prompt. Live SSH response:
+  `Hi lehater! You've successfully authenticated`; proxied HTTPS PASS,
+  authenticated Git SSH check PASS. This verifies the **revised wizard's
+  interactive existing-key authentication path**, not first-time key creation,
+  clipboard integration, or a clean-snapshot deployment.
+- No console output for the new `make host-test` target or repeat installation
+  after a clean reset has been provided yet.
 
 **Limits:** no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, no completed full S1 provisioning, and independent confirmation of proxy *automatic* launch after reboot still depends on observing that no manual start occurred. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
 
