@@ -15,7 +15,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: subsequent-login GNOME autostart | **OWNER-VERIFIED ON `lab-test`** | After restoring `vmware-tools-ready` and repeating S0 → S1, owner explicitly confirmed v2rayN started without manual intervention after reboot; proxied HTTPS and authenticated Git SSH passed. Owner-reported verification recorded in [PR #5](https://github.com/lehater/ai-lab/pull/5). |
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
-| Docker/Compose bootstrap | **S1-D HOST SLICE OWNER-VERIFIED ON `lab-test`; DRAFT PR #6** | Docker Engine 29.9.2, Compose v5.6.1, daemon proxy, initial/rerun setup, Docker Hub pull/container start and post-reboot checks passed. No fresh S0 → S1 → S1-D replay; PR not merged. Container app proxy-only network deferred per D-011. |
+| Docker/Compose bootstrap | **FIRST S1-D HOST/COMPOSE SLICE ACCEPTED ([PR #6](https://github.com/lehater/ai-lab/pull/6)); OWNER-VERIFIED ON `lab-test`** | Docker Engine 29.9.2, Compose v5.6.1, daemon proxy, rerun, image pull, post-reboot checks and default Compose service/cleanup PASS. Full integrated clean-snapshot replay and external LAN test not performed; full S1-D remains open. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -186,8 +186,7 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   observations as engineering evidence.
 - **Still not verified:** clean-snapshot S0 → S1 → Docker replay,
   external LAN-host exposure checks or any claim of enforced
-  container-level HTTP(S) proxy routing. PR #6 remains draft;
-  `main` is unchanged. Next narrow acceptance step: run current
+  container-level HTTP(S) proxy routing. the first slice is accepted via PR #6; full S1-D remains open. Next narrow acceptance step: run current
   `make docker-test` (after pruning) on `lab-test`, then clean-VM
   bootstrap/reboot checks and service-port review before considering merge.
 
@@ -219,8 +218,18 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   Compose, and post-reboot daemon/registry checks. **Still pending:**
   complete clean-snapshot S0 → S1 → S1-D replay and explicit inspection
   of unrelated Docker-published ports/host network exposure. Restricted
-  egress and custom forwarders remain deferred under D-011. PR #6 is
-  still a draft, not merged; `main` is unchanged.
+  egress and custom forwarders remain deferred under D-011. First slice accepted in PR #6; full milestone open.
+
+- Final local port inspection after Compose smoke on `lab-test`:
+  `sudo docker ps` showed no running containers and therefore no
+  published container ports. The host `ss -lntp` filter for
+  2375, 2376 and 10808 showed only Xray listening at
+  `127.0.0.1:10808`. No Docker API listener on 2375/2376 was
+  observed. This **point-in-time local check is not an external
+  LAN negative test** and says nothing about ports that later
+  workloads might publish. First Docker/Compose bootstrap slice
+  accepted through [PR #6](https://github.com/lehater/ai-lab/pull/6);
+  clean-snapshot whole-chain proof is still outstanding.
 
 ## Known environments
 

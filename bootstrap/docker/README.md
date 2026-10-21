@@ -1,6 +1,6 @@
-# S1-D — Docker Engine/Compose bootstrap (candidate)
+# S1-D — Docker Engine/Compose bootstrap (accepted first slice)
 
-**Status:** [draft PR #6](https://github.com/lehater/ai-lab/pull/6); tested on `lab-test`, not merged into `main`.
+**Status:** limited first slice accepted via [PR #6](https://github.com/lehater/ai-lab/pull/6), owner-tested on `lab-test`. Full S1-D remains open.
 Target: Ubuntu 24.04 Desktop/amd64 VMware, after accepted S0/S1.
 This module installs Docker Engine, Docker Compose and the **Docker daemon's**
 HTTP(S) proxy using S0's existing local Xray. It does not change the Xray
@@ -93,12 +93,16 @@ the temporary `hello-world` Compose service exited 0, its
 `bridge/internal=false` network had no published ports, and
 both container and network were removed; the test reported
 `PASS: Docker Compose default bridge service and cleanup.`
+A final local inspection showed no running Docker containers/published
+ports and no listeners on Docker API ports 2375/2376, while Xray
+remained bound to 127.0.0.1:10808. This does not establish remote
+LAN isolation.
 These results do **not** establish a fresh S0 → S1 → S1-D replay,
 package-version pinning, externally tested LAN security, or container
 proxy-routing. Full findings and prior optional network experiments
 are preserved in [project state](../../docs/project/state.md).
 
-### Remaining first-slice acceptance
+### Remaining integrated full-chain acceptance
 
 From the agreed clean `lab-test` VMware baseline, follow S0 → S1 →
 `make docker-test` → `make docker-setup` → second setup →

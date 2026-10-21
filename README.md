@@ -31,16 +31,19 @@ The guided setup and checks were owner-tested after a clean-snapshot replay
 and accepted in [PR #5](https://github.com/lehater/ai-lab/pull/5).
 **Full S1 host provisioning remains incomplete.**
 
-## Next candidate: S1-D Docker Bootstrap
+## Docker Engine/Compose bootstrap — first slice accepted
 
-[Draft PR #6](https://github.com/lehater/ai-lab/pull/6) provides
-`make docker-setup`, `make docker-verify`, `make docker-pull-test`
-and `make docker-test`. Owner-reported installation, rerun,
-image pull and post-reboot checks passed on `lab-test`.
-The Docker **daemon** uses S0 Xray for registry access.
-Ordinary Compose networking remains the default; container-only
-forced proxy egress is deferred (D-011) until a real scenario calls
-for it. Clean-S0→S1→S1-D validation and exposure review are not yet
-complete; the candidate is not accepted in `main`.
+[Merged PR #6](https://github.com/lehater/ai-lab/pull/6) provides
+`make docker-setup`, `make docker-verify`, `make docker-pull-test`,
+`make docker-compose-test` and `make docker-test`.
+Owner-verified on `lab-test`: Docker Engine 29.9.2, Compose v5.6.1,
+daemon proxy, initial/repeat setup, image pull, post-reboot operation,
+and default Compose bridge service/cleanup.
+Normal Compose networking remains the default (D-011);
+app-level forced proxy egress is deferred.
+Final local inspection found no running containers or Docker API
+TCP listeners. Clean-snapshot S0 → S1 → S1-D replay and
+external LAN-isolation verification remain outstanding;
+full S1-D milestone is not declared complete.
 
 Only merged `main` is authoritative. The verified Stage 0 MVP is a first step toward the target, not evidence of full unattended deployment or Enterprise-grade compliance. See [roadmap](docs/project/roadmap.md) for the next testable increment.

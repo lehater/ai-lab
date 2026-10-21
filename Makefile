@@ -12,7 +12,7 @@ help:
 	  '  make github-verify  Check GitHub SSH access (with interactive host-key review)' \
 	  '  make host-verify    Check local S1 config and proxied HTTPS' \
 	  '  make host-test      Run offline S1 regression tests' \
-	  '  make docker-setup    Candidate S1-D Docker Engine/Compose install (sudo)' \
+	  '  make docker-setup    Install Docker Engine/Compose after S1 (sudo)' \
 	  '  make docker-verify   Check Docker/Compose and daemon proxy' \
 	  '  make docker-pull-test  Pull/run hello-world through daemon proxy' \
 	  '  make docker-test     Run offline Docker render/syntax checks' \
@@ -37,7 +37,7 @@ host-test:
 	@bash $(HOST_DIR)/tests/test-configure.sh
 	@bash $(HOST_DIR)/tests/test-github-setup.sh
 
-# S1-D first candidate: separate from S1 and requires explicit sudo.
+# S1-D accepted first module: separate from S1, requires sudo.
 docker-setup:
 	@bash $(DOCKER_DIR)/setup.sh
 

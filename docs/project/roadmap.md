@@ -75,12 +75,12 @@ and passes its stated checks; configuration survives reboot where relevant;
 rerun does not damage existing settings. Record exact commands, output and
 limitations in [state](state.md).
 
-## Current next candidate — S1-D Docker
+## S1-D — accepted Docker first slice; full-chain verification open
 
 The first S1 GitHub SSH transport slice is accepted in PR #5, with owner
 evidence for its stated functional criteria. Do not invent host tooling
-just to extend the milestone. The next candidate is
-[draft PR #6](https://github.com/lehater/ai-lab/pull/6).
+just to extend the milestone. The first module was accepted in
+[PR #6](https://github.com/lehater/ai-lab/pull/6).
 
 **Scope:** official Docker Engine/Compose APT installation; a dedicated
 systemd daemon proxy using S0's Xray; image pull/container execution,
@@ -89,10 +89,15 @@ Docker's daemon proxy does **not** configure application-level proxying.
 A container's ability to reach the internet directly is not in itself
 a failure of this baseline.
 
-**Next gate:** clean `lab-test` S0 → S1 → Docker replay, owner-recorded
-tests and installed versions, and inspection of unexpected published
-ports/daemon TCP listeners. LAN exposure must be tested independently
-when making a LAN-isolation claim. Avoid auto-publishing app ports.
+**Owner-verified first slice:** Engine/Compose install and rerun,
+daemon proxy, image pulls, normal Compose bridge lifecycle/cleanup
+and reboot checks on `lab-test`. A final local port check found no
+running published containers or Docker API listeners on 2375/2376.
+
+**Remaining full-chain gate:** clean `lab-test` S0 → S1 → Docker
+replay with recorded evidence. Negative LAN access must be verified
+from another host before claiming LAN isolation. App container
+proxy-only routing is not required by the baseline (D-011).
 
 **Deliberately deferred (D-011):** a forced-proxy-only network,
 Docker `--internal` app egress restrictions, bridge-scoped forwarders
