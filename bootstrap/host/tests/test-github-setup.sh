@@ -38,8 +38,10 @@ MOCK
 chmod +x "$scratch/bin"/*
 export PATH="$scratch/bin:$PATH"
 
-bash "$DIR/github-setup.sh" > "$scratch/output1"
-bash "$DIR/github-setup.sh" > "$scratch/output2"
+# Tests must never inherit a real operator TTY: the wizard would prompt to verify
+# against GitHub, which is intentionally unavailable in the mocked environment.
+bash "$DIR/github-setup.sh" </dev/null > "$scratch/output1"
+bash "$DIR/github-setup.sh" </dev/null > "$scratch/output2"
 [[ "$(sha256sum "$HOME/.ssh/id_ed25519")" == "$before" ]]
 [[ "$(cat "$HOME/.ssh/config")" == '# untouched' ]]
 [[ "$(cat "$MOCK_LOG/browser")" == 'https://github.com/settings/keys' ]]
@@ -48,13 +50,13 @@ grep -q 'Reusing existing SSH public key' "$scratch/output2"
 
 # Incomplete pairs and symlinks must fail without writing new credentials.
 mv "$HOME/.ssh/id_ed25519.pub" "$scratch/hold.pub"
-if bash "$DIR/github-setup.sh" > "$scratch/output3" 2>&1; then
+if bash "$DIR/github-setup.sh" </dev/null > "$scratch/output3" 2>&1; then
     echo 'FAIL: incomplete key pair was accepted' >&2; exit 1
 fi
 mv "$scratch/hold.pub" "$HOME/.ssh/id_ed25519.pub"
 mv "$HOME/.ssh/id_ed25519.pub" "$scratch/hold.pub"
 ln -s "$scratch/hold.pub" "$HOME/.ssh/id_ed25519.pub"
-if bash "$DIR/github-setup.sh" > "$scratch/output4" 2>&1; then
+if bash "$DIR/github-setup.sh" </dev/null > "$scratch/output4" 2>&1; then
     echo 'FAIL: symlinked public key was accepted' >&2; exit 1
 fi
 rm "$HOME/.ssh/id_ed25519.pub"
