@@ -49,8 +49,7 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
   authenticated Git SSH check PASS. This verifies the **revised wizard's
   interactive existing-key authentication path**, not first-time key creation,
   clipboard integration, or a clean-snapshot deployment.
-- No console output for the new `make host-test` target or repeat installation
-  after a clean reset has been provided yet.
+- No complete S0→S1 installation trace after a clean reset has been provided yet.
 
 - Owner ran `make host-test` on `lab-test` for the revised Make workflow:
   `test-configure.sh` passed, but `test-github-setup.sh` unexpectedly
@@ -63,8 +62,13 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [draft PR #5](htt
   prompts and live network checks. On a separate local test environment,
   running the corrected `make host-test` under a pseudo-TTY as a
   non-root user produced both `PASS` lines (Shell/config/idempotency and
-  mocked wizard preservation/browser/clipboard checks). **The corrected
-  test has not yet been rerun on `lab-test`.**
+  mocked wizard preservation/browser/clipboard checks). Owner subsequently
+  reran `make host-test` on `lab-test` and reported both expected PASS lines:
+  `shell syntax, mocked config rendering, idempotency, safe conflict refusal`
+  and `SSH wizard reuse, clipboard/browser guidance, no overwrite,
+  incomplete/symlink protection, interactive opt-in`. This establishes
+  regression success on that machine (the mock test does not prove GUI
+  clipboard/browser behavior or a clean-snapshot S0→S1 run).
 
 **Limits:** no demonstrated reset immediately before these S1 tests, no full clean-snapshot S0 → S1 replay, no completed full S1 provisioning, and independent confirmation of proxy *automatic* launch after reboot still depends on observing that no manual start occurred. Existing S0 acceptance remains distinct. Evidence derives from the owner's logs, not remote execution by the assistant.
 
