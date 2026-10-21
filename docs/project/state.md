@@ -149,15 +149,31 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   does not independently establish whether v2rayN was started
   automatically rather than manually; prior S0 autostart was separately
   confirmed in PR #5.
-- Still **not verified:** negative LAN access from a separate LAN host,
-  Docker firewall interactions, bridge-container HTTP(S) proxy routing,
-  or an end-to-end clean-snapshot S0 → S1 → S1-D replay. PR remains draft;
-  `main` is unchanged. Next, perform read-only bridge/proxy diagnostics
-  before choosing any route or opening a host listener. Candidate adds
-  `make docker-net-diagnose` (existing host socket/bridge information and
-  ephemeral curl-container proxy/direct tests); this **has not yet been
-  run on `lab-test`**. It pulls one diagnostic image but does not change
-  firewall rules, persistent Docker networks or proxy bind settings.
+- Owner ran updated `make docker-test` on `lab-test`; it reported
+  `PASS: Docker Shell syntax, stable APT repository template, daemon proxy
+  template and bridge diagnostic contract.` Owner then ran
+  `make docker-net-diagnose`. Observed:
+  `xray` listens on **127.0.0.1:10808** (pid 3407);
+  default Docker `bridge` gateway is **172.17.0.1**;
+  `curlimages/curl:8.16.0` was pulled (digest
+  `sha256:463eaf6072688fe96ac64fa623fe73e1dbe25d8ad6c34404a669ad3ce1f104b6`).
+  Explicit proxy request from a bridge container via
+  `host.docker.internal:10808` **failed** (`curl: (7)`, HTTP 000).
+  A direct proxy-bypassing HTTPS request from the bridge container
+  to `github.com` **succeeded (HTTP 200)**. The difference is
+  consistent with the host listener bound to loopback only rather than
+  to a bridge-reachable IP address, and confirms direct HTTPS
+  bypass is possible on this Docker network. These are **observations
+  on `lab-test`**, not evidence that Docker cannot use a future
+  controlled proxy route or that LAN security has been proven.
+- Still **not verified:** bridge-container proxied HTTP(S), enforced
+  restriction of direct egress, negative LAN access from another host,
+  Docker firewall behavior for published ports, or clean-snapshot
+  S0 → S1 → S1-D replay. PR remains draft; `main` unchanged.
+  Next evaluate a dedicated Docker `--internal` bridge with a
+  bridge-interface-only forwarder to loopback Xray; keep the host
+  Xray listener on `127.0.0.1`. Design and test before any permanent
+  bridge listener/firewall change.
 
 ## Known environments
 
