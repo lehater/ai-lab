@@ -199,9 +199,12 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   with `BindToDevice` to a newly created temporary internal Docker
   bridge, forwarding to loopback Xray. It attempts proxied HTTPS and
   DNS-independent direct-IP HTTPS from the container, then removes
-  the socket/service and network. It changes temporary Docker-managed
-  firewall state and opens a scoped temporary listener while active.
-  No permanent forwarder, Xray listener change or LAN proof yet.
+  the socket/service and network. A positive direct-IP control is
+  attempted first from the existing default bridge; if it fails, no new
+  network/socket is created, and no internal-route conclusion is possible.
+  It changes temporary Docker-managed firewall state and opens a scoped
+  temporary listener while active. No permanent forwarder, Xray listener
+  change or LAN proof yet.
 
 ## Known environments
 
