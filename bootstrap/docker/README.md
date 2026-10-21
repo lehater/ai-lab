@@ -14,6 +14,7 @@ make docker-setup
 make docker-setup          # safe rerun
 make docker-verify
 make docker-pull-test      # docker pull + run hello-world
+make docker-compose-test   # ephemeral Compose service/default bridge + teardown
 ```
 
 `docker-setup` installs the official signed Docker APT Noble/amd64
@@ -32,6 +33,13 @@ and standard Docker API TCP management ports. `docker-pull-test`
 runs `sudo docker run --rm --pull=always hello-world`, proving that the
 daemon can obtain a registry image and execute a container, **not**
 that individual app containers use Xray.
+
+`docker-compose-test` creates one temporary Compose project containing
+`hello-world`, checks that the automatically created network uses normal
+`bridge` driver with `internal=false`, and removes its containers and
+network on exit. It **publishes no ports**, creates no volumes and leaves
+no persistent services. This tests Compose execution and its standard
+network lifecycle, not egress proxy policy or application networking.
 
 ## Default Compose networking and explicit limitations
 
@@ -77,7 +85,10 @@ Owner reported successful initial and repeat `make docker-setup` for
 Docker Engine **29.9.2**, Compose **v5.6.1**, daemon proxy
 verification and Docker Hub `hello-world` pull/launch.
 Post-reboot `make host-verify`, `make docker-verify` and
-`make docker-pull-test` also passed.
+`make docker-pull-test` also passed. The simplified PR revision's
+`make docker-test` and `make docker-verify` passed again after experimental
+network tools were removed; the new Compose smoke has not yet run on
+`lab-test`.
 These results do **not** establish a fresh S0 → S1 → S1-D replay,
 package-version pinning, externally tested LAN security, or container
 proxy-routing. Full findings and prior optional network experiments
@@ -87,7 +98,8 @@ are preserved in [project state](../../docs/project/state.md).
 
 From the agreed clean `lab-test` VMware baseline, follow S0 → S1 →
 `make docker-test` → `make docker-setup` → second setup →
-`make docker-pull-test` → reboot → `make docker-verify`.
+`make docker-pull-test` → `make docker-compose-test` → reboot →
+`make docker-verify`.
 Keep that actual transcript or an owner-reviewed summarized record.
 Use `docker compose version` to confirm the Compose plugin.
 Review host listening ports and any Docker-published ports; obtain a
