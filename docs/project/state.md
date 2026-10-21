@@ -137,14 +137,23 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   This verifies authenticated or anonymous registry retrieval through
   the daemon's configured network path and container process execution,
   **not outbound HTTP(S) networking from a Docker bridge container**.
-- Still **not verified:** post-reboot daemon/proxy availability,
-  host LAN exposure and Docker firewall interactions, bridge-container
-  network routing, or an end-to-end clean-snapshot S0 → S1 → S1-D replay.
-  This PR remains a draft; `main` is unchanged.
-- Next acceptance action: reboot `lab-test` without manually starting
-  the proxy; repeat `make docker-verify` and `make docker-pull-test`.
-  Keep bridge networking and negative LAN isolation as separate S1-D
-  acceptance gates.
+- After a reboot, owner provided `lab-test` console output for
+  `make host-verify` (`S1 local config and proxied HTTPS: PASS`),
+  `make docker-verify` (Docker Engine `29.9.2`, Docker Compose
+  `v5.6.1`, daemon proxy PASS), and `make docker-pull-test`
+  (same daemon PASS, proxy HTTPS PASS, Docker Hub `hello-world`
+  already up to date, container prints `Hello from Docker!`,
+  registry pull / container PASS). This verifies **post-reboot S0
+  proxy connectivity, Docker daemon persistence, registry access and
+  process startup** in the observed session. The latest log itself
+  does not independently establish whether v2rayN was started
+  automatically rather than manually; prior S0 autostart was separately
+  confirmed in PR #5.
+- Still **not verified:** negative LAN access from a separate LAN host,
+  Docker firewall interactions, bridge-container HTTP(S) proxy routing,
+  or an end-to-end clean-snapshot S0 → S1 → S1-D replay. PR remains draft;
+  `main` is unchanged. Next, perform read-only bridge/proxy diagnostics
+  before choosing any route or opening a host listener.
 
 ## Known environments
 
