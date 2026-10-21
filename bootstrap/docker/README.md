@@ -15,6 +15,7 @@ make docker-setup
 make docker-setup           # rerun / idempotence
 make docker-verify
 make docker-pull-test       # docker pull + run hello-world
+make docker-net-diagnose    # bridge network diagnostics (no host network edits)
 ```
 
 `docker-setup` invokes `bootstrap/docker/setup.sh`. It uses S0's
@@ -43,6 +44,34 @@ management port absence. `docker-pull-test` additionally runs
 daemon registry pull and process startup, not outbound networking from
 a Docker bridge container.**
 
+## Next diagnostic: host Xray proxy versus Docker bridge
+
+After post-reboot `docker-verify` and `docker-pull-test` pass, run
+`make docker-test` (updated offline syntax check), then
+`make docker-net-diagnose`. This diagnostic does **not** modify proxy
+listeners, the Docker network, daemon config or host firewall. It does
+download/cache the `curlimages/curl:8.16.0` test image and creates two
+**ephemeral** containers with `--network bridge`, no published ports,
+no added capabilities and no-new-privileges.
+
+It prints the existing host TCP listener for 10808 and the default
+Docker bridge gateway; then tests HTTPS from the bridge container both
+through `host.docker.internal:10808` (using the Docker
+`--add-host host.docker.internal:host-gateway` mapping) and with direct
+outbound access, bypassing proxy settings.
+
+A running Xray bound only to `127.0.0.1` **cannot normally be reached**
+via the host bridge gateway IP. That test failure is diagnostic evidence,
+**not proof that Docker itself is broken**. A successful direct test
+means traffic can bypass Xray; it does not establish acceptable routing
+or firewall isolation. Keep results distinct; do not change v2rayN to
+`0.0.0.0` or open ports simply to make the test pass.
+
+To determine LAN isolation, a separate, controlled test from another
+machine on the LAN will be required. Loopback socket checks alone
+cannot prove that Docker port publishing or other rules never expose
+services. No external LAN test is performed by this diagnostic.
+
 ## Security boundaries
 
 - `sudo docker` only; do not add desktop users to the `docker` group
@@ -59,7 +88,8 @@ a Docker bridge container.**
   and volumes are deleted. A preexisting daemon proxy setting triggers
   refusal for manual review; no automatic takeover.
 - `docker-test` is a syntax/template test. It does not invoke privileged
-  operations, Docker daemon or network; the live install remains unverified.
+  operations, Docker daemon or network; the live installation and post-reboot daemon/image pull checks have
+  passed on `lab-test`, but bridge HTTPS and LAN security remain unverified.
 
 ## Acceptance on lab-test (before a merge)
 
