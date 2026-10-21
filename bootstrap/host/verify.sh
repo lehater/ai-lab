@@ -24,7 +24,7 @@ echo 'S1 local config and proxied HTTPS: PASS (SSH authentication not checked).'
 
 if [[ "$mode" == --auth ]]; then
     echo 'Checking authenticated Git SSH transport; requires registered user key and verified host key.'
-    printf -v ssh_cmd 'ssh -F %q -o BatchMode=yes -o StrictHostKeyChecking=yes' "$config"
+    printf -v ssh_cmd 'ssh -F %q -o ConnectTimeout=20 -o StrictHostKeyChecking=yes' "$config"
     GIT_SSH_COMMAND="$ssh_cmd" git ls-remote ai-lab-github:lehater/ai-lab.git HEAD >/dev/null
     echo 'S1 GitHub SSH authentication: PASS.'
 fi

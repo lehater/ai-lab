@@ -16,11 +16,17 @@ done
 }
 
 # S0 owns the proxy itself. Do not modify its configuration or user credentials.
-if ! dpkg-query -W -f='${Status}' netcat-openbsd 2>/dev/null | grep -qx 'install ok installed'; then
-    echo 'Installing netcat-openbsd via the S0-configured APT proxy...'
+missing=()
+for pkg in netcat-openbsd make; do
+    if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -qx 'install ok installed'; then
+        missing+=("$pkg")
+    fi
+done
+if (( ${#missing[@]} )); then
+    echo "Installing S1 prerequisites via the S0-configured APT proxy: ${missing[*]}"
     sudo apt-get update
-    sudo apt-get install -y netcat-openbsd
+    sudo apt-get install -y "${missing[@]}"
 fi
 bash "$DIR/configure-ssh.sh"
-bash "$DIR/verify.sh"
-echo 'S1 SSH transport candidate configured. SSH identity/enrollment still requires owner action.'
+bash "$DIR/verify.sh" --local
+echo 'S1 SSH transport configured. Run make github-setup for SSH key enrollment guidance.'
