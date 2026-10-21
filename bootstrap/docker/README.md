@@ -104,15 +104,12 @@ are preserved in [project state](../../docs/project/state.md).
 
 ### Remaining integrated full-chain acceptance
 
-From the agreed clean `lab-test` VMware baseline, follow S0 → S1 →
-`make docker-test` → `make docker-setup` → second setup →
-`make docker-pull-test` → `make docker-compose-test` → reboot →
-`make docker-verify`.
-Keep that actual transcript or an owner-reviewed summarized record.
-Use `docker compose version` to confirm the Compose plugin.
-Review host listening ports and any Docker-published ports; obtain a
-separate LAN-host check if LAN safety is an acceptance claim.
-Do not conflate these checks with a restricted-egress security policy.
+Follow [the complete USB S0 → S1 → S1-D operator replay](../README.md)
+from the original `vmware-tools-ready` snapshot or a clone.
+It includes the manual first GUI launch and GitHub SSH key registration,
+repeated install, post-reboot tests and a privacy-safe evidence summary.
+Do not claim full-chain reproducibility before that replay has passed.
+A separate LAN-host test is required before claiming LAN isolation.
 
 References:
 [Docker Ubuntu installation](https://docs.docker.com/engine/install/ubuntu/),

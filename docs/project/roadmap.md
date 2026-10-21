@@ -37,7 +37,7 @@ The depth of these controls grows with **risk, complexity and reuse**, not with 
 
 | Stage | Additional engineering evidence |
 | --- | --- |
-| **S0** | Existing clean-`lab-test` recovery evidence remains **VERIFIED MVP** only for its specified path; manual first launch, unverified autostart and deferred hardening stay explicit. New maturity requirements do not retroactively invalidate or upgrade S0. |
+| **S0** | Existing clean-`lab-test` recovery evidence remains **VERIFIED MVP** only for its specified path; manual first launch, owner-verified GNOME autostart and deferred hardening stay explicit. New maturity requirements do not retroactively invalidate or upgrade S0. |
 | **S1** | Repeatable host configuration, idempotent rerun, reboot checks and safe developer access on clean `lab-test`. |
 | **S1-D** | Reproducible Docker install/daemon proxy, image pull, container and Compose smoke tests, rerun/reboot from clean `lab-test`; negative exposure checks for enabled Docker APIs/published ports, with external LAN verification when making LAN-safety claims. Container proxy-only egress is a separate optional workload requirement. |
 | **S2** | Module boundaries, configuration/secrets and persistent-data lifecycle, representative service health/diagnostics and recovery checks. |
@@ -94,9 +94,10 @@ daemon proxy, image pulls, normal Compose bridge lifecycle/cleanup
 and reboot checks on `lab-test`. A final local port check found no
 running published containers or Docker API listeners on 2375/2376.
 
-**Remaining full-chain gate:** clean `lab-test` S0 → S1 → Docker
-replay with recorded evidence. Negative LAN access must be verified
-from another host before claiming LAN isolation. App container
+**Remaining full-chain gate:** follow the [USB end-to-end replay runbook](../../bootstrap/README.md)
+from the clean `lab-test` baseline or its clone; record checkout SHA,
+operator steps, install/rerun and post-reboot evidence. Negative LAN
+access must be verified from another host before claiming LAN isolation. App container
 proxy-only routing is not required by the baseline (D-011).
 
 **Deliberately deferred (D-011):** a forced-proxy-only network,
