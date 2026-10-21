@@ -153,7 +153,11 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
   Docker firewall interactions, bridge-container HTTP(S) proxy routing,
   or an end-to-end clean-snapshot S0 → S1 → S1-D replay. PR remains draft;
   `main` is unchanged. Next, perform read-only bridge/proxy diagnostics
-  before choosing any route or opening a host listener.
+  before choosing any route or opening a host listener. Candidate adds
+  `make docker-net-diagnose` (existing host socket/bridge information and
+  ephemeral curl-container proxy/direct tests); this **has not yet been
+  run on `lab-test`**. It pulls one diagnostic image but does not change
+  firewall rules, persistent Docker networks or proxy bind settings.
 
 ## Known environments
 
