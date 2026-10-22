@@ -73,6 +73,37 @@ the old locally generated private key may disappear. Reuse it only from a
 protected backup or generate/register a new key and revoke the obsolete
 GitHub account entry.
 
+## Git push via S1 SSH (optional, per repository)
+
+S0 clones `ai-lab` through **HTTPS**. S1 configures a working SSH alias
+`ai-lab-github` via `~/.config/ai-lab/github-ssh.conf` but deliberately
+**does not change** Git `origin` or `~/.ssh/config`. Therefore a plain
+`git push origin` can still try HTTPS even after `make github-verify`
+has passed. This was observed when publishing experiment PR #11.
+
+After `make github-verify` succeeds, an operator who wants SSH **only
+for writes** in this checkout can explicitly configure:
+
+```bash
+cd ~/projects/ai-lab
+git remote -v
+git remote set-url --push origin ai-lab-github:lehater/ai-lab.git
+git config --local core.sshCommand \
+  "ssh -F $HOME/.config/ai-lab/github-ssh.conf -o StrictHostKeyChecking=yes"
+git remote -v
+# fetch retains S0 HTTPS; push targets S1 SSH alias
+# Push только текущей рабочей ветки для последующего PR; не напрямую в main:
+git push origin "$(git branch --show-current)"
+```
+
+Do not run this push while on `main`: use a feature branch and PR under the repository's branch protection policy. This changes **local Git configuration only**; the `core.sshCommand` path
+is specific to the Ubuntu operator home. Do not blindly apply it to
+other computers/repositories or overwrite an operator's custom SSH
+configuration without inspecting it. Before first use, keep strict
+GitHub host-key verification; this does **not** enroll keys or bypass
+authentication. If `origin` is already intentionally customized,
+inspect it rather than forcing the URL above.
+
 ## Acceptance on clean lab-test
 
 1. Return to the agreed `vmware-tools-ready` snapshot; run S0 from USB

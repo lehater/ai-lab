@@ -56,3 +56,4 @@
 
 - [2026-10-22 — Landscape платформ и сред для AI Lab](2026-10-22-platform-landscape.md) — готовые инфраструктурные платформы, проектные среды, инструменты deployment и каталоги шаблонов; EXPLORATORY.
 - [2026-10-22 — Опциональные компоненты и воспроизводимые окружения](2026-10-22-optional-components-lifecycle.md) — host-managed / project-managed, mise/Ansible/Compose/Dev Containers, жизненный цикл и минимальный стек; EXPLORATORY.
+- [2026-10-22 — Codex CLI на Ubuntu/VMware: результаты экспериментов](2026-10-22-codex-ubuntu-vm-findings.md) — проверенные sandbox/AppArmor, MCP и Wayland-clipboard находки; экспериментальное свидетельство, не принятая установка.
