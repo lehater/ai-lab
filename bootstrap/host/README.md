@@ -92,10 +92,11 @@ git config --local core.sshCommand \
   "ssh -F $HOME/.config/ai-lab/github-ssh.conf -o StrictHostKeyChecking=yes"
 git remote -v
 # fetch retains S0 HTTPS; push targets S1 SSH alias
-git push origin HEAD
+# Push только текущей рабочей ветки для последующего PR; не напрямую в main:
+git push origin "$(git branch --show-current)"
 ```
 
-This changes **local Git configuration only**; the `core.sshCommand` path
+Do not run this push while on `main`: use a feature branch and PR under the repository's branch protection policy. This changes **local Git configuration only**; the `core.sshCommand` path
 is specific to the Ubuntu operator home. Do not blindly apply it to
 other computers/repositories or overwrite an operator's custom SSH
 configuration without inspecting it. Before first use, keep strict
