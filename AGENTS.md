@@ -32,6 +32,7 @@ machine changes are not accepted repository state.
 - Use the tested `lab-test` VMware snapshot for validation of bootstrap
   changes. Do not mistake results from manually configured `lab` for
   clean-machine reproduction.
+- Size validation to the change's **actual uncertainty and risk**, per [risk-based verification](docs/project/roadmap.md#risk-based-verification-test-our-uncertainty-not-known-platform-features): do not re-test documented tool primitives or repeat the full baseline without a relevant impact; preserve decisive tests of our integrations and destructive actions.
 - Never commit private proxy archives, subscription URLs, SSH private keys,
   tokens, local credentials, or actual machine secrets.
 
