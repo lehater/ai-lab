@@ -82,7 +82,7 @@ $ sudo aa-status | grep -Ei 'bwrap|unprivileged_userns' || true
 
 **Interpretation:** no tracked/untracked Git changes were reported in the ordinary working tree, and the expected Stage A evidence directory was not present. The filtered AppArmor status shows the generic `unprivileged_userns` profile, **not** a loaded named `bwrap` profile. This does not by itself prove that no differently named AppArmor profile attaches to `/usr/bin/bwrap`, and no AppArmor changes have yet been made.
 
-**Next safe gate:** check `/etc/apparmor.d` for profiles attached to `/usr/bin/bwrap`; only if none conflict, install and load the official Ubuntu 24.04 `bwrap-userns-restrict` profile. Then run a system-`bwrap` namespace test and `codex sandbox linux /bin/true`, confirming the global AppArmor setting stays at `1`. Installation and test results are pending.
+**Next safe gate:** check `/etc/apparmor.d` for profiles attached to `/usr/bin/bwrap`; only if none conflict, install and load the official Ubuntu 24.04 `bwrap-userns-restrict` profile. Then run a system-`bwrap` namespace test and `codex sandbox -- /bin/true`, confirming the global AppArmor setting stays at `1`. Installation and test results are pending.
 
 ## Incomplete local artifacts / Git coordination
 
@@ -105,7 +105,7 @@ The operator provided the APT output from `lab-test`:
 - The subsequent `sudo apt-get install -y apparmor-profiles apparmor-utils` **completed successfully**: `apparmor` and `libapparmor1` upgraded to `4.0.1really4.0.1-0ubuntu0.24.04.9`; `apparmor-profiles`, `apparmor-utils`, `python3-apparmor` and `python3-libapparmor` installed.
 - The input batch included `sudo install ... bwrap-userns-restrict` and `sudo apparmor_parser -r ...`, but their actual loaded-profile status and sandbox smoke output have **not** been submitted. Do not declare remediation PASS solely on a successful package install.
 
-**Next validation:** inspect existence of `/etc/apparmor.d/bwrap-userns-restrict`, `sudo aa-status | grep -Ei 'bwrap|unprivileged_userns'`, the unchanged `sysctl kernel.apparmor_restrict_unprivileged_userns`, then host `bwrap --unshare-user --unshare-net --ro-bind / / /bin/true` and `codex sandbox linux /bin/true`. Capture exit codes; never disable AppArmor or bypass Codex sandbox to make the tests pass.
+**Next validation:** inspect existence of `/etc/apparmor.d/bwrap-userns-restrict`, `sudo aa-status | grep -Ei 'bwrap|unprivileged_userns'`, the unchanged `sysctl kernel.apparmor_restrict_unprivileged_userns`, then host `bwrap --unshare-user --unshare-net --ro-bind / / /bin/true` and `codex sandbox -- /bin/true`. Capture exit codes; never disable AppArmor or bypass Codex sandbox to make the tests pass.
 
 ## AppArmor profile loaded and bwrap smoke PASS — 2026-10-22
 
@@ -125,7 +125,31 @@ Codex sandbox exit: 127
 
 **Interpretation:** `/etc/apparmor.d/bwrap-userns-restrict` is present; `aa-status` shows `bwrap` and `unpriv_bwrap`; the global AppArmor userns restriction remains enabled; standalone `bwrap --unshare-user --unshare-net --ro-bind / / /bin/true` returns 0. This **passes the standalone Bubblewrap test**.
 
-`codex sandbox linux /bin/true` was **not actually run**, since this shell could not resolve `codex` (exit 127). Codex was earlier installed successfully to `~/.local/bin/codex`, whose parent directory may not be present on this fresh shell's `PATH`. **Do not install Snap Codex**; export `PATH="$HOME/.local/bin:$PATH"`, run `hash -r`, confirm `command -v codex` and `codex --version`, then retry the Codex-specific sandbox smoke test. Codex's sandbox recovery remains unverified until this last test succeeds.
+The initially recommended `codex sandbox linux /bin/true` was **not actually run**, since that shell could not resolve `codex` (exit 127). This historical command was later found to have incorrect syntax. Codex was earlier installed successfully to `~/.local/bin/codex`, whose parent directory may not be present on this fresh shell's `PATH`. **Do not install Snap Codex**; export `PATH="$HOME/.local/bin:$PATH"`, run `hash -r`, confirm `command -v codex` and `codex --version`, then retry the Codex-specific sandbox smoke test. Codex's sandbox recovery remains unverified until this last test succeeds.
+
+## Codex found; previous smoke command syntax incorrect — 2026-10-22
+
+With `PATH="$HOME/.local/bin:$PATH"`, the operator confirmed:
+
+```text
+/home/alex/.local/bin/codex
+codex-cli 0.163.0
+
+thread 'main' (2) panicked at linux-sandbox/src/linux_run_main.rs:1600:5:
+Failed to execvp linux: No such file or directory (os error 2)
+Codex sandbox exit: 101
+```
+
+This error came from **our incorrect smoke-test command**, `codex sandbox linux /bin/true`. The Codex CLI subcommand `sandbox` accepts an executable as `COMMAND...` with `--` delimiting options; thus it attempted to run a program named `linux`. **Exit 101 is not evidence of a user-namespace or AppArmor failure.**
+
+**Correct test** (as documented by the Codex CLI Linux sandbox reference):
+
+```bash
+codex sandbox -- /bin/true
+echo "Codex sandbox exit: $?"
+```
+
+Expected: exit `0`. Until this is reported, standalone `bwrap` is **PASS** but the Codex sandbox remains **NOT VERIFIED**. No new packages, AppArmor changes, Snap installation or unsandboxed Codex execution are warranted from the exit 101 result.
 
 ## Next acceptance sequence
 
