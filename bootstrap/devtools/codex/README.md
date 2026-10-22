@@ -55,19 +55,17 @@ If it fails **and** `kernel.apparmor_restrict_unprivileged_userns=1`, the option
 
 Documentation: [OpenAI Codex Linux sandbox](https://learn.chatgpt.com/docs/sandboxing); [Codex permissions](https://learn.chatgpt.com/docs/permissions).
 
-## Which editor?
+## CLI clipboard and optional local VS Code
 
-Codex CLI and the official VS Code Codex extension are **two interfaces to the Codex agent**, not two alternative Linux sandboxes. The extension has its own bundled runtime; do not force its `chatgpt.cliExecutable` to the npm executable. When CLI and IDE run on the **same machine/user**, they share the `~/.codex/config.toml` configuration layers (sandbox, approvals, MCP); editor-specific `chatgpt.*` settings are separate.
+**Before installing another editor**, test the Ubuntu → Windows clipboard. Terminal mouse selection can populate Linux PRIMARY without populating CLIPBOARD. In the Codex terminal, select a **nonsecret** output fragment and press **Ctrl+Shift+C** (or use the terminal context-menu **Copy**); then try Windows Ctrl+V. If Windows still pastes an old value, check GNOME session type with `echo "$XDG_SESSION_TYPE"`. VMware documents limitations of host/guest copy/paste under Wayland and recommends X11. Follow the **read-only first** [VMware clipboard runbook](../../host/clipboard.md). Do not install a clipboard-sync daemon or force Xorg without a verified need.
 
-**Option A — simplest for validating the IDE:** Install official VS Code on the existing `lab-test` Ubuntu Desktop, then install the official **Codex** extension `OpenAI.chatgpt`, sign in to ChatGPT, open the repository, and run a read-only sandbox check. This avoids SSH server changes but consumes GUI resources on the VM. Editor installation is not included in `make codex-setup` and is not yet tested.
+**VS Code is optional and LOCAL to the Ubuntu VM** in this proposal. If desired, install Microsoft's official VS Code package on `lab-test`, add the official **Codex** extension `OpenAI.chatgpt`, sign in, open the local repository and verify a read-only Codex command with the normal sandbox. The editor provides a graphical diff/review workflow; it does not fix the VMware clipboard synchronization by itself.
 
-**Option B — recommended long-term workbench (conditional):** Run VS Code on the operator's Windows PC, use Microsoft **Remote - SSH** (`ms-vscode-remote.remote-ssh`) to connect to the Ubuntu VM, and install the Codex extension in the **SSH: lab-test** extension host, so project files and the agent execute in Ubuntu. Remote-SSH installs VS Code Server on the VM and requires an accessible SSH **server** there; the accepted S1 GitHub SSH setup currently configures only an **outbound SSH client**. Provisioning `sshd`, firewall/VM reachability and trust must be an explicit, separately reviewed optional feature, not an automatic consequence of installing Codex. Do not open SSH or VS Code services to the internet for this task.
+CLI and Codex IDE use a common user-level `~/.codex/config.toml` when run in the **same Ubuntu account**, but the extension has its own bundled executable. Do not set `chatgpt.cliExecutable` merely to force reuse of the npm CLI. Editor installation and extensions are **not** included in `make codex-setup`, and no GUI acceptance has yet been observed.
 
-For a first Remote-SSH test, connect and open `~/projects/ai-lab`, confirm Codex extension activation, `/status`, read-only repository command, current effective config, sandboxing, and MCP accessibility if a relevant service is running. Remote extension compatibility may vary with VS Code and extension versions; do not assume the CLI's existing login or success guarantees the remote extension works.
+References: [official VS Code for Ubuntu](https://code.visualstudio.com/docs/setup/linux), [official Codex extension](https://marketplace.visualstudio.com/items?itemName=OpenAI.chatgpt), [Codex IDE settings](https://learn.chatgpt.com/docs/ide/settings), [shared configuration](https://learn.chatgpt.com/docs/config-file/config-basic).
 
-Sources: [VS Code Remote - SSH](https://code.visualstudio.com/docs/remote/ssh), [Codex extension](https://marketplace.visualstudio.com/items?itemName=OpenAI.chatgpt), [Codex IDE settings](https://learn.chatgpt.com/docs/ide/settings), [Codex configuration basics](https://learn.chatgpt.com/docs/config-file/config-basic). Related upstream Remote-SSH compatibility reports: [#32385](https://github.com/openai/codex/issues/32385), [#42663](https://github.com/openai/codex/issues/42663).
-
-**UI choice is not a prerequisite for installing the CLI module.** No VS Code installation or Remote-SSH service is provisioned by this proposal.
+**Not in scope:** Windows VS Code, Remote-SSH, inbound SSH server or any cross-machine IDE setup. The operator explicitly selected local-on-VM VS Code only as an optional interface.
 
 ## Cleanup, upgrades and limits
 
