@@ -1,6 +1,6 @@
-# AI Lab — Ansible optional host components (first candidate)
+# AI Lab — Ansible optional host components
 
-**Status: PROPOSED / NOT VERIFIED on `lab-test`.**
+**Status: ACCEPTED FIRST HOST-MANAGED SLICE via [PR #15](https://github.com/lehater/ai-lab/pull/15); scope-limited owner-reported `lab-test` checks.**
 This is a minimal S2-adjacent host-management slice, **not** a completed
 Infrastructure Core milestone and not a replacement for the accepted
 S0 → S1 → S1-D bootstrap.
@@ -182,7 +182,7 @@ commands/results, target snapshot and limitations in
 [`docs/project/state.md`](../docs/project/state.md) via a PR. Redact
 credentials, proxy secrets and machine-specific private files.
 
-After acceptance, additional host options can use Ansible roles. Do not
+Per decision D-012, further new optional host components use Ansible roles when appropriate. Do not
 infer that a role from Galaxy has the same license as ansible-core: inspect
 each role's origin, version, license, dependencies, privileges and upkeep
 before inclusion.
