@@ -14,7 +14,44 @@ INVENTORY="${HOME}/.local/bin/ansible-inventory"
 
 [[ -x "${PLAY}" && -x "${INVENTORY}" ]] ||
   fail 'Pinned user-level Ansible missing; run bash controller-setup.sh.'
-[[ "$("${PLAY}" --version | head -n 1)" == *'[core 2.21.5]'* ]] ||
+version_output="$("${PLAY}" --version)"
+version_first_line="${version_output%%
+  fail 'Controller must be pinned Ansible Core 2.21.5.'
+bash -n "${ROOT}/controller-setup.sh"
+bash -n "${ROOT}/tests/test-offline.sh"
+
+# Inventory validation intentionally checks exactly one managed host.
+inventory_json="$("${INVENTORY}" -i "${INV}" --list)"
+python3 -c '
+import json, sys
+inv = json.load(sys.stdin)
+hosts = inv.get("ai_lab_local", {}).get("hosts", [])
+if hosts != ["localhost"]:
+    raise SystemExit(f"Expected only localhost, found: {hosts!r}")
+print("Inventory localhost: PASS")
+' <<<"${inventory_json}"
+
+"${PLAY}" -i "${INV}" "${BOOK}" --syntax-check
+list_hosts="$("${PLAY}" -i "${INV}" "${BOOK}" --list-hosts)"
+[[ "${list_hosts}" == *'localhost'* && "${list_hosts}" == *'hosts (1)'* ]] ||
+  fail 'Target list must contain exactly one localhost.'
+
+# Negative test: removal MUST refuse when the operator did not opt in.
+# No --become or sudo is involved. No package removal is possible here.
+set +e
+rejection="$("${PLAY}" -i "${INV}" "${BOOK}" \
+    -e ai_lab_ripgrep_action=absent 2>&1)"
+status=$?
+set -e
+[[ "${status}" -ne 0 ]] ||
+  fail 'Unapproved removal unexpectedly succeeded.'
+[[ "${rejection}" == *'Deletion is disabled by default'* ]] ||
+  fail "Negative test failed for another reason, not approval guard: ${rejection}"
+
+printf '%s\n' 'PASS: syntax, localhost-only inventory and default removal refusal.'
+printf '%s\n' 'NOT TESTED: actual installation, reboot, teardown, idempotence, security and lab-test S2 acceptance.'
+\n'*}"
+[[ "${version_first_line}" == *'[core 2.21.5]'* ]] ||
   fail 'Controller must be pinned Ansible Core 2.21.5.'
 bash -n "${ROOT}/controller-setup.sh"
 bash -n "${ROOT}/tests/test-offline.sh"
