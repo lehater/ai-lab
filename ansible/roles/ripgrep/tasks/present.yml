@@ -1,11 +1,21 @@
 ---
-- name: Ensure ripgrep exists via Ubuntu APT (no external repositories)
+- name: Install pinned ripgrep only if missing or previously role-owned
   ansible.builtin.apt:
-    name: ripgrep
+    name: "ripgrep={{ ai_lab_ripgrep_apt_version }}"
     state: present
     install_recommends: false
     update_cache: false
   become: true
+  when: "'ripgrep' not in ansible_facts.packages or ai_lab_ripgrep_marker.stat.exists"
+
+- name: Preserve already installed unmanaged ripgrep without adopting it
+  ansible.builtin.debug:
+    msg: >-
+      ripgrep already existed outside AI Lab; do not change its version
+      or mark it owned. Only verify its executable.
+  when:
+    - "'ripgrep' in ansible_facts.packages"
+    - not ai_lab_ripgrep_marker.stat.exists
 
 - name: Create isolated ownership directory for newly installed package
   ansible.builtin.file:
