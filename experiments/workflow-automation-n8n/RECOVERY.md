@@ -64,9 +64,15 @@ sysctl kernel.apparmor_restrict_unprivileged_userns
 # Expected: 1 (unchanged)
 bwrap --unshare-net --ro-bind / / --proc /proc --dev /dev /bin/true
 echo "bwrap exit code: $?"
+export PATH="$HOME/.local/bin:$PATH"
+hash -r
+command -v codex
+codex --version
 codex sandbox linux /bin/true
 echo "codex sandbox exit code: $?"
 ```
+
+**Actual check so far (operator output, 2026-10-22):** profile file exists, `aa-status` reports `bwrap` and `unpriv_bwrap`, AppArmor restriction remains `1`, and standalone `bwrap` exits `0`. The Codex-specific check returned `127` **only because `codex` was not in this shell's PATH**. The commands above correct PATH before testing; they do not reinstall Codex or modify kernel settings. Confirm Codex sandbox exit `0` before marking recovery PASS.
 
 If the CLI's sandbox subcommand syntax differs in `0.163.0`, inspect `codex sandbox --help` and adapt; do **not** disable sandboxing to make the test pass. Completely exit and restart Codex (or restart its daemon if applicable), then use a **read-only** repository command inside Codex, confirming no unsandboxed retry prompt.
 
