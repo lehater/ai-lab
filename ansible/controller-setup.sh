@@ -24,7 +24,8 @@ fi
 
 if [[ -e "${ANSIBLE_BIN}" || -L "${ANSIBLE_BIN}" ]]; then
   [[ -x "${ANSIBLE_BIN}" ]] || fail 'Existing Ansible entrypoint is not executable; operator review required.'
-  first_line="$("${ANSIBLE_BIN}" --version | head -n 1)"
+  version_output="$("${ANSIBLE_BIN}" --version)"
+  first_line="${version_output%%$'\n'*}"
   [[ "${first_line}" == *"[core ${ANSIBLE_CORE_VERSION}]"* ]] ||
     fail "Ansible entrypoint already exists but is not core ${ANSIBLE_CORE_VERSION}; do not overwrite it."
   printf 'Existing pinned Ansible controller found: %s\n' "${first_line}"
@@ -35,7 +36,8 @@ else
     fail 'pipx completed but expected ~/.local/bin/ansible-playbook is unavailable.'
 fi
 
-first_line="$("${ANSIBLE_BIN}" --version | head -n 1)"
+version_output="$("${ANSIBLE_BIN}" --version)"
+  first_line="${version_output%%$'\n'*}"
 [[ "${first_line}" == *"[core ${ANSIBLE_CORE_VERSION}]"* ]] ||
   fail "Expected Ansible ${ANSIBLE_CORE_VERSION}, got: ${first_line}"
 printf 'Controller bootstrap: READY (%s)\n' "${first_line}"
