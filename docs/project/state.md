@@ -46,6 +46,12 @@ SHA, snapshot/clone identity, manual actions and limitations **before merge**.
 - This establishes **operator-reported controller-install and limited static/negative-guard smoke success only**, not role installation, idempotence, post-reboot persistence, negative checks for pre-existing packages, package-removal correctness, or S2 completion.
 - The supplied excerpt does **not** show `git rev-parse HEAD`, the source snapshot/clone baseline, a repeated controller install, package version/dependency freeze or actual role apply. Preserve those gaps as open.
 
+**Additional owner-reported check-mode evidence, 2026-10-22, `alex@lab-test`:**
+- The immediately preceding operator command log showed a clean checkout `feat/s2-ansible-host-options-first-slice` at `d3f4598`, then an origin fast-forward to `6fa520e`. The following `--check --diff` ran on that branch; no standalone `git rev-parse HEAD` output was captured after pull.
+- `ansible-playbook playbooks/ripgrep.yml --check --diff --ask-become-pass` completed: `ok=5 changed=1 unreachable=0 failed=0 skipped=20`. Apt predicted **one new package (`ripgrep`), zero upgrades and removals**, plus 43 unrelated available upgrades not applied. Role-owned marker creation and real executable verification were **skipped** in check mode.
+- This is **PREVIEW PASS ONLY**, not a real package installation, marker creation, lifecycle acceptance, package upgrade or S2 acceptance. The dry-run emitted **three deprecation warnings** because the platform guard read injected top-level system facts. The branch was then patched to use `ansible_facts['distribution']`, `ansible_facts['distribution_version']` and `ansible_facts['architecture']`; **the patch itself is not yet retested on `lab-test`**.
+
+
 ## First S1 GitHub SSH slice — owner-reported validation (accepted via PR #5)
 
 Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://github.com/lehater/ai-lab/pull/5):
