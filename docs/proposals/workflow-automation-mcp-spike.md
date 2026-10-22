@@ -1,6 +1,6 @@
 # Proposal: Agent-driven workflow automation spike (Codex + n8n MCP)
 
-**Status:** PROPOSAL ONLY — not accepted, implemented or verified.
+**Status:** EXPERIMENTAL IMPLEMENTATION IN BRANCH — not accepted or verified on lab-test.
 **Baseline:** accepted main, S0 → S1 → S1-D Docker/Compose functional replay on lab-test. S2 and S3 are not verified.
 **Scope:** disposable research experiment; no permanent Infrastructure Core component.
 
@@ -75,7 +75,7 @@ MCP is a **control interface**, not the workflow execution engine. No agent proc
 
 ## Not proposed
 
-No change to accepted strategy, roadmap, state, decisions, S0–S1-D bootstrap scripts or Docker networking baseline. No permanent database or orchestration service. No automatic acceptance, merge, publication or production deployment.
+The branch now contains a disposable n8n Compose harness, scoped Bash lifecycle script, static checks, an operator runbook and a Codex authoring task under `experiments/workflow-automation-n8n/`. This is **preparation, not a live test**. No change to accepted strategy, roadmap, state, decisions, S0–S1-D bootstrap scripts or Docker networking baseline. No permanent database or orchestration service. No automatic acceptance, merge, publication or production deployment.
 
 ## Source documentation and constraints
 
@@ -85,4 +85,4 @@ No change to accepted strategy, roadmap, state, decisions, S0–S1-D bootstrap s
 - Official n8n announcement: https://blog.n8n.io/n8n-mcp-server/
 - Codex MCP client and bearer-token configuration: https://learn.chatgpt.com/docs/extend/mcp?surface=cli
 
-**This document is a test proposal, not a claim that any n8n/Codex integration has been installed or tested on lab-test.**
+**This document is an experimental plan with prepared launch assets, not a claim that any n8n/Codex integration has been installed or tested on lab-test.**
