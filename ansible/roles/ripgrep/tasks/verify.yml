@@ -1,0 +1,21 @@
+---
+- name: Refresh package facts after previous action
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Require installed ripgrep package
+  ansible.builtin.assert:
+    that:
+      - "'ripgrep' in ansible_facts.packages"
+    fail_msg: "ripgrep is not installed; run the present action first."
+
+- name: Verify ripgrep executable (read-only)
+  ansible.builtin.command:
+    cmd: rg --version
+  changed_when: false
+  check_mode: false
+  register: ai_lab_ripgrep_version
+
+- name: Show installed version
+  ansible.builtin.debug:
+    msg: "{{ ai_lab_ripgrep_version.stdout_lines[0] }}"
