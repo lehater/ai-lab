@@ -97,6 +97,16 @@ Codex intended to write under `evidence/2026-10-22-stage-a/`:
 
 The operator interrupted `apply_patch`. **Do not assume these files were all written or none were written.** Inspect `git status --short` and the paths in the normal host terminal before attempting `git pull` or committing. Review JSON and tool captures for credentials before pushing.
 
+## AppArmor package installation report — 2026-10-22
+
+The operator provided the APT output from `lab-test`:
+
+- `sudo apt-get update` returned an error `Hash Sum mismatch` for `noble-updates/multiverse/dep11/Components-amd64.yml.xz` on `ru.archive.ubuntu.com`. The issue concerned one APT metadata file, and older indices were retained where necessary. A completely clean package-list refresh is **not** established.
+- The subsequent `sudo apt-get install -y apparmor-profiles apparmor-utils` **completed successfully**: `apparmor` and `libapparmor1` upgraded to `4.0.1really4.0.1-0ubuntu0.24.04.9`; `apparmor-profiles`, `apparmor-utils`, `python3-apparmor` and `python3-libapparmor` installed.
+- The input batch included `sudo install ... bwrap-userns-restrict` and `sudo apparmor_parser -r ...`, but their actual loaded-profile status and sandbox smoke output have **not** been submitted. Do not declare remediation PASS solely on a successful package install.
+
+**Next validation:** inspect existence of `/etc/apparmor.d/bwrap-userns-restrict`, `sudo aa-status | grep -Ei 'bwrap|unprivileged_userns'`, the unchanged `sysctl kernel.apparmor_restrict_unprivileged_userns`, then host `bwrap --unshare-user --unshare-net --ro-bind / / /bin/true` and `codex sandbox linux /bin/true`. Capture exit codes; never disable AppArmor or bypass Codex sandbox to make the tests pass.
+
 ## Next acceptance sequence
 
 1. Repair/test Codex sandbox while **retaining** AppArmor restrictions. See [RECOVERY.md](../RECOVERY.md).
