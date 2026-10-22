@@ -16,7 +16,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
 | S1-D: Docker/Compose Bootstrap | **FUNCTIONAL INTEGRATED REPLAY OWNER-VERIFIED on `lab-test`** | Owner explicitly confirmed restoring `vmware-tools-ready`, reinstalling S0 → S1 → S1-D from repository scripts, and providing the final PASS logs. Docker Engine 29.9.2, Compose v5.6.1, GitHub SSH, daemon proxy, image pulls and Compose lifecycle succeeded. Operator-assisted reproducibility on the specified VMware baseline; not unattended automation, external LAN isolation or package pinning. |
-| S2 candidate: Ansible local optional host components | **PROPOSED, UNVERIFIED (Draft [PR #15](https://github.com/lehater/ai-lab/pull/15))** | Independent `ansible/` inventory/playbook/role for optional `ripgrep` lifecycle; **not run on lab-test**; does not constitute S2 core, persistent-data or secret-handling acceptance. |
+| S2 candidate: Ansible local optional host components | **PROPOSED, PARTIAL OWNER-TESTED CONTROLLER/SMOKE ONLY (Draft [PR #15](https://github.com/lehater/ai-lab/pull/15))** | On `lab-test` (2026-10-22) user supplied console output for pipx Ansible Core 2.21.5 / Python 3.12.3 controller install and offline smoke PASS (localhost inventory, syntax check, removal refusal without approval). **Actual `ripgrep` lifecycle, reboot, cleanup and baseline regression NOT RUN**; does not complete S2. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -25,7 +25,7 @@ It is **not** a substitute for code, tests, or evidence.
 This is an **unmerged implementation proposal**, not accepted project evidence.
 Ansible Core was preferred after the exploratory comparison in draft
 [PR #14](https://github.com/lehater/ai-lab/pull/14); this PR contains
-a local inventory, a guarded `pipx` controller setup pinned to **ansible-core 2.21.5** (upstream supported, unlike Ubuntu Noble's 2.16.x archive package), one reusable role, a read-only negative-guard smoke and documented but **unrun** commands.
+a local inventory, a guarded `pipx` controller setup pinned to **ansible-core 2.21.5** (upstream supported, unlike Ubuntu Noble's 2.16.x archive package), one reusable role, a read-only negative-guard smoke and an E2E plan. **Controller setup and the read-only smoke have now passed according to the operator's `lab-test` console output; optional component lifecycle remains untested.**
 The role manages only `ripgrep` and protects pre-existing packages from
 automatic removal using a root-owned role marker. No Galaxy packages,
 VS Code, Codex sandbox policies, daemon modifications or external cloud
@@ -40,7 +40,11 @@ for pre-installed `ripgrep` from a disposable clone, and run regression
 checks for existing `make host-verify`/`make github-verify`/
 `make docker-verify`. Preserve factual PASS/FAIL output, versions, Git
 SHA, snapshot/clone identity, manual actions and limitations **before merge**.
-No such checks are claimed completed by this PR.
+**Partial owner-reported evidence, 2026-10-22, `alex@lab-test`:**
+- `bash controller-setup.sh` installed `ansible-core 2.21.5` in a user-level pipx environment using **Python 3.12.3**; printed `Controller bootstrap: READY (ansible-playbook [core 2.21.5])`.
+- `bash tests/test-offline.sh` printed `Inventory localhost: PASS`, `playbook: /home/alex/projects/ai-lab/ansible/playbooks/ripgrep.yml` and `PASS: syntax, localhost-only inventory and default removal refusal.`
+- This establishes **operator-reported controller-install and limited static/negative-guard smoke success only**, not role installation, idempotence, post-reboot persistence, negative checks for pre-existing packages, package-removal correctness, or S2 completion.
+- The supplied excerpt does **not** show `git rev-parse HEAD`, the source snapshot/clone baseline, a repeated controller install, package version/dependency freeze or actual role apply. Preserve those gaps as open.
 
 ## First S1 GitHub SSH slice — owner-reported validation (accepted via PR #5)
 
