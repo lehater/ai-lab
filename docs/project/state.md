@@ -16,8 +16,31 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
 | S1-D: Docker/Compose Bootstrap | **FUNCTIONAL INTEGRATED REPLAY OWNER-VERIFIED on `lab-test`** | Owner explicitly confirmed restoring `vmware-tools-ready`, reinstalling S0 → S1 → S1-D from repository scripts, and providing the final PASS logs. Docker Engine 29.9.2, Compose v5.6.1, GitHub SSH, daemon proxy, image pulls and Compose lifecycle succeeded. Operator-assisted reproducibility on the specified VMware baseline; not unattended automation, external LAN isolation or package pinning. |
+| S2 candidate: Ansible local optional host components | **PROPOSED, UNVERIFIED (Draft [PR #15](https://github.com/lehater/ai-lab/pull/15))** | Independent `ansible/` inventory/playbook/role for optional `ripgrep` lifecycle; **not run on lab-test**; does not constitute S2 core, persistent-data or secret-handling acceptance. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
+
+## Proposed Ansible optional host slice — NOT VERIFIED (Draft PR #15)
+
+This is an **unmerged implementation proposal**, not accepted project evidence.
+Ansible Core was preferred after the exploratory comparison in draft
+[PR #14](https://github.com/lehater/ai-lab/pull/14); this PR contains
+a local inventory, one reusable role and documented but **unrun** commands.
+The role manages only `ripgrep` and protects pre-existing packages from
+automatic removal using a root-owned role marker. No Galaxy packages,
+VS Code, Codex sandbox policies, daemon modifications or external cloud
+services are installed by this change. S0/S1/S1-D accepted baselines and
+the S2 service/persistent-data gate remain unaffected.
+
+**Open acceptance on independent `lab-test`:** use the operator procedure
+in [`ansible/README.md`](../../ansible/README.md), perform syntax and
+preview checks, first and repeated install, functional `rg --version`,
+reboot, removal with explicit approval, repeated cleanup, a negative test
+for pre-installed `ripgrep` from a disposable clone, and run regression
+checks for existing `make host-verify`/`make github-verify`/
+`make docker-verify`. Preserve factual PASS/FAIL output, versions, Git
+SHA, snapshot/clone identity, manual actions and limitations **before merge**.
+No such checks are claimed completed by this PR.
 
 ## First S1 GitHub SSH slice — owner-reported validation (accepted via PR #5)
 
