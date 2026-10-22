@@ -1,0 +1,8 @@
+# Local-only credentials and generated operator state
+/.env.local
+/.codex/
+/.mcp.json
+/private/
+/tmp/
+/logs/
+/unsanitized/
