@@ -1,5 +1,13 @@
 # Codex task — author a verifiable n8n workflow via MCP
 
+> **Stage A partially executed on lab-test (2026-10-22). Do not blindly rerun this file from the beginning.**
+> The workflow `0MfgOrrQXujdLHVM` already exists, and its first execution (ID `1`) returned numeric `value:8`.
+> Attempting `setNodeParameter` with an indexed array path was rejected. The factor remains 2, and the workflow was not published.
+> **Read [RECOVERY.md](RECOVERY.md) and [operator results](evidence/2026-10-22-stage-a-operator-report.md) first.**
+> Only after the local Codex sandbox works again should the agent *resume* at the existing-workflow update.
+> The current n8n SDK task contract is retained here as the original test specification, **not** a command to create a second workflow.
+
+
 You are operating against a **disposable local n8n test instance** on lab-test, from Git branch `proposal/workflow-automation-mcp-spike`. **Do not modify or merge `main`. Do not alter the AI Lab S0/S1/S1-D bootstrap.** The purpose is to evaluate the authoring interface, not the business use case.
 
 ## Verified setup facts (owner evidence, 2026-10-22)
@@ -33,7 +41,7 @@ Use only **official instance-level n8n MCP tools** for workflow authoring (no ma
 
 ## Phase 2: modify the same workflow
 
-1. Change factor 2 → 3 **via MCP**, using the discovered `update_workflow` schema and preserving the workflow ID. Do not create a replacement workflow.
+1. Change factor 2 → 3 **via MCP** on the **existing workflow ID `0MfgOrrQXujdLHVM`**, after reading its current node configuration. The attempted indexed `setNodeParameter` path `assignments.assignments[0].value` is unsupported: n8n uses JSON Pointer paths and does not support array indices. Use the documented `updateNodeParameters` operation, passing a complete, validated Set-node parameters object that preserves unrelated fields (e.g., `replace: true` with the full parameters derived from the actual node). Do not create a replacement workflow.
 2. Revalidate, execute, inspect output, and assert numeric `value = 12`.
 3. Preserve the initial and final workflow definition or SDK source as reviewable artifacts; do not store unrelated workflows, credentials or instance secrets.
 4. If the tool cannot return complete workflow definition, record the limitation and possible official export alternative. Do not fabricate a portable artifact.
