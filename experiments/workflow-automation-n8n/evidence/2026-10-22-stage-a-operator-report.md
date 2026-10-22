@@ -151,6 +151,20 @@ echo "Codex sandbox exit: $?"
 
 Expected: exit `0`. Until this is reported, standalone `bwrap` is **PASS** but the Codex sandbox remains **NOT VERIFIED**. No new packages, AppArmor changes, Snap installation or unsandboxed Codex execution are warranted from the exit 101 result.
 
+## Correct Codex sandbox smoke test — PASS (operator log, 2026-10-22)
+
+The operator executed the corrected Codex CLI command:
+
+```text
+$ codex sandbox -- /bin/true
+$ echo "Codex sandbox exit: $?"
+Codex sandbox exit: 0
+```
+
+**Result:** **PASS** for the Codex **CLI sandbox smoke test** on `lab-test` using Codex CLI `0.163.0`. Unlike previous attempts, this test used the correct syntax and was executed by Codex; code `0` confirms sandboxed process startup and completion of `/bin/true`. The AppArmor/user-namespace setting remained `1` in the preceding standalone bwrap check.
+
+**Remaining guard:** a full interactive Codex session has not yet run `pwd && git status --short --branch` inside its ordinary sandbox after this fix. Perform that read-only check (without approving unsandboxed retry) before resuming MCP mutation. No reinstall, global sysctl change, or Docker socket permission change is needed.
+
 ## Next acceptance sequence
 
 1. Repair/test Codex sandbox while **retaining** AppArmor restrictions. See [RECOVERY.md](../RECOVERY.md).
