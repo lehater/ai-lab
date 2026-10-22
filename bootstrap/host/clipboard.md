@@ -11,9 +11,21 @@ Two distinct failure modes must not be conflated:
 - **X11 PRIMARY versus CLIPBOARD.** Selecting text with a mouse may set only PRIMARY; explicit `Copy` or `Ctrl+Shift+C` in a terminal sets CLIPBOARD. These are different selections; Windows uses its normal clipboard.
 - **VMware guest ↔ host synchronization.** Even if the Linux CLIPBOARD is correct, `open-vm-tools-desktop`/VMware may not propagate it to Windows. Broadcom documents limitations with Wayland and recommends X11/Xorg for Workstation/Fusion guest copy/paste.
 
+## Codex built-in copying (no extra software)
+
+Before manually selecting text, try the **existing Codex CLI feature** (documented in the official CLI reference):
+
+- **`/copy`** or **Ctrl+O** copies the latest completed agent response to Ubuntu's native clipboard. A copy inside Ubuntu does not by itself prove VMware propagated it to Windows.
+- **`/raw`** toggles more copy-friendly raw scrollback.
+- **`/tui` → Scrollback** switches away from the fullscreen/alternate-screen experience after restarting Codex, so terminal selection is easier.
+
+These commands are not verified on the operator's running `0.163.0` instance yet; their availability is documented upstream. Avoid `/export` for ad hoc cross-VM clipboard tests if the complete conversation could include secrets.
+
+Primary reference: [Codex CLI developer commands](https://learn.chatgpt.com/docs/developer-commands); [Codex CLI reference](https://learn.chatgpt.com/docs/cli/reference).
+
 ## Smallest observable test, no host changes
 
-1. In the Ubuntu terminal showing a **nonsecret** test string, highlight it with the mouse and press **Ctrl+Shift+C** (do not use plain Ctrl+C, which may signal a terminal process).
+1. In the Ubuntu Codex TUI, try **`/copy`** first with a **nonsecret** completed response and test Windows Ctrl+V. If that does not bridge correctly, highlight nonsecret text with the mouse and press **Ctrl+Shift+C** (do not use plain Ctrl+C, which may signal a terminal process).
 2. Without intermediate editor, switch to Windows and press Ctrl+V in a scratch text field. Repeat using terminal context menu **Copy** if useful.
 3. If it still pastes an older value, run this in the Ubuntu GUI terminal:
 
