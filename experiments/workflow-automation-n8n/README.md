@@ -1,9 +1,8 @@
 # n8n + Codex MCP — disposable experiment
 
-**Status: STAGE A PARTIAL PASS (owner-provided Codex report). Workflow created and first execution returned 8; updating to factor 3 and confirming 12 remain pending.**
+**Latest status (2026-10-22): Stage A reported COMPLETE by operator/Codex, primary local artifacts NOT YET REVIEWED/COMMITTED.** The same workflow `0MfgOrrQXujdLHVM` returned `{"value":8}` (×2) then `{"value":12}` (×3), execution IDs 1 and 2, according to the operator report in [PR #11](https://github.com/lehater/ai-lab/pull/11). The correct `codex sandbox -- /bin/true` smoke test returned 0; interactive read-only sandbox operation was also reported successful. **Do not rerun workflow creation or assume clean-instance replay**. Exact primary evidence files are still local to `lab-test` and have not been independently reviewed. The actionable next step is the [safe closeout procedure](CLOSEOUT.md), **not** further Stage A or Stage B testing.
 
-Branch-only GitHub Actions static validation (Bash syntax, scoped configuration, Docker Compose parsing) succeeded: https://github.com/lehater/ai-lab/actions/runs/39731909135. Additionally, the owner supplied PASS output for Docker prerequisites, n8n container startup, local loopback binding and HTTP health on `lab-test`. See [recorded 2026-10-22 lab-test evidence](evidence/2026-10-22-lab-test-bootstrap.md). Codex is installed and signed in using ChatGPT; a read-only n8n MCP call succeeded, with [51 discovered tools and the response recorded](evidence/2026-10-22-n8n-mcp-connectivity.md). MCP authoring and workflow execution have **not** yet been demonstrated.
-This is **not** an Infrastructure Core service, persistent AI platform, or a verified S3 module. All code belongs to branch `proposal/workflow-automation-mcp-spike` (draft PR #11); do not merge to `main`.
+Previous partial failure and remediation are historical evidence in [Stage A report](evidence/2026-10-22-stage-a-operator-report.md) and [recovery guide](RECOVERY.md); they do not override the later operator-reported outcome. Branch static CI previously passed. This is **not** an accepted Infrastructure Core service or S3 module. All code belongs to experimental Draft PR #11; **no merge to main**.
 
 ## Purpose and responsibilities
 
@@ -14,13 +13,11 @@ This is **not** an Infrastructure Core service, persistent AI platform, or a ver
 
 This is a test of agent-driven **workflow authoring and reproducibility**, not an attempt to replace AI Lab bootstrap scripts, Make or CI with n8n.
 
-## Current recovery gate (2026-10-22)
+## Closeout gate (2026-10-22)
 
-**Do not rerun the original create-workflow task:** workflow `0MfgOrrQXujdLHVM` already exists. Codex reported execution ID `1`, success, and output `{"value":8}`. An attempt to update `assignments.assignments[0].value` failed because n8n's `setNodeParameter` does not accept array indices. The Codex `bwrap` sandbox also fails before local shell commands can run.
+Functional proof-of-concept was reported successful. **Four files under** `evidence/2026-10-22-stage-a/` **remain untracked on lab-test**, and `docs/project/state.md` had an unexpected local modification. Do not pull, switch branches, reset, delete the project, or run the original Codex workflow task before inspecting/preserving them.
 
-See [actual Stage A report](evidence/2026-10-22-stage-a-operator-report.md) and [safe recovery guide](RECOVERY.md). Only resume the update of the **existing** workflow after the sandbox repair. No second execution or output 12 has been verified.
-
-**Do not `git pull` on lab-test yet:** interrupted `apply_patch` may have left partially written local evidence. First inspect `git status --short --branch` in a **normal terminal**, preserve relevant evidence, then reconcile the local checkout and remote experimental branch.
+See [CLOSEOUT.md](CLOSEOUT.md) for the one-block read-only audit, review, safe evidence capture and scoped cleanup requirements. [RECOVERY.md](RECOVERY.md) is a historical troubleshooting guide, not a request to repeat the completed experiment.
 
 ## Preconditions
 
@@ -119,7 +116,7 @@ The approval mode above prompts for write operations. Keep approval enabled; the
 
 ## Codex authoring task
 
-**Original Stage A task (partially completed):** From the experiment branch checkout, open Codex in `~/projects/ai-lab` and read [CODEX_TASK.md](CODEX_TASK.md). **For the current lab-test state, do not repeat creation: follow [RECOVERY.md](RECOVERY.md) and resume updating existing workflow ID `0MfgOrrQXujdLHVM`.** The original minimal workflow:
+**Original Stage A task (reported complete; for historical reference only):** From the experiment branch, Codex was tasked via [CODEX_TASK.md](CODEX_TASK.md). Do **not** rerun creation or mutation for closeout. The original minimal workflow:
 
 - Manual trigger
 - Create a deterministic `value = 4`
@@ -155,7 +152,7 @@ bash experiments/workflow-automation-n8n/lab.sh clean --destroy-experiment-data
 
 ## Verified vs unverified
 
-Static CI passed; **owner-observed** local n8n startup, Codex CLI login and a read-only MCP request passed on lab-test. **Creating, modifying and executing a workflow and clean-volume replay remain unverified** and require running Codex on lab-test. Record actual PASS/FAIL in the experiment branch. Do not update accepted `main` project-state documents from this experiment.
+Static CI passed. **Owner-observed** local n8n startup, Codex CLI login and MCP discovery/read passed on lab-test. **Workflow creation, edit and both executions are reported PASS by owner/Codex in PR #11; the complete raw evidence remains unreviewed and uncommitted.** Git-based export/replay on a clean n8n volume (Stage B) was **not attempted** and is not needed to close the limited functional hypothesis. Use [CLOSEOUT.md](CLOSEOUT.md) before removing data or closing PR #11; do not update accepted `main` project-state documents from this experiment.
 
 ## Sources
 
