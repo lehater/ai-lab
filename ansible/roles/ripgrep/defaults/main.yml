@@ -1,0 +1,9 @@
+---
+# The desired action is explicit: present (default), verify, absent.
+ai_lab_ripgrep_action: present
+
+# Deletion requires separate explicit operator approval.
+ai_lab_ripgrep_allow_remove: false
+
+# Root-owned marker is created only when this role newly installs ripgrep.
+ai_lab_ripgrep_marker_path: /var/lib/ai-lab/ansible/ripgrep.installed
