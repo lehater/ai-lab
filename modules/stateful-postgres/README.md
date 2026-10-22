@@ -1,7 +1,6 @@
 # S2: minimal backup/restore integration candidate
 
-**Draft / NOT RUN on `lab-test`.** Disposable PostgreSQL **17** fixture
-only. PostgreSQL is not a mandatory AI Lab service.
+**First integration test: PASS in operator-reported `lab-test` output (2026-10-22); accepted scope is one known-row backup/restore.** Disposable PostgreSQL **17** fixture only. PostgreSQL is not a mandatory AI Lab service; the test does not certify a general backup system.
 
 ## Why this exists
 
@@ -69,6 +68,23 @@ AI_LAB_ALLOW_PILOT_TEARDOWN=YES bash pilot.sh cleanup
 
 Cleanup does not remove `.env`, `private/db_password.txt`, or backup
 dumps. Treat dumps as potentially containing data and do not commit them.
+
+## Owner-reported `lab-test` result — 2026-10-22
+
+The submitted terminal output showed the primary container healthy, SQL table creation and row insertion, a dump created, an **independent recovery Compose project/volume** created, and then:
+
+```text
+PASS: backup restored and independently read in separate fresh volume.
+Restore-only fixture removed; primary project and local dump retained.
+```
+
+The restore-only container, named volume and network were visibly removed.
+**This is sufficient to accept the narrow integration test**. No extra
+reproduction of built-in Docker/PostgreSQL functions is required.
+
+The excerpt does **not** include exact Git HEAD, image digest, primary
+volume teardown, or clean-snapshot replay. Preserve these as limitations,
+not failed acceptance gates for the one-scenario fixture.
 
 ## Boundaries
 
