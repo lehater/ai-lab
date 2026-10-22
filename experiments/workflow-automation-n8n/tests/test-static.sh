@@ -2,7 +2,8 @@
 # Offline constraints; runtime verification is ./lab.sh verify on lab-test.
 set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-bash -n "$ROOT/lab.sh" "$ROOT/tests/test-static.sh"
+bash -n "$ROOT/lab.sh"
+bash -n "$ROOT/tests/test-static.sh"
 [[ -f "$ROOT/compose.yaml" ]]
 grep -Fq -- '127.0.0.1:5678:5678' "$ROOT/compose.yaml"
 grep -Fq -- 'N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:' "$ROOT/compose.yaml"
