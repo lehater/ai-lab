@@ -28,10 +28,10 @@ ensure_apt_packages() {
     local package
     local missing=()
     for package in "$@"; do
-        dpkg-query -W -f='\u0024{Status}' "$package" 2>/dev/null | grep -qx 'install ok installed' ||
+        dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -qx 'install ok installed' ||
             missing+=("$package")
     done
-    (("$(printf '%s\n' "${missing[@]}" | sed '/^$/d' | wc -l)" == 0)) && return 0
+    (("${#missing[@]}" == 0)) && return 0
     [[ -f /etc/apt/apt.conf.d/80proxy ]] ||
         fail 'S0 APT proxy configuration not found; run accepted S0 first.'
     note "Installing required Ubuntu packages: ${missing[*]}"
@@ -129,7 +129,7 @@ ensure_sandbox() {
             fail "Existing profile differs from packaged profile: $PROFILE_TARGET"
     else
         # Refuse competing local policies that mention the bwrap executable.
-        if sudo grep -RIl --include='*.profile' '/usr/bin/bwrap' /etc/apparmor.d 2>/dev/null | grep -q .; then
+        if sudo grep -RIl --exclude='bwrap-userns-restrict' --exclude-dir='cache' '/usr/bin/bwrap' /etc/apparmor.d 2>/dev/null | grep -q .; then
             fail 'Another local AppArmor policy references bwrap; manual review required.'
         fi
         sudo install -m 0644 -- "$PROFILE_SOURCE" "$PROFILE_TARGET"
