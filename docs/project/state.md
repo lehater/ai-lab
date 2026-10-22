@@ -21,6 +21,21 @@ It is **not** a substitute for code, tests, or evidence.
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
+## S2 reality check — 2026-10-22 (read-only Git audit, not a new test)
+
+**Basis:** merged `main` at `7acf9fd10401bdaa0278ff9fde849b5f23f3690a`, the complete tracked file tree, this state, the roadmap and D-012. **No lab VM was accessed for this audit.** No open PRs were found at this checkpoint.
+
+| S2 dimension | Actual accepted evidence | Missing claim / need |
+| --- | --- | --- |
+| Host-level optional components | Local Ansible Core plus one owner-tested `ripgrep` lifecycle ([PR #15](https://github.com/lehater/ai-lab/pull/15)) | Does not establish a required catalog or justify adding unused host tools. |
+| Module config and lifecycle | Compose/Make for Docker; one disposable versioned PostgreSQL recovery fixture ([PR #20](https://github.com/lehater/ai-lab/pull/20)) | No **adopted real consumer** or independently reused research-environment definition in this repository. A generic orchestrator is not justified. |
+| State and recovery | Local `pg_dump` → `pg_restore` into a separate fresh volume and independent read of known data: owner-reported **PASS** | Not a shared backup system, off-host retention policy, or recovered production workload. |
+| Secrets | Scoped gitignored password file with Compose file-backed secret in the disposable fixture | No common secret lifecycle, required rotation, or evidence of multiple consumers. Does **not** automatically justify Vault/KMS. |
+| Health / diagnostics | Existing S0/S1/S1-D verification commands and fixture-specific Compose health/SQL evidence | No defined service-level diagnostic contract for an actual application. Do **not** implement a central monitoring stack without service requirements. |
+| AI/research consumer | No runnable AI application or reusable consumer environment is tracked in `main` | **Primary planning dependency:** choose one independent real workload, then identify what existing Compose/Ansible cannot support. |
+
+**Assessment:** S2 remains **IN PROGRESS / scope-limited capabilities accepted**. The next useful step is **requirements elicitation from a real consumer**, not another demo, extra control plane, or an attempt to repeat vendor tests. This is a planning finding, **not** a new binding architectural decision. Existing S0/S1/S1-D statuses remain unchanged.
+
 ## Stateful Compose fixture — scoped operator-reported recovery evidence (PR #20)
 
 **Environment:** `alex@lab-test`, 2026-10-22, terminal log supplied by operator. The log contains the terminal output of `bash pilot.sh test` (the preceding exact Git checkout SHA, `bash -n` and `init` outputs were not supplied in this excerpt). No claim of assistant-side execution.
@@ -157,7 +172,7 @@ Owner-reported console evidence on `lab-test`, 2026-10-21, for [PR #5](https://g
 
 **Limits:** owner confirmed full clean-snapshot S0 → S1 completion and automatic proxy launch but did not provide the complete installation command/output transcript; the GitHub browser's actual page load and first-time new-key generation were not independently observed. First SSH transport slice is accepted via PR #5; complete S1 host provisioning and S1-D are not implemented/accepted by this evidence. Evidence derives from the owner's observations and logs, not remote execution by the assistant.
 
-## Next work — S1-D Docker host candidate
+## Historical S1-D Docker host candidate — superseded by accepted S1-D replay
 
 - After accepted PR #5, the roadmap's **narrow functional S1 exit criterion**
   has owner-provided clean-VM setup, rerun, GitHub SSH and post-reboot evidence.
@@ -371,15 +386,11 @@ is retained in [bootstrap/README.md](../../bootstrap/README.md).
 
 ## Active work / handoff
 
-1. S0, the first S1 GitHub SSH module, and Docker/Compose S1-D have
-   owner-verified functional replay evidence from restored `lab-test`.
-   Their specific accepted scopes and manual steps remain documented.
-2. Full S1-D functional installation has been demonstrated; do not
-   continue researching mandatory container proxy-only networking
-   without a concrete workload (D-011).
-3. Evaluate the next infrastructure increment S2 against an actual
-   research requirement. Preserve repeatability and explicit
-   qualification of all security and portability claims.
+1. **Accepted baseline:** owner-verified S0 offline bootstrap, first S1 Git SSH slice, integrated S1-D Docker/Compose replay, and the first Ansible host-role lifecycle ([PR #15](https://github.com/lehater/ai-lab/pull/15)) within their documented limits. **Do not restart these milestone investigations without a relevant regression risk.**
+2. **Newly accepted S2 proof:** [PR #20](https://github.com/lehater/ai-lab/pull/20) demonstrated the **custom script's** backup/restore into separate fresh storage with an independently read test row. The original PostgreSQL pilot container/volume and local dump were **left on `lab-test`**, according to the operator log; current runtime state has not been re-queried. Do not clean or mutate that host without operator direction.
+3. **Current gap / next action:** identify **one actual research/AI workload** that will consume the lab. State its owner, purpose, intended runtime, required persistence/secrets/network/diagnostics and an observable success criterion. Historical n8n/Codex experiments are possible references, **not** automatically selected mandatory core modules. If existing Git + Compose + Ansible satisfy the consumer, deploy using them; **create a new AI Lab infrastructure PR only for a demonstrable reusable gap**.
+4. **S2 status stays open:** no generalized secrets, stateful-service recovery policy, shared diagnostic contract, or reusable consumer environment is accepted. Their urgency depends on actual consumers. The accepted host/sandbox security boundaries and risk-based verification instructions remain in force. There were **no open PRs** at this documentation audit.
+
 ## Status vocabulary
 
 - **NOT STARTED / NOT IMPLEMENTED**: no committed, verified implementation.
