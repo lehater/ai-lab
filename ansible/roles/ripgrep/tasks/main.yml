@@ -2,9 +2,9 @@
 - name: Check target platform and action
   ansible.builtin.assert:
     that:
-      - ansible_distribution == 'Ubuntu'
-      - ansible_distribution_version == '24.04'
-      - ansible_architecture == 'x86_64'
+      - ansible_facts['distribution'] == 'Ubuntu'
+      - ansible_facts['distribution_version'] == '24.04'
+      - ansible_facts['architecture'] == 'x86_64'
       - ansible_connection == 'local'
       - ai_lab_ripgrep_action in ['present', 'verify', 'absent']
     fail_msg: >-
