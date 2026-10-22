@@ -25,14 +25,14 @@ It is **not** a substitute for code, tests, or evidence.
 This is an **unmerged implementation proposal**, not accepted project evidence.
 Ansible Core was preferred after the exploratory comparison in draft
 [PR #14](https://github.com/lehater/ai-lab/pull/14); this PR contains
-a local inventory, one reusable role and documented but **unrun** commands.
+a local inventory, a guarded `pipx` controller setup pinned to **ansible-core 2.21.5** (upstream supported, unlike Ubuntu Noble's 2.16.x archive package), one reusable role, a read-only negative-guard smoke and documented but **unrun** commands.
 The role manages only `ripgrep` and protects pre-existing packages from
 automatic removal using a root-owned role marker. No Galaxy packages,
 VS Code, Codex sandbox policies, daemon modifications or external cloud
 services are installed by this change. S0/S1/S1-D accepted baselines and
 the S2 service/persistent-data gate remain unaffected.
 
-**Open acceptance on independent `lab-test`:** use the operator procedure
+**Open acceptance on independent `lab-test`:** Ansible controller setup and verification require PyPI access via the operator's existing trusted proxy; this is not implied by S0 APT connectivity. A failed download is a BLOCKED step rather than a reason to adopt unmaintained Ansible 2.16. Use the operator procedure
 in [`ansible/README.md`](../../ansible/README.md), perform syntax and
 preview checks, first and repeated install, functional `rg --version`,
 reboot, removal with explicit approval, repeated cleanup, a negative test
