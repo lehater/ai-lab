@@ -68,13 +68,15 @@ export PATH="$HOME/.local/bin:$PATH"
 hash -r
 command -v codex
 codex --version
-codex sandbox linux /bin/true
+codex sandbox -- /bin/true
 echo "codex sandbox exit code: $?"
 ```
 
-**Actual check so far (operator output, 2026-10-22):** profile file exists, `aa-status` reports `bwrap` and `unpriv_bwrap`, AppArmor restriction remains `1`, and standalone `bwrap` exits `0`. The Codex-specific check returned `127` **only because `codex` was not in this shell's PATH**. The commands above correct PATH before testing; they do not reinstall Codex or modify kernel settings. Confirm Codex sandbox exit `0` before marking recovery PASS.
+**Actual checks so far (operator output, 2026-10-22):** profile file exists, `aa-status` reports `bwrap` and `unpriv_bwrap`, AppArmor restriction remains `1`, and standalone `bwrap` exits `0`. The first Codex check returned `127` because `codex` was not on `PATH`. After fixing `PATH`, `codex --version` succeeded (`0.163.0`), but our earlier **incorrect** command `codex sandbox linux /bin/true` caused `Failed to execvp linux: No such file or directory` (exit `101`). This is a command-line syntax error: `linux` was treated as the executable, not a subcommand. The documented command is **`codex sandbox -- /bin/true`**. Codex's own sandbox smoke test remains **NOT YET TESTED CORRECTLY** until that command exits `0`. No further AppArmor adjustments should be made solely because of exit `101`.
 
-If the CLI's sandbox subcommand syntax differs in `0.163.0`, inspect `codex sandbox --help` and adapt; do **not** disable sandboxing to make the test pass. Completely exit and restart Codex (or restart its daemon if applicable), then use a **read-only** repository command inside Codex, confirming no unsandboxed retry prompt.
+Reference: [Codex CLI reference — Linux sandbox](https://learn.chatgpt.com/docs/cli/reference).
+
+If the CLI's sandbox syntax is different in the installed `0.163.0`, inspect `codex sandbox --help` before rerunning; do **not** disable sandboxing to make the test pass. Completely exit and restart Codex (or restart its daemon if applicable), then use a **read-only** repository command inside Codex, confirming no unsandboxed retry prompt.
 
 Reference: https://learn.chatgpt.com/docs/sandboxing (Linux/WSL2 prerequisites). Caveat about bwrap profile collisions: https://github.com/openai/codex/issues/38715. Known identical error: https://github.com/openai/codex/issues/15057.
 
