@@ -59,7 +59,7 @@
 
 - name: Prepare signed Microsoft APT repository
   ansible.builtin.import_tasks: prepare.yml
-  when: ai_lab_vscode_action == 'prepare' or (ai_lab_vscode_action == 'present' and ('code' not in ansible_facts.packages or ai_lab_vscode_package_mark.stat.exists))
+  when: ai_lab_vscode_action == 'prepare' or (ai_lab_vscode_action == 'present' and 'code' not in ansible_facts.packages)
 
 - name: Install exact requested VS Code package
   ansible.builtin.import_tasks: present.yml
