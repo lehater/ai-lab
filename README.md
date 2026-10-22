@@ -20,6 +20,7 @@ The deliverables are reusable infrastructure modules, versioned configurations a
 - [Observed environment](docs/current-environment.md) — manually configured reference VM, not clean-VM IaC proof.
 - [USB quick start](bootstrap/README.md) — ordered S0 → S1 operator runbook, carried on USB with `bootstrap/`.
 - [Stage 0 bootstrap](bootstrap/stage0/README.md) — limited, independently tested offline VMware bootstrap.
+- [Optional Codex developer tool (proposal)](bootstrap/devtools/codex/README.md) — candidate CLI installer, Linux sandbox verification and VS Code workbench options; **not accepted or default**.
 
 ## Operational commands (first S1 slice)
 
