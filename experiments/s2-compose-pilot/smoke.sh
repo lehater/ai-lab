@@ -41,6 +41,15 @@ cleanup() {
         echo "ERROR: cleanup failed for $primary; inspect it manually" >&2
         status=1
     }
+    # Check the actual post-teardown Docker state, not just the 'down' exit code.
+    for project in "$primary" "$recovered"; do
+        if [[ -n "$(sudo docker ps -aq --filter "label=com.docker.compose.project=$project")" ]] ||
+           [[ -n "$(sudo docker volume ls -q --filter "label=com.docker.compose.project=$project")" ]] ||
+           [[ -n "$(sudo docker network ls -q --filter "label=com.docker.compose.project=$project")" ]]; then
+            echo "ERROR: project resources remain after teardown: $project" >&2
+            status=1
+        fi
+    done
     rm -rf "$tmp"
     if (( status == 0 )); then
         echo 'PASS: S2.1 secret, health, no published ports, persistence, logical backup/restore and cleanup.'
