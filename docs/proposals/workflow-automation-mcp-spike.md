@@ -16,7 +16,7 @@ This is **not** a proposal to orchestrate S0/S1/bootstrap through n8n. Make, she
 
 - Runtime: isolated **self-hosted n8n** in a short-lived Docker Compose project on lab-test, using its bundled/default database and a project-scoped persistent volume. No PostgreSQL, Supabase, LiteLLM, Eggent, public VPS or reverse proxy.
 - Network: publish the editor/MCP port **only on 127.0.0.1** of the test machine. Verify actual host binding. Do not assume local-only binding establishes LAN isolation.
-- Client: **Codex CLI** with official n8n built-in MCP. Run Codex in the same VM or explicitly document an operator-controlled transport from the Codex host; never assume localhost on a remote agent refers to lab-test.
+- Client: **Codex CLI** with official n8n built-in MCP. Codex was **absent on lab-test** after S1-D; the experimental branch now includes `experiments/workflow-automation-n8n/codex-setup.sh` to install pinned `@openai/codex@0.163.0` in the operator's home directory using Ubuntu APT for missing Node/npm and S0's npm proxy. Run Codex in the same VM or explicitly document an operator-controlled transport from the Codex host; never assume localhost on a remote agent refers to lab-test.
 - Identity: operator creates the n8n owner and enables instance-level MCP, then issues an **MCP API key** (not the separate n8n public REST API key). Those steps are manual prerequisites, not unattended installation.
 - Secrets: MCP token and n8n encryption key outside Git; Codex HTTP MCP bearer token read from a local environment variable, never embedded in the repo or logs. Use an isolated instance and explicitly approve state-changing MCP operations.
 - Versioning: fix and record a concrete n8n image version/digest for the trial, installed Codex version, Workflow SDK/tool capabilities, and baseline Git SHA.
@@ -37,7 +37,7 @@ MCP is a **control interface**, not the workflow execution engine. No agent proc
 
 ### Stage A — prove agent-driven authoring before investing in a module
 
-1. On lab-test, record Git HEAD, Docker/Compose and Codex versions, n8n image identity. Verify S1-D prerequisites with the existing Make checks.
+1. On lab-test, record Git HEAD, Docker/Compose and n8n image identity, and verify S1-D prerequisites. Install/verify Codex with the experimental user-local script; operator signs in with ChatGPT or another supported method. Record Node/npm/Codex versions and whether the proxy works. Do not mark authentication complete until actually tested.
 2. Start an isolated n8n Compose project with a project-scoped volume and loopback-only binding. Record container startup/health and port exposure. Do not change existing AI Lab Docker proxy or default networking decisions (D-011).
 3. Operator initializes the owner account, enables Instance-level MCP, creates the instance MCP token. Configure Codex Streamable HTTP MCP with a **local** bearer-token environment variable. Confirm MCP tool discovery; record names and count, not tokens.
 4. Ask Codex to construct a **manual/test-triggered** workflow without outside dependencies. Example: a fixed input value 4 is transformed to value 8, with a machine-checkable JSON result.
@@ -85,4 +85,4 @@ The branch now contains a disposable n8n Compose harness, scoped Bash lifecycle 
 - Official n8n announcement: https://blog.n8n.io/n8n-mcp-server/
 - Codex MCP client and bearer-token configuration: https://learn.chatgpt.com/docs/extend/mcp?surface=cli
 
-**This document is an experimental plan with prepared launch assets, not a claim that any n8n/Codex integration has been installed or tested on lab-test.**
+**Current evidence:** Docker/Compose + n8n 2.44.5 startup and HTTP health were owner-verified on lab-test on 2026-10-22 (see `experiments/workflow-automation-n8n/evidence/2026-10-22-lab-test-bootstrap.md`). Codex installation, login, MCP access, agent-authored execution and clean-instance replay remain **NOT TESTED**.
