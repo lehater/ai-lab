@@ -110,6 +110,11 @@ its AI Lab ownership marker. A failed or interrupted install can leave a
 package without a marker; then manual inspection is required, **not**
 automatic removal. The role never uses APT autoremove/purge, never removes
 shared repositories, and does not delete the marker directory.
+**APT can install transitive dependencies** when satisfying the pinned package,
+and a removal plan may reveal other dependency effects; inspect actual APT
+output before approval. Disabling `autoremove` does **not** certify that
+no other package could ever be affected. The marker protects the target
+package from unintended removal, not all shared dependencies.
 
 ## Mandatory acceptance checks before claiming VERIFIED
 
