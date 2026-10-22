@@ -45,7 +45,7 @@ bash -n pilot.sh
 bash pilot.sh init
 # Review private .env before using it. In this first proposal:
 # POSTGRES_IMAGE=postgres:17 is a moving MAJOR tag (NOT digest-pinned).
-cat .env
+grep '^POSTGRES_IMAGE=' .env
 bash pilot.sh config
 bash pilot.sh test
 
