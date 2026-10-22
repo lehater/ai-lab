@@ -25,13 +25,25 @@ For each new or changed module/template, use a risk- and scope-appropriate accep
 | Engineering dimension | Minimum expectation, progressing with scope |
 | --- | --- |
 | **IaC & change control** | Version configuration and deployment code in Git; record versions, dependencies and explicitly required manual steps; review changes through PRs. |
-| **Reproducibility & automation** | Provide controlled installation/configuration commands and a clean-baseline verification procedure; test reruns, reboot persistence or teardown where applicable. |
+| **Reproducibility & automation** | Provide controlled installation/configuration commands and a declared baseline; test reruns, reboot persistence or teardown **only where the change's own contract or concrete risk requires it**. |
 | **Verification** | Define independent, repeatable acceptance checks and retain results with the environment/revision; do not confuse writing a check with successfully running it. |
 | **Security** | Keep secrets outside Git, minimize privileges and exposed network surfaces, evaluate risk, document deliberate deferrals and test relevant boundaries. |
 | **Operability & recovery** | Provide sufficient diagnostics to identify failures, an appropriate reset/rollback or recovery procedure, and explicit known limitations. |
 | **Portability** | Isolate environment-specific settings; state exactly which operating systems/hypervisors have actually been tested. Extend support only after verification. |
 
 The depth of these controls grows with **risk, complexity and reuse**, not with a calendar or a fixed certification checklist. CI, centralized observability, advanced policy and other enterprise practices are candidates for incremental adoption when a concrete control gap justifies them.
+
+### Risk-based verification: test our uncertainty, not known platform features
+
+Before adding an acceptance test, write down **the specific failure in our code/configuration that the test can detect**. Use official upstream documentation for mature, already-supported capabilities such as Docker volumes, PostgreSQL dump/restore, APT and Ansible modules; do not rebuild vendor conformance suites.
+
+- **Standard documented behavior:** cite the contract, no proof-of-technology experiment. A static `config` or syntax check is enough when the work merely expresses a known configuration.
+- **Our integration:** one smallest decisive end-to-end check of the uncertainty (for example, *our* dump restored into **different empty storage** and actually queried), not repeated demonstrations of individual Docker/PostgreSQL primitives.
+- **Risky actions** (secrets, destructive cleanup, data loss, trust boundaries): keep narrow preconditions/guards and verify the failure mode where we introduce custom logic. Avoid unrelated certification-style test matrices.
+- **Regression:** rerun affected accepted checks only when the change can actually alter that contract; do not reflexively replay the entire S0 → S1-D clean-VM bootstrap for an isolated Compose fixture.
+- **Evidence:** record one real PASS/FAIL with revision/environment and explicit limits. A documented feature is not evidence that *our script* ran; an unexecuted pilot is not VERIFIED.
+
+Tests should be proportionate to change risk and answer concrete acceptance questions; **test volume is not a maturity metric**. Do not introduce a second component merely to test an already-proven installer abstraction.
 
 **Stage-specific verification emphasis** (additive, not a replacement for the cross-cutting contract):
 
@@ -52,7 +64,7 @@ Record actual pass/fail evidence and remaining gaps in [state](state.md), not a 
 
 **Accepted first host-manager slice:** [merged PR #15](https://github.com/lehater/ai-lab/pull/15) provides a pinned, local Ansible Core controller, localhost inventory and an owner-tested `ripgrep` installation/verify/rerun/cleanup lifecycle. Decision **D-012** accepts Ansible as the S2 mechanism for *new optional host-managed components*. This does **not** retroactively make Ansible necessary to run the existing S0/S1/S1-D bootstrap, replace Compose, or certify the complete S2 milestone.
 
-**Next separately scoped work:** (a) optionally exercise the host-role contract with a practical Ubuntu workstation tool (VS Code), including upstream licensing/repository key provenance, pre-existing installation safety, rerun and removal; **do not** mark it verified before `lab-test` testing; (b) in an independent PR, deliver a disposable **stateful Docker Compose service** with explicit secret handling, persistent data across recreation, a separate-storage backup/restore test, health checks and non-destructive teardown. Continue treating PostgreSQL or other fixture as a **test consumer**, not a general S2-required database.
+**Current priority:** [PR #19 — optional VS Code role](https://github.com/lehater/ai-lab/pull/19) is **closed without merge**: no identified consumer needs managed VS Code deployment; the already accepted Ansible role does not require further artificial demonstrations. [Draft PR #20 — minimal backup/restore integration](https://github.com/lehater/ai-lab/pull/20) remains an **unverified candidate**. Its only decisive runtime question is whether **our own script** creates a backup and correctly restores its known data into a separate empty volume. PostgreSQL is only a disposable test fixture, not a required AI Lab database. Do not merge or claim S2 acceptance without observing that integration result.
 
 **Remaining initial Ansible pilot evidence gaps:** negative scenario for a pre-existing unmanaged `ripgrep`, explicit post-reboot package functional verification, repeat controller-bootstrap and pipx dependency freeze; track independently without delaying unrelated S2 work.
 
