@@ -46,34 +46,22 @@ The depth of these controls grows with **risk, complexity and reuse**, not with 
 
 Record actual pass/fail evidence and remaining gaps in [state](state.md), not a speculative aggregate Enterprise-grade score. **Maturity work continues after S4** without requiring a new numbered final stage.
 
-## First infrastructure vertical slice
+## Current next infrastructure slice — S2 (proposed, not verified)
 
-Use current S1 Host Bootstrap as the next *small independently testable infrastructure improvement*: configuration in Git → command-driven provisioning → repeat/reboot checks → verification on `lab-test` → saved evidence. Document any necessary operator step rather than describing it as fully unattended IaC.
+**Accepted baseline:** S0 → first S1 GitHub SSH module → S1-D Docker/Compose are owner-verified in their recorded scopes. The historical S1 setup/replay procedure is retained below as evidence; repeating it is a regression check, **not** a reason to restart the S1 milestone.
 
-Reusable modules and templates should be built from observed needs, not from a preselected AI scenario. A research project may independently use the lab at any stage for which its prerequisites and checks are available; such use does not change the laboratory mission or prematurely complete a milestone.
+The next implementation candidate is [PR #15](https://github.com/lehater/ai-lab/pull/15), a **Draft/UNVERIFIED** local Ansible Core + `ripgrep` lifecycle slice. It is based on the [exploratory comparison of optional component managers](../research/2026-10-22-optional-components-lifecycle.md). No Ansible host-manager decision becomes accepted merely by merging the research.
 
-## Next iteration — S1 Host Bootstrap
+**Next gate on `lab-test`:** evaluate operator-owned localhost inventory, controller installation, explicit `present / verify / absent`, dry-run limits, rerun/idempotence, ownership safety of pre-existing packages, reboot/teardown and old S0/S1-D regression. Record actual command outputs, version/digest and controlled cleanup before requesting implementation acceptance. A new Codex host option is a separate later slice **only if needed**, informed by [Codex VM findings](../research/2026-10-22-codex-ubuntu-vm-findings.md).
 
-**Objective:** On the `lab-test` VMware Ubuntu that has completed S0,
-prepare a usable, secure, reproducible development host **without relying
-on machine-local undocumented actions**.
+## Historical proposed S2/S3 probes — deferred, not accepted implementation
 
-Proposed thin slice:
+Two earlier candidates are not active infrastructure work; their untested code and platform-specific choices are **not merged into `main`**:
 
-1. Define `bootstrap/host/` entrypoint and module boundaries:
-   prerequisites, configurable inputs, idempotence, and `verify.sh`.
-2. Configure/verify developer tooling and **GitHub SSH through proxy**,
-   including a user-authorized public-key registration procedure.
-   Public HTTPS clone already works in S0; avoid repeating it.
-3. Keep host networking/apt baseline compatible with S0 and document
-   which settings belong to which stage; do not duplicate proxy installation.
-4. Verify the host module on `lab-test` and rerun it to catch
-   unintended overwrites.
+- [PR #9 — stateful Docker Compose pilot](https://github.com/lehater/ai-lab/pull/9) was closed **without merge** and **without `lab-test` runtime validation**. The portable *acceptance questions* remain useful for S2: a representative stateful service should demonstrate private secret handling, health/readiness, persistent data across recreation, scoped backup and restoration into **separate fresh storage**, no unintended published ports, and complete **project-specific** teardown without global `docker prune`. A disposable PostgreSQL 17 fixture was one proposed test mechanism, **not** a database requirement or a proven recovery system. Do not represent planned smoke scripts as actual PASS results.
+- [PR #10 — first optional local inference candidate](https://github.com/lehater/ai-lab/pull/10) proposed a disposable **Ollama CPU** probe (`qwen3:1.7b`) on the Docker baseline; it was **not run, accepted or selected as a mandatory S3 module**. Valuable future checks: a named AI consumer, RAM/CPU/disk and model download viability, exact image/model versions and digests, response correctness/latency, and bind-only-to-loopback API exposure. In particular, **Docker daemon registry proxying does not automatically provide outbound network access from inside a model container**. Do not weaken the host proxy or expose the unauthenticated Ollama API on LAN merely to get a demo running. Select the concrete model/runtime later when a consumer justifies it.
 
-**Acceptance:** from the S0-completed test snapshot, host bootstrap runs
-and passes its stated checks; configuration survives reboot where relevant;
-rerun does not damage existing settings. Record exact commands, output and
-limitations in [state](state.md).
+These are **deferred verification requirements**, not an instruction to resume either old PR or preserve their working branches. Small clean-environment tests should be proposed anew once their requirements are relevant.
 
 ## S1-D — functional integrated replay verified on lab-test
 
