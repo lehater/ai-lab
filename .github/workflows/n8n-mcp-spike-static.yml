@@ -1,0 +1,26 @@
+name: n8n MCP spike — branch-only static checks
+
+on:
+  push:
+    branches:
+      - proposal/workflow-automation-mcp-spike
+    paths:
+      - experiments/workflow-automation-n8n/**
+      - .github/workflows/n8n-mcp-spike-static.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Bash syntax and scoped configuration
+        run: bash experiments/workflow-automation-n8n/tests/test-static.sh
+      - name: Parse Docker Compose without starting any services
+        env:
+          N8N_ENCRYPTION_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        run: docker compose --file experiments/workflow-automation-n8n/compose.yaml config --quiet
