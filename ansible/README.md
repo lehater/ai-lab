@@ -9,7 +9,8 @@ S0 → S1 → S1-D bootstrap.
 
 - `ansible-core` (no AWX/server) runs locally in the Ubuntu 24.04 Desktop
   VMware guest. The operator installs ansible-core **after** the accepted
-  bootstrap, from Ubuntu's own APT repository.
+  bootstrap via the isolated user-level `pipx` environment and a pinned,
+  currently upstream-maintained version. Only `pipx` comes from Ubuntu APT.
 - A first optional, low-risk component: [ripgrep](roles/ripgrep/README.md).
   This role establishes a reusable *present → verify → absent* pattern.
 - No third-party Galaxy content, Ubuntu PPA, extra API keys, Docker changes,
@@ -35,24 +36,58 @@ working snapshot, do not modify the manually configured reference `lab`.
 First reproduce the accepted S0/S1/S1-D path documented in
 [`bootstrap/README.md`](../bootstrap/README.md).
 
-Install ansible-core (requires access to the Ubuntu **universe** repository,
-working S0 APT proxy, and normal Ubuntu package signatures). No new PPA or
-vendor account is required. The Ubuntu 24.04 archive currently provides
-ansible-core 2.16.x; record the **actual installed version** and review its
-maintenance status before treating it as long-term pinned production tooling.
-The example role **pins the Ubuntu Noble `ripgrep` package to `14.1.0-1`** from the official archive; the Ansible controller package remains unpinned in this first slice and must be recorded at acceptance. If the exact role version disappears from configured APT repositories, the role must fail rather than silently upgrade.
+**Controller version and security.** Ubuntu 24.04 Noble `universe`
+offers `ansible-core 2.16.3` [Ubuntu package], while Ansible upstream
+ended maintenance of the 2.16 branch in **July 2025**. Using that package
+as our future-proof 2026 management foundation would be a mistake.
+Instead, we pin **`ansible-core==2.21.5`**, released **2026-10-05**, which
+supports the Ubuntu 24.04 system Python **3.12** and is upstream-maintained
+until November 2027. This is a deliberate version decision and will
+need routine review before that date.
+
+Install `pipx` and its dependencies **from signed Ubuntu APT**, then install
+Ansible into an isolated **non-root pipx virtual environment** from PyPI.
+No Ansible PPA, Ubuntu system-Python `pip --break-system-packages`,
+commercial Red Hat AAP subscription, Galaxy collection or background
+control plane is required. The first slice's
+[`controller-setup.sh`](controller-setup.sh) only performs these steps.
+It **does not** change S0's proxy settings or silently replace an existing,
+different Ansible executable. Review the script before running it.
+
+**Network precondition:** successful APT through the existing S0 proxy
+does **not** imply PyPI works through `pipx`. If direct PyPI fails, configure
+standard `HTTPS_PROXY`/`HTTP_PROXY` **for that operator shell** through an
+already approved local S0 proxy endpoint, without committing proxy
+credentials or changing system-wide networking. If no trusted PyPI access
+is available, stop and record the blocked step; do not use `curl | bash`
+or invent an alternate package mirror.
+
+The example role **pins Ubuntu Noble `ripgrep=14.1.0-1`** from the
+official archive. Missing or changed versions cause a visible error
+rather than an automatic upgrade. Ansible's direct version is pinned;
+transitive PyPI dependency versions are recorded with
+`pipx runpip ansible-core freeze` during acceptance, not yet locked
+by hashes in this first slice.
 
 ```sh
-sudo apt-get update
-sudo apt-get install --no-install-recommends ansible-core
-ansible-playbook --version
-
 cd ~/projects/ai-lab
 git rev-parse HEAD
 git branch --show-current
 cd ansible
 
-# Discovery and static validations (no package installation).
+# Controller install only: inspect this script before executing!
+bash ./controller-setup.sh
+export PATH="$HOME/.local/bin:$PATH"
+~/.local/bin/ansible-playbook --version
+pipx runpip ansible-core freeze
+
+# Repeat setup: MUST detect the same version without replacing it.
+bash ./controller-setup.sh
+
+# Read-only smoke: syntax, localhost inventory, removal guards.
+bash tests/test-offline.sh
+
+# Discovery and static validations.
 ansible-inventory --list
 ansible-playbook playbooks/ripgrep.yml --list-hosts
 ansible-playbook playbooks/ripgrep.yml --syntax-check
@@ -70,6 +105,9 @@ ansible-playbook playbooks/ripgrep.yml --ask-become-pass
 ansible-playbook playbooks/ripgrep.yml -e ai_lab_ripgrep_action=verify
 rg --version
 ```
+
+This is intentionally a **post-bootstrap** management tool: not required
+to recover S0, and not evidence of S2 service/data/secret acceptance.
 
 `--ask-become-pass` prompts locally if the operator's sudo policy requires
 a password. Do not commit the sudo password or use `-e` to pass credentials.
@@ -120,7 +158,7 @@ package from unintended removal, not all shared dependencies.
 
 | Case | Expected result | Status |
 | --- | --- | --- |
-| Fresh `lab-test` after S0/S1/S1-D | No changes to baseline; ansible-core install and local-only inventory succeed | **NOT RUN** |
+| Fresh `lab-test` after S0/S1/S1-D | No changes to baseline; isolated pipx Ansible 2.21.5 install, repeat, exact version, dependency freeze and localhost inventory succeed | **NOT RUN** |
 | `--syntax-check` and `--check --diff` | Syntax valid; preview documents expected changes | **NOT RUN** |
 | First `present` | Install ripgrep; create *only* role ownership marker; `rg --version` works | **NOT RUN** |
 | Second `present` | No role-managed package or marker changes | **NOT RUN** |
@@ -151,5 +189,10 @@ Official upstream references:
 - https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/apt_module.html
 - https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html
 - https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html
-- https://packages.ubuntu.com/noble/ansible-core\n- https://packages.ubuntu.com/noble/ripgrep
+- https://packages.ubuntu.com/noble/ansible-core
+- https://packages.ubuntu.com/noble/ripgrep
+- https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html
+- https://docs.ansible.com/projects/ansible/latest/intro_installation.html
+- https://pipx.pypa.io/latest/how-to/install-pipx.html
+- https://forum.ansible.com/t/new-release-ansible-core-v2-21-5/46415
 - https://github.com/BurntSushi/ripgrep
