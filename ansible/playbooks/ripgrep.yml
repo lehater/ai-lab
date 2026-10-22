@@ -1,0 +1,7 @@
+---
+- name: AI Lab optional host tool - ripgrep
+  hosts: ai_lab_local
+  gather_facts: true
+  become: false
+  roles:
+    - role: ripgrep
