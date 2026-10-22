@@ -21,7 +21,7 @@ ensure_inputs() {
 }
 do_init() {
   command -v openssl >/dev/null || fail "openssl missing."
-  [[ ! -L private && ! -L .env ]] || fail "Refusing symlinked local configuration."
+  [[ ! -L private && ! -L private/backups && ! -L .env ]] || fail "Refusing symlinked local configuration."
   (umask 077; mkdir -p private/backups)
   chmod 0700 private private/backups
   if [[ ! -e private/db_password.txt && ! -L private/db_password.txt ]]; then
