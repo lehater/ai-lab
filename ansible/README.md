@@ -167,10 +167,10 @@ package from unintended removal, not all shared dependencies.
 | Independent `rg --version` | `ripgrep 14.1.0` independently observed | **PASS, OWNER-REPORTED 2026-10-22** |
 | Reboot + post-reboot `verify` | Package and command persist after reboot | **NOT RUN** |
 | `absent` without approval | Read-only smoke confirmed explicit approval guard rejects missing consent. Repeat during full role E2E | **PASS IN OFFLINE SMOKE ONLY** |
-| `absent` after this role installed package | Remove package, preserve unrelated APT packages, no `autoremove`; second run no-op | **NOT RUN** |
+| `absent` after this role installed package | Explicit approval and ownership guard PASS; package + marker removed (`ok=13 changed=2 failed=0`) and second approved removal no-op (`ok=8 changed=0 failed=0`) | **PASS, OWNER-REPORTED 2026-10-22** |
 | Pre-existing `ripgrep`, **no** AI Lab marker | Install action does not claim ownership; cleanup refuses to remove it | **NOT RUN** |
-| Absent package and absent marker | Repeated approved cleanup is a no-op | **NOT RUN** |
-| Regression on existing S0/S1/S1-D | Existing `make host-verify`, `make github-verify`, `make docker-verify` still pass | **NOT RUN** |
+| Absent package and absent marker | Repeated approved cleanup `changed=0`; separate marker-absence test PASS; post-remove Ansible package facts confirm absence | **PASS, OWNER-REPORTED 2026-10-22** |
+| Regression on existing S0/S1/S1-D | `S1 local config/proxied HTTPS: PASS`, `GitHub SSH authentication: PASS`, `S1-D Docker host and daemon proxy: PASS`; Docker 29.9.2, Compose v5.6.1 | **PASS FOR THE RECORDED CHECKS, OWNER-REPORTED 2026-10-22** |
 
 For the pre-existing-package negative case use a **separate disposable
 snapshot/clone**, or document that it was not tested. Do not intentionally
