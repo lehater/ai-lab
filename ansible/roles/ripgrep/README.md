@@ -6,8 +6,10 @@ This deliberately small role demonstrates the Ansible host-component contract
 on Ubuntu 24.04 amd64. It uses only `ansible.builtin` and the distro's APT
 repository, avoiding a third-party Galaxy role, key or external APT source.
 
-- `present` (default): install `ripgrep` when missing and independently
-  verify `rg --version`; running again should not change the package.
+- `present` (default): install pinned `ripgrep=14.1.0-1` (Ubuntu Noble)
+  when absent and independently verify `rg --version`. Pre-existing unmanaged
+  packages are verified but **not adopted** or changed to the pinned version;
+  rerun should not change the package.
 - `verify`: read-only check that the package and binary are available.
 - `absent`: requires `ai_lab_ripgrep_allow_remove=true`. It removes the
   package **only** when AI Lab's root-owned marker indicates this role first
