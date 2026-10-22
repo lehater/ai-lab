@@ -1,0 +1,60 @@
+---
+- name: Require explicit operator approval for removal
+  ansible.builtin.assert:
+    that:
+      - ai_lab_ripgrep_allow_remove | bool
+    fail_msg: >-
+      Deletion is disabled by default. The operator must explicitly set
+      ai_lab_ripgrep_allow_remove=true after reviewing the target.
+
+- name: Refuse removing package that AI Lab did not install
+  ansible.builtin.assert:
+    that:
+      - "'ripgrep' not in ansible_facts.packages or ai_lab_ripgrep_marker.stat.exists"
+    fail_msg: >-
+      ripgrep was present without an AI Lab ownership marker. It may belong
+      to the base system or operator: refusing to uninstall it.
+
+- name: Read ownership marker before destructive actions
+  ansible.builtin.slurp:
+    src: "{{ ai_lab_ripgrep_marker_path }}"
+  register: ai_lab_ripgrep_marker_content
+  when: ai_lab_ripgrep_marker.stat.exists
+
+- name: Check exact ownership marker content
+  ansible.builtin.assert:
+    that:
+      - (ai_lab_ripgrep_marker_content.content | b64decode) == 'ai-lab-ripgrep-ownership-v1\n'
+    fail_msg: >-
+      Ownership marker contents are unexpected; refusing uninstall.
+  when: ai_lab_ripgrep_marker.stat.exists
+
+- name: Remove only role-owned ripgrep (never autoremove shared dependencies)
+  ansible.builtin.apt:
+    name: ripgrep
+    state: absent
+    purge: false
+    autoremove: false
+  become: true
+  when: ai_lab_ripgrep_marker.stat.exists
+
+- name: Remove ownership marker after a real successful package removal
+  ansible.builtin.file:
+    path: "{{ ai_lab_ripgrep_marker_path }}"
+    state: absent
+  become: true
+  when:
+    - ai_lab_ripgrep_marker.stat.exists
+    - not ansible_check_mode
+
+- name: Refresh package facts after actual cleanup
+  ansible.builtin.package_facts:
+    manager: apt
+  when: not ansible_check_mode
+
+- name: Verify removal without changing other system packages
+  ansible.builtin.assert:
+    that:
+      - "'ripgrep' not in ansible_facts.packages"
+    fail_msg: "ripgrep remains installed; inspect APT state and marker."
+  when: not ansible_check_mode
