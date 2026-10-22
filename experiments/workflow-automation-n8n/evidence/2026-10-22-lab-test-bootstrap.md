@@ -39,7 +39,8 @@ PASS: Compose config, container, loopback port and local health.
 | n8n owner and instance-level MCP enablement | **NOT TESTED** | Manual operator action next |
 | Codex CLI 0.163.0 installation / binary | **PASS (operator output)** | Experiment-local `codex-setup.sh verify` reports pinned version; subsequent `codex --version` also returns `codex-cli 0.163.0` |
 | Codex ChatGPT login / authentication | **PASS (operator output)** | `codex login status` returned `Logged in using ChatGPT`; n8n MCP not tested |
-| Codex MCP authorization and tool discovery | **NOT TESTED** | Agent integration next |
+| Codex n8n MCP tool discovery | **PASS (operator excerpt)** | n8n-specific MCP tool names surfaced in Codex; truncated partial list |
+| Codex MCP read-only tool invocation / authorization | **NOT TESTED** | No actual MCP tool response supplied yet |
 | Agent-authored workflow create/execute/update/execute | **NOT TESTED** | Stage A main research gate |
 | Git artifact export and clean-instance replay | **NOT TESTED** | Stage B gated on Stage A |
 
@@ -67,6 +68,37 @@ Logged in using ChatGPT
 ```
 
 **Acceptance:** Codex CLI ChatGPT sign-in is confirmed by the operator's status output (**PASS**). No authentication token was shared. This does **not** establish n8n owner setup, instance-level MCP authorization, MCP tool discovery, or workflow execution.
+
+## MCP discovery evidence (operator excerpt, 2026-10-22)
+
+The owner supplied the following **partial** output from Codex tool discovery:
+
+```text
+t_workflow_best_practices
+get_workflow_details
+get_workflow_execution
+get_workflow_history
+get_workflow_sdk_reference
+get_workflow_version
+get_workflow_versions_diff
+install_community_node
+list_agent_versions
+list_credentials
+list_n8n_gateway_services
+list_workflow_tags
+mutate_agent
+prepare_workflow_pin_data
+publish_agent
+publish_workflow
+rename_data_table
+rename_data_table_column
+restore_workflow_version
+revert_agent
+```
+
+**Interpretation:** Codex surfaced n8n-specific MCP tool names, indicating tool discovery. This is an excerpt, not the complete list; `t_workflow_best_practices` is truncated and its full name is not assumed. No successful invocation response from a read-only tool, verified tool schemas, actual workflow authoring tool, or execution output was included. Consequently **MCP tool discovery: PASS (operator excerpt)** and **MCP read call/authorization: PENDING**.
+
+**Next evidence:** in Codex, call `get_workflow_sdk_reference` (or `get_workflow_best_practices` if actually discovered), summarize returned SDK/node types, and report whether the call returned valid server data or a tool error. Do not create/change/publish workflows until this succeeds.
 
 ## Next reproducible checks (on lab-test)
 
