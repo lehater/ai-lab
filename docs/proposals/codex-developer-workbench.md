@@ -12,25 +12,31 @@ Codex protected `.git/index.lock` as read-only in its working-tree sandbox even 
 
 Evidence: [n8n PR #11](https://github.com/lehater/ai-lab/pull/11) and its [2026-10-22 Stage A report](https://github.com/lehater/ai-lab/blob/proposal/workflow-automation-mcp-spike/experiments/workflow-automation-n8n/evidence/2026-10-22-stage-a-operator-report.md). This is operator/agent-reported evidence on an existing VM, **not** a clean-snapshot test of the proposed generic module.
 
-## Architecture options
+## UI choice and clipboard problem
 
-| Option | Benefits | Costs / constraints | Proposed use |
-| --- | --- | --- | --- |
-| Codex CLI only | Small, scriptable, SSH/automation friendly, direct sandbox test | Console UI less convenient for browsing/review | **Opt-in underlying developer capability** |
-| VS Code on Ubuntu Desktop VM + Codex extension | Fastest GUI trial, existing local VM access, no inbound SSH service | GUI resources in VM; editor adds packages and update lifecycle | **Initial IDE compatibility spike** |
-| Windows VS Code + Remote-SSH to Ubuntu VM + Codex extension in SSH host | Comfortable host UI, source, runtime and sandbox remain on VM | Need separately managed `sshd`, network exposure assessment, VS Code Server/extension compatibility | **Preferred operator workbench if a scoped SSH path is approved** |
-| Windows VS Code with Codex running locally | Easy Windows-only setup | Different OS/sandbox and runtime; VM's localhost MCP unavailable without explicit tunnel | Not a substitute for validating AI Lab's Linux runtime |
+**Operator preference (2026-10-22):** Codex CLI remains the principal agent interface. VS Code + Codex extension may be installed **locally inside the Ubuntu VM** as an optional graphical editor. No Windows VS Code, Remote-SSH or SSH-server proposal is needed.
 
-The Codex extension is `OpenAI.chatgpt`; Remote - SSH is `ms-vscode-remote.remote-ssh`. The CLI and IDE share Codex `config.toml` layers **when running for the same user on the same machine**, but the VS Code extension carries its own executable and also has editor-specific `chatgpt.*` settings. Do not set `chatgpt.cliExecutable` simply to force an IDE to reuse the independently pinned npm CLI; OpenAI marks it development-only.
+The most significant current CLI usability issue is **clipboard propagation from Ubuntu VMware guest to Windows host**: selecting text in Codex sometimes leaves an older value in the Windows clipboard, whereas copy via a GNOME graphical editor works. The root cause is not yet proven. Linux PRIMARY (mouse selection) differs from CLIPBOARD (explicit copy); VMware/open-vm-tools also has documented Wayland integration limitations.
 
-**Remote-SSH correctness gate:** The accepted S1 module configures GitHub SSH client/outbound transport, **not** an SSH server on `lab-test`. Do not assert that Windows can already connect, and do not add an inbound listener automatically. Once the operator chooses the approach, scope a separate optional SSH-server/UI path, test guest↔host reachability, and verify the extension runs on the remote extension host. VS Code Remote-SSH compatibility bugs have been reported; verify rather than assuming the IDE is equivalent to a working CLI.
+**Diagnosis before implementation:** use terminal `Ctrl+Shift+C` or menu Copy on nonsecret Codex output, test immediate Windows Ctrl+V, check `echo "$XDG_SESSION_TYPE"`. For Wayland, consider the available **Ubuntu on Xorg** login session as a reversible option, then retry the transfer. If already X11 or failure persists, inspect VMware Guest Isolation copy/paste and `open-vm-tools-desktop` state. See [host clipboard runbook](../../bootstrap/host/clipboard.md).
+
+No global clipboard selection sync daemon, background watcher, third-party clipboard patches, disabling of VMware isolation or forced desktop switch should be committed before an observed minimal fix. The clipboard belongs to **host/desktop VM integration**, not the Codex CLI installation or sandbox.
+
+| Component | Role | Status in this proposal |
+| --- | --- | --- |
+| Codex CLI | Optional agent tool with pinned install/sandbox checks | Candidate implementation |
+| Ubuntu/VMware clipboard | Existing host desktop UX; diagnose PRIMARY/CLIPBOARD and Wayland/X11 | Runbook only; unresolved |
+| VS Code + official Codex extension | Optional graphical interface **inside Ubuntu VM** | Evaluated; not auto-installed |
+| Windows VS Code/Remote-SSH/SSHD | Not requested for this lab setup | Out of scope |
+
+The Codex extension `OpenAI.chatgpt` has its own bundled executable; CLI and IDE can share user `~/.codex/config.toml` when running in the same Ubuntu account. The editor does not replace sandbox prerequisites.
 
 ## Proposed code boundary
 
 - Implement `bootstrap/devtools/codex/setup.sh` as an **opt-in**, user-local pinned installer and security test, exporting `make codex-setup`, `make codex-verify`, `make codex-test`.
 - Reuse an existing known experiment-local pinned Codex installation safely; do not overwrite unknown launcher paths or import n8n MCP tokens/config.
 - Install only prerequisite Ubuntu packages and the targeted AppArmor profile if the sandbox test shows it is needed, preserving the global restriction.
-- Document operator-owned ChatGPT login and optional VS Code setup; **do not** automatically install VS Code or SSHD until the UI path has been chosen and a concrete acceptance test defined.
+- Document operator-owned ChatGPT login, guest ↔ host clipboard diagnosis, and **optional local Ubuntu VM** VS Code setup; neither editor nor SSH server is installed automatically.
 - No required dependency from S0/S1/S1-D to Codex. No change to accepted Docker, networking, secrets or S2 runtime scope.
 
 ## Acceptance gate
@@ -39,8 +45,9 @@ The Codex extension is `OpenAI.chatgpt`; Remote - SSH is `ms-vscode-remote.remot
 2. On a **new clean-snapshot replay** after accepted S0/S1, run `make codex-setup` and `make codex-verify`; record command outputs, revision and versions. Run setup again.
 3. AppArmor userns global restriction remains `1`; actual Codex sandbox command passes. Confirm no unsandboxed workaround and no Docker group changes.
 4. Operator-controlled `codex login status` verifies authentication separately; browser proxy remains an explicit operator step.
-5. If VS Code is chosen, prove the extension starts, attaches to the intended Ubuntu workspace, accesses the correct config/MCP, and can review a controlled Git diff without widening sandbox rights.
-6. Only **after** results and security boundaries are reviewed may the owner accept/merge this optional module. Do not mark any S0/S1/S1-D milestone differently solely because this proposal exists.
+5. In a separate operator clipboard check, demonstrate Ubuntu Codex output copying directly to Windows, or record the unresolved host-integration limitation; do not block Codex sandbox acceptance on VMware clipboard behavior.
+6. If optional **local Ubuntu VS Code** is chosen, prove the extension starts on the VM, shares the intended config/MCP and can review a controlled Git diff without widening sandbox rights.
+7. Only **after** results and security boundaries are reviewed may the owner accept/merge this optional module. Do not mark any S0/S1/S1-D milestone differently solely because this proposal exists.
 
 **Scope stop:** Do not build a generalized AI runtime, harness, agent orchestrator or IDE automation system. This candidate solves repeatable installation and secure local execution of **one** developer tool.
 
@@ -48,5 +55,5 @@ The Codex extension is `OpenAI.chatgpt`; Remote - SSH is `ms-vscode-remote.remot
 
 - [OpenAI Codex Linux sandbox](https://learn.chatgpt.com/docs/sandboxing) — Ubuntu 24.04 AppArmor remediation and Bubblewrap.
 - [Codex IDE settings](https://learn.chatgpt.com/docs/ide/settings) and [shared config](https://learn.chatgpt.com/docs/config-file/config-basic) — CLI/IDE agent configuration and editor-specific options.
-- [Codex extension](https://marketplace.visualstudio.com/items?itemName=OpenAI.chatgpt), [VS Code Remote - SSH](https://code.visualstudio.com/docs/remote/ssh).
-- Relevant upstream reports: [remote loading issue](https://github.com/openai/codex/issues/32385), [remote activation incompatibility](https://github.com/openai/codex/issues/42663).
+- [Codex extension](https://marketplace.visualstudio.com/items?itemName=OpenAI.chatgpt), [VS Code on Linux](https://code.visualstudio.com/docs/setup/linux).
+- [GNOME clipboard selections](https://wiki.gnome.org/Initiatives/Wayland/PrimarySelection), [Broadcom VMware Wayland limitation](https://knowledge.broadcom.com/external/article/320995).
