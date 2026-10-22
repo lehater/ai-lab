@@ -1,0 +1,74 @@
+---
+- name: Reject unsupported platforms or actions
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['distribution'] == 'Ubuntu'
+      - ansible_facts['distribution_version'] == '24.04'
+      - ansible_facts['architecture'] == 'x86_64'
+      - ansible_connection == 'local'
+      - ai_lab_vscode_action in ['prepare', 'present', 'verify', 'absent']
+    fail_msg: This role targets local Ubuntu 24.04 amd64 only.
+
+- name: Gather installed APT packages
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Inspect VS Code package ownership marker
+  ansible.builtin.stat:
+    path: "{{ ai_lab_vscode_package_marker }}"
+    follow: false
+  register: ai_lab_vscode_package_mark
+
+- name: Inspect repo ownership marker
+  ansible.builtin.stat:
+    path: "{{ ai_lab_vscode_repo_marker }}"
+    follow: false
+  register: ai_lab_vscode_repo_mark
+
+- name: Inspect managed repository source
+  ansible.builtin.stat:
+    path: "{{ ai_lab_vscode_source_path }}"
+    follow: false
+  register: ai_lab_vscode_source_stat
+
+- name: Inspect managed signing key
+  ansible.builtin.stat:
+    path: "{{ ai_lab_vscode_key_path }}"
+    follow: false
+  register: ai_lab_vscode_key_stat
+
+- name: Reject compromised ownership markers
+  ansible.builtin.assert:
+    that:
+      - (not item.stat.exists) or ((item.stat.isreg | default(false)) and (item.stat.uid == 0))
+    fail_msg: An AI Lab marker is not a root-owned regular file.
+  loop:
+    - "{{ ai_lab_vscode_package_mark }}"
+    - "{{ ai_lab_vscode_repo_mark }}"
+  loop_control:
+    label: root-owned marker validation
+
+- name: Validate repository ownership when necessary
+  ansible.builtin.assert:
+    that:
+      - ai_lab_vscode_repo_mark.stat.exists or (not ai_lab_vscode_source_stat.stat.exists and not ai_lab_vscode_key_stat.stat.exists)
+    fail_msg: >-
+      An AI Lab VS Code key/source path already exists without its managed
+      marker. Stop: do not overwrite an operator-controlled APT configuration.
+  when: ai_lab_vscode_action == 'prepare' or (ai_lab_vscode_action == 'present' and 'code' not in ansible_facts.packages)
+
+- name: Prepare signed Microsoft APT repository
+  ansible.builtin.import_tasks: prepare.yml
+  when: ai_lab_vscode_action == 'prepare' or (ai_lab_vscode_action == 'present' and ('code' not in ansible_facts.packages or ai_lab_vscode_package_mark.stat.exists))
+
+- name: Install exact requested VS Code package
+  ansible.builtin.import_tasks: present.yml
+  when: ai_lab_vscode_action == 'present'
+
+- name: Verify existing VS Code
+  ansible.builtin.import_tasks: verify.yml
+  when: ai_lab_vscode_action == 'verify'
+
+- name: Remove role-owned VS Code with explicit consent
+  ansible.builtin.import_tasks: absent.yml
+  when: ai_lab_vscode_action == 'absent'

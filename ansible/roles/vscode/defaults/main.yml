@@ -1,0 +1,13 @@
+---
+# The repository is prepared separately so the operator can select an exact
+# available package version before an install. No "latest" is implicit.
+ai_lab_vscode_action: verify  # prepare | present | verify | absent
+ai_lab_vscode_apt_version: ''
+ai_lab_vscode_allow_remove: false
+
+ai_lab_vscode_key_url: https://packages.microsoft.com/keys/microsoft.asc
+ai_lab_vscode_key_fingerprint: BC528686B50D79E339D3721CEB3E94ADBE1229CF
+ai_lab_vscode_key_path: /usr/share/keyrings/ai-lab-vscode.asc
+ai_lab_vscode_source_path: /etc/apt/sources.list.d/ai-lab-vscode.sources
+ai_lab_vscode_repo_marker: /var/lib/ai-lab/ansible/vscode-repo.managed
+ai_lab_vscode_package_marker: /var/lib/ai-lab/ansible/vscode.installed

@@ -1,0 +1,95 @@
+---
+- name: Explain check-mode limitations for new third-party repositories
+  ansible.builtin.debug:
+    msg: >-
+      No APT key, repository, or package will be installed in check mode.
+      A real prepare action is needed before apt-cache can list code versions.
+  when: ansible_check_mode
+
+- name: Apply signed repository setup (not in check mode)
+  when: not ansible_check_mode
+  block:
+    - name: Create an isolated temporary file for the signing key
+      ansible.builtin.tempfile:
+        state: file
+        suffix: .microsoft.asc
+      register: ai_lab_vscode_key_temp
+
+    - name: Fetch Microsoft's published signing key as the unprivileged user
+      ansible.builtin.get_url:
+        url: "{{ ai_lab_vscode_key_url }}"
+        dest: "{{ ai_lab_vscode_key_temp.path }}"
+        force: true
+        mode: '0600'
+
+    - name: Extract key fingerprint without importing it
+      ansible.builtin.command:
+        argv:
+          - gpg
+          - --batch
+          - --with-colons
+          - --show-keys
+          - "{{ ai_lab_vscode_key_temp.path }}"
+      changed_when: false
+      register: ai_lab_vscode_gpg_result
+
+    - name: Require the official Microsoft key fingerprint
+      ansible.builtin.assert:
+        that:
+          - "'fpr:::::::::' ~ ai_lab_vscode_key_fingerprint ~ ':' in ai_lab_vscode_gpg_result.stdout"
+        fail_msg: The downloaded GPG signing key fingerprint is not expected.
+
+    - name: Place dedicated ASCII-armored key in an isolated keyring path
+      ansible.builtin.copy:
+        src: "{{ ai_lab_vscode_key_temp.path }}"
+        dest: "{{ ai_lab_vscode_key_path }}"
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+
+    - name: Configure signed official stable code source only
+      ansible.builtin.copy:
+        dest: "{{ ai_lab_vscode_source_path }}"
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          Types: deb
+          URIs: https://packages.microsoft.com/repos/code
+          Suites: stable
+          Components: main
+          Architectures: amd64
+          Signed-By: {{ ai_lab_vscode_key_path }}
+      become: true
+
+    - name: Create role-specific ownership directory
+      ansible.builtin.file:
+        path: /var/lib/ai-lab/ansible
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      become: true
+
+    - name: Mark ownership of only the AI Lab repository files
+      ansible.builtin.copy:
+        dest: "{{ ai_lab_vscode_repo_marker }}"
+        content: ai-lab-vscode-repository-v1
+        owner: root
+        group: root
+        mode: '0644'
+        force: false
+      become: true
+
+    - name: Refresh APT metadata for the signed source
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+      become: true
+  always:
+    - name: Remove temporary signing key download
+      ansible.builtin.file:
+        path: "{{ ai_lab_vscode_key_temp.path }}"
+        state: absent
+      when: ai_lab_vscode_key_temp.path is defined

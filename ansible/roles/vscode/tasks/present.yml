@@ -1,0 +1,43 @@
+---
+- name: Require an explicitly selected APT version for managed VS Code
+  ansible.builtin.assert:
+    that:
+      - ai_lab_vscode_apt_version | length > 0
+    fail_msg: >-
+      First run action=prepare, inspect apt-cache madison code, then explicitly
+      supply ai_lab_vscode_apt_version. Do not install a floating latest.
+  when: "'code' not in ansible_facts.packages or ai_lab_vscode_package_mark.stat.exists"
+
+- name: Install pinned version only if uninstalled or previously role-owned
+  ansible.builtin.apt:
+    name: "code={{ ai_lab_vscode_apt_version }}"
+    state: present
+    install_recommends: false
+    update_cache: false
+  become: true
+  when: "'code' not in ansible_facts.packages or ai_lab_vscode_package_mark.stat.exists"
+
+- name: Create package ownership marker only when the package was absent
+  ansible.builtin.copy:
+    dest: "{{ ai_lab_vscode_package_marker }}"
+    content: ai-lab-vscode-package-v1
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+  become: true
+  when:
+    - "'code' not in ansible_facts.packages"
+    - not ai_lab_vscode_package_mark.stat.exists
+    - not ansible_check_mode
+
+- name: Leave pre-existing unmanaged VS Code unchanged
+  ansible.builtin.debug:
+    msg: VS Code was pre-installed; verified but not modified or adopted.
+  when:
+    - "'code' in ansible_facts.packages"
+    - not ai_lab_vscode_package_mark.stat.exists
+
+- name: Verify package after real present
+  ansible.builtin.import_tasks: verify.yml
+  when: not ansible_check_mode

@@ -1,0 +1,53 @@
+---
+- name: Require explicit destructive-action approval
+  ansible.builtin.assert:
+    that:
+      - ai_lab_vscode_allow_remove | bool
+    fail_msg: Set ai_lab_vscode_allow_remove=true deliberately to delete the package.
+
+- name: Refuse to remove an unmanaged pre-existing VS Code package
+  ansible.builtin.assert:
+    that:
+      - "'code' not in ansible_facts.packages or ai_lab_vscode_package_mark.stat.exists"
+    fail_msg: No role package-ownership marker: refusing to remove operator-owned VS Code.
+
+- name: Verify package marker content
+  ansible.builtin.slurp:
+    src: "{{ ai_lab_vscode_package_marker }}"
+  register: ai_lab_vscode_package_mark_body
+  when: ai_lab_vscode_package_mark.stat.exists
+
+- name: Refuse unexpected ownership marker
+  ansible.builtin.assert:
+    that:
+      - "(ai_lab_vscode_package_mark_body.content | b64decode) == 'ai-lab-vscode-package-v1'"
+  when: ai_lab_vscode_package_mark.stat.exists
+
+- name: Remove only the role-owned VS Code package
+  ansible.builtin.apt:
+    name: code
+    state: absent
+    autoremove: false
+    purge: false
+  become: true
+  when: ai_lab_vscode_package_mark.stat.exists
+
+- name: Forget ownership after successful real removal
+  ansible.builtin.file:
+    path: "{{ ai_lab_vscode_package_marker }}"
+    state: absent
+  become: true
+  when:
+    - ai_lab_vscode_package_mark.stat.exists
+    - not ansible_check_mode
+
+- name: Refresh package facts after real removal
+  ansible.builtin.package_facts:
+    manager: apt
+  when: not ansible_check_mode
+
+- name: Verify package absent
+  ansible.builtin.assert:
+    that:
+      - "'code' not in ansible_facts.packages"
+  when: not ansible_check_mode

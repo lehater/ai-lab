@@ -1,0 +1,21 @@
+---
+- name: Refresh installed package facts
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Assert VS Code package installed
+  ansible.builtin.assert:
+    that:
+      - "'code' in ansible_facts.packages"
+    fail_msg: VS Code is not installed (use action=prepare then action=present).
+
+- name: Check command-line version without opening GUI
+  ansible.builtin.command:
+    cmd: code --version
+  check_mode: false
+  changed_when: false
+  register: ai_lab_vscode_cli
+
+- name: Show version
+  ansible.builtin.debug:
+    msg: "{{ ai_lab_vscode_cli.stdout_lines[0] }}"
