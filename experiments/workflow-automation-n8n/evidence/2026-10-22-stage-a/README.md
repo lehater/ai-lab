@@ -1,0 +1,8 @@
+# Stage A recovery — 2026-10-22
+
+Sandbox PASS: ordinary sandbox command `pwd && git status --short --branch` exited 0, with a clean experimental branch and no bypass. Existing workflow `0MfgOrrQXujdLHVM` was read through n8n MCP before mutation. `get_node_types` returned Set v3.5 manual-mode assignment schema. Complete parameters derived from the live Multiply node were validated, then replaced using one `updateNodeParameters` operation. Saved nodes and connections were compared: only the multiplier expression changed, from 2 to 3. All three saved node configurations validated; update returned no graph/JSON warnings.
+
+Manual `execute_workflow` produced execution **2**, retrieved using `get_workflow_execution(includeData:true)`: status **success**, input numeric 4, output numeric **12**. Previous execution **1** / numeric 8 is historical operator evidence, not rerun here. Draft version changed from `fed8243f-5a94-4863-8af0-e57d58f8652f` to `3af1106c-ac6b-4e53-862e-ed58abe01b1c`. Workflow remains `active:false`, `activeVersionId:null`; no creation or publication. Description retains its original factor-2 text because only the requested parameter was modified.
+
+`results.json` contains the corrected operation, validations, selected execution metadata, assertions, historical error and current limitations. Workflow JSON files are MCP snapshots, not proof of portable export/replay. No runtime resume token is retained. No current MCP errors occurred. `gh` was unavailable (127); remote-main check failed (128) because the local proxy was unreachable. No unsandboxed retries, Docker access, permission changes or main modifications were performed. Stage B requires evidence review and remains untested.
+

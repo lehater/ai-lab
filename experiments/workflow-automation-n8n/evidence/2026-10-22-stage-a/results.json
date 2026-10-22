@@ -1,0 +1,104 @@
+{
+  "environment": "lab-test (session context)",
+  "gitRevision": "e395247eb407b1864e8c03d0b1de6b971d94d3bd",
+  "sandbox": {
+    "command": "pwd && git status --short --branch",
+    "exitCode": 0,
+    "bypass": false
+  },
+  "operation": {
+    "type": "updateNodeParameters",
+    "nodeName": "Multiply",
+    "replace": true,
+    "parameters": {
+      "mode": "manual",
+      "includeOtherFields": false,
+      "assignments": {
+        "assignments": [
+          {
+            "id": "multiply-value",
+            "name": "value",
+            "value": "={{ $json.value * 3 }}",
+            "type": "number"
+          }
+        ]
+      },
+      "options": {}
+    }
+  },
+  "update": {
+    "workflowId": "0MfgOrrQXujdLHVM",
+    "name": "AI Lab MCP Spike - multiply",
+    "nodeCount": 3,
+    "url": "http://127.0.0.1:5678/workflow/0MfgOrrQXujdLHVM",
+    "appliedOperations": 1,
+    "autoAssignedCredentials": [],
+    "validationWarnings": []
+  },
+  "validationBefore": {
+    "valid": true,
+    "results": [
+      {
+        "index": 0,
+        "name": "Multiply",
+        "type": "n8n-nodes-base.set",
+        "valid": true
+      }
+    ]
+  },
+  "validationAfter": {
+    "valid": true,
+    "results": [
+      {
+        "index": 0,
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "valid": true
+      },
+      {
+        "index": 1,
+        "name": "Input value",
+        "type": "n8n-nodes-base.set",
+        "valid": true
+      },
+      {
+        "index": 2,
+        "name": "Multiply",
+        "type": "n8n-nodes-base.set",
+        "valid": true
+      }
+    ]
+  },
+  "execution": {
+    "id": "2",
+    "workflowId": "0MfgOrrQXujdLHVM",
+    "mode": "manual",
+    "status": "success",
+    "startedAt": "2026-10-22T07:36:46.825Z",
+    "stoppedAt": "2026-10-22T07:36:46.843Z",
+    "retryOf": null,
+    "retrySuccessId": null,
+    "waitTill": null
+  },
+  "input": {
+    "value": 4
+  },
+  "output": {
+    "value": 12
+  },
+  "assertion": "typeof value === 'number' && value === 12",
+  "historicalError": {
+    "source": "../2026-10-22-stage-a-operator-report.md",
+    "error": "Operation 0 failed: path 'assignments.assignments[0].value' is invalid or contains unsafe segments",
+    "errorCode": "UNKNOWN_ERROR"
+  },
+  "currentMcpErrors": [],
+  "limitations": [
+    "gh unavailable; open PR state not checked",
+    "git ls-remote origin refs/heads/main failed: local proxy 127.0.0.1:10808 unavailable; no escalation",
+    "Docker image digest not rechecked; Docker permissions unchanged",
+    "Stage B not attempted; no replay/portability claim",
+    "Execution response reduced to metadata and input/output; runtime resume token excluded",
+    "Workflow description still mentions factor 2; only requested multiplier parameter was changed"
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "id": "0MfgOrrQXujdLHVM",
+  "name": "AI Lab MCP Spike - multiply",
+  "active": false,
+  "isArchived": false,
+  "versionId": "3af1106c-ac6b-4e53-862e-ed58abe01b1c",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "nodeCount": 3,
+  "createdAt": "2026-10-22T07:15:03.156Z",
+  "updatedAt": "2026-10-22T07:36:02.767Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "parentFolderId": null,
+  "description": "Local Stage A MCP experiment: manual trigger, numeric value 4, multiply by 2. No credentials or external I/O.",
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true,
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Input value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input value": {
+      "main": [
+        [
+          {
+            "node": "Multiply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "df4f7fdb-63c0-452e-9df0-07f7e9cb2600",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "5924c8eb-ecca-4c99-bfd3-5958daeeb607",
+      "name": "Input value",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "input-value",
+              "name": "value",
+              "value": 4,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4529c2c4-751f-4caf-aea9-67c59d1dbea0",
+      "name": "Multiply",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "multiply-value",
+              "name": "value",
+              "value": "={{ $json.value * 3 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "nodeGroups": [],
+  "activeVersion": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
+}
