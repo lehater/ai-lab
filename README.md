@@ -50,4 +50,11 @@ baseline**, with manual first-run steps. No externally validated LAN
 isolation, automatic first GUI launch, pinning or portability to other
 platforms is claimed.
 
+## S2.1 — candidate stateful lifecycle acceptance
+
+[Temporary Compose pilot](experiments/s2-compose-pilot/README.md) adds
+`make s2-config-test` and `make s2-smoke` to check one disposable
+stateful service, secrets, persistence, logical restore and cleanup.
+**Not yet verified on `lab-test`; not a permanent PostgreSQL service.**
+
 Only merged `main` is authoritative. The verified Stage 0 MVP is a first step toward the target, not evidence of full unattended deployment or Enterprise-grade compliance. See [roadmap](docs/project/roadmap.md) for the next testable increment.

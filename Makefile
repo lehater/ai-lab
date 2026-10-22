@@ -1,8 +1,9 @@
 .DEFAULT_GOAL := help
-.PHONY: help host-setup host-verify host-test github-setup github-verify docker-setup docker-verify docker-pull-test docker-test docker-compose-test
+.PHONY: help host-setup host-verify host-test github-setup github-verify docker-setup docker-verify docker-pull-test docker-test docker-compose-test s2-config-test s2-smoke
 
 HOST_DIR := bootstrap/host
 DOCKER_DIR := bootstrap/docker
+S2_DIR := experiments/s2-compose-pilot
 
 help:
 	@printf '%s\n' \
@@ -17,6 +18,8 @@ help:
 	  '  make docker-pull-test  Pull/run hello-world through daemon proxy' \
 	  '  make docker-test     Run offline Docker render/syntax checks' \
 	  '  make docker-compose-test  Run disposable standard Compose bridge smoke' \
+	  '  make s2-config-test  Validate S2.1 stateful Compose fixture' \
+	  '  make s2-smoke        Test disposable stateful lifecycle and restore' \
 	  '' \
 	  'S0 remains independent: run bootstrap/stage0/bootstrap.sh from USB.' \
 	  'If make is missing after S0, run: bash bootstrap/host/bootstrap.sh'
@@ -53,3 +56,10 @@ docker-test:
 # Standard Compose bridge smoke; one disposable service, no published ports.
 docker-compose-test:
 	@bash $(DOCKER_DIR)/compose-smoke.sh
+
+# S2.1 proposal: temporary acceptance workload, never a permanent service.
+s2-config-test:
+	@bash $(S2_DIR)/test-config.sh
+
+s2-smoke:
+	@bash $(S2_DIR)/smoke.sh

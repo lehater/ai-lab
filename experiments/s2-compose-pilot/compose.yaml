@@ -1,0 +1,24 @@
+# Temporary S2.1 acceptance fixture; not a default lab service.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: "no"
+    environment:
+      POSTGRES_USER: ai_lab_s2
+      POSTGRES_DB: ai_lab_s2
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ai_lab_s2 -d ai_lab_s2 >/dev/null"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+secrets:
+  db_password:
+    file: ${S2_SECRET_FILE:?Provide a private, readable password file}
+volumes:
+  db_data:

@@ -16,6 +16,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
 | S1-D: Docker/Compose Bootstrap | **FUNCTIONAL INTEGRATED REPLAY OWNER-VERIFIED on `lab-test`** | Owner explicitly confirmed restoring `vmware-tools-ready`, reinstalling S0 → S1 → S1-D from repository scripts, and providing the final PASS logs. Docker Engine 29.9.2, Compose v5.6.1, GitHub SSH, daemon proxy, image pulls and Compose lifecycle succeeded. Operator-assisted reproducibility on the specified VMware baseline; not unattended automation, external LAN isolation or package pinning. |
+| S2.1: stateful Compose lifecycle pilot | **CANDIDATE — NOT VERIFIED** | Proposed disposable PostgreSQL acceptance fixture; needs live `lab-test` config, persistence, backup/restore and teardown evidence before acceptance. No persistent platform service. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -318,9 +319,13 @@ is retained in [bootstrap/README.md](../../bootstrap/README.md).
 2. Full S1-D functional installation has been demonstrated; do not
    continue researching mandatory container proxy-only networking
    without a concrete workload (D-011).
-3. Evaluate the next infrastructure increment S2 against an actual
-   research requirement. Preserve repeatability and explicit
-   qualification of all security and portability claims.
+3. S2.1 proposes a *temporary acceptance fixture* to test Compose lifecycle,
+   secret file delivery, persistence, health, backup/restore and teardown.
+   Run `make s2-config-test` and `make s2-smoke` on `lab-test` and capture
+   the exact Git revision, image ID, outcomes and cleanup evidence. This is
+   not yet verified and is not a production PostgreSQL dependency.
+4. Before extracting reusable S2 modules, identify an actual consuming
+   service; retain D-011 and the accepted S0/S1/S1-D constraints.
 ## Status vocabulary
 
 - **NOT STARTED / NOT IMPLEMENTED**: no committed, verified implementation.

@@ -46,34 +46,25 @@ The depth of these controls grows with **risk, complexity and reuse**, not with 
 
 Record actual pass/fail evidence and remaining gaps in [state](state.md), not a speculative aggregate Enterprise-grade score. **Maturity work continues after S4** without requiring a new numbered final stage.
 
-## First infrastructure vertical slice
+## Next iteration — S2.1 disposable stateful service lifecycle
 
-Use current S1 Host Bootstrap as the next *small independently testable infrastructure improvement*: configuration in Git → command-driven provisioning → repeat/reboot checks → verification on `lab-test` → saved evidence. Document any necessary operator step rather than describing it as fully unattended IaC.
+**Proposed thin slice, not yet verified:** [stateful Compose pilot](../../experiments/s2-compose-pilot/README.md).
+Verify one temporary service with configuration in Git, host-file secret,
+healthy startup, project-local persistent volume, stop/recreate persistence,
+logical backup, restoration into an independent clean volume, diagnostics
+and scoped cleanup. Run `make s2-config-test` and `make s2-smoke`
+on `lab-test`; capture revision, image ID, PASS/failure and limitations
+in [state](state.md). This does not add PostgreSQL to Infrastructure Core.
 
-Reusable modules and templates should be built from observed needs, not from a preselected AI scenario. A research project may independently use the lab at any stage for which its prerequisites and checks are available; such use does not change the laboratory mission or prematurely complete a milestone.
+**Acceptance gate:** owner-verified test on `lab-test` (and repeat after a
+clean baseline when claiming reproduction); no published service ports,
+no user secrets in Git, no residual project volumes after success.
+A Compose fixture is not a universal service manager. Generalize only after
+an actual second service needs shared lifecycle conventions.
 
-## Next iteration — S1 Host Bootstrap
-
-**Objective:** On the `lab-test` VMware Ubuntu that has completed S0,
-prepare a usable, secure, reproducible development host **without relying
-on machine-local undocumented actions**.
-
-Proposed thin slice:
-
-1. Define `bootstrap/host/` entrypoint and module boundaries:
-   prerequisites, configurable inputs, idempotence, and `verify.sh`.
-2. Configure/verify developer tooling and **GitHub SSH through proxy**,
-   including a user-authorized public-key registration procedure.
-   Public HTTPS clone already works in S0; avoid repeating it.
-3. Keep host networking/apt baseline compatible with S0 and document
-   which settings belong to which stage; do not duplicate proxy installation.
-4. Verify the host module on `lab-test` and rerun it to catch
-   unintended overwrites.
-
-**Acceptance:** from the S0-completed test snapshot, host bootstrap runs
-and passes its stated checks; configuration survives reboot where relevant;
-rerun does not damage existing settings. Record exact commands, output and
-limitations in [state](state.md).
+**S1/S1-D context:** The first S1 SSH slice and S1-D Docker/Compose
+functional replay are already accepted. Full S1 host provisioning has
+not been claimed. No new host tooling is required without a consumer.
 
 ## S1-D — functional integrated replay verified on lab-test
 
