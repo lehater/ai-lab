@@ -44,8 +44,7 @@ launcher_path() {
     [[ -L "$SHORTCUT" ]] || fail "Missing symlink $SHORTCUT (run setup)."
     target="$(readlink -- "$SHORTCUT")"
     case "$target" in
-        "$PREFIX/node_modules/@openai/codex/bin/codex.js"|
-        "$EXPERIMENT_PREFIX/node_modules/@openai/codex/bin/codex.js") ;;
+        "$PREFIX/node_modules/@openai/codex/bin/codex.js" | "$EXPERIMENT_PREFIX/node_modules/@openai/codex/bin/codex.js") ;;
         *) fail "Refusing unrecognized Codex launcher target: $target" ;;
     esac
     [[ -f "$target" ]] || fail "Codex launcher target missing: $target"
