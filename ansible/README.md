@@ -103,7 +103,9 @@ ansible-playbook playbooks/ripgrep.yml \
   --ask-become-pass
 ```
 
-If `ripgrep` was already installed before the role, the role leaves **its existing version unchanged**, verifies it, and does not create an ownership marker; such a package is deliberately outside AI Lab's management.\n\nThe role refuses to uninstall an already-installed `ripgrep` **without**
+If `ripgrep` was already installed before the role, the role leaves **its existing version unchanged**, verifies it, and does not create an ownership marker; such a package is deliberately outside AI Lab's management.
+
+The role refuses to uninstall an already-installed `ripgrep` **without**
 its AI Lab ownership marker. A failed or interrupted install can leave a
 package without a marker; then manual inspection is required, **not**
 automatic removal. The role never uses APT autoremove/purge, never removes
