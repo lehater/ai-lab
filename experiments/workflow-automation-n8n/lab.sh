@@ -60,7 +60,7 @@ verify_health() {
     fi
     sleep 2
   done
-  fail "n8n health check failed; inspect ./lab.sh logs"
+  fail "n8n health check failed; inspect bash lab.sh logs"
 }
 
 case "${1:-help}" in
@@ -76,7 +76,7 @@ case "${1:-help}" in
   verify)
     check_prereqs
     check_secret_path
-    [[ -f "$SECRETS" ]] || fail "Run ./lab.sh up first"
+    [[ -f "$SECRETS" ]] || fail "Run bash lab.sh up first"
     compose config --quiet
     [[ -n "$(compose ps --quiet n8n)" ]] || fail "No n8n container running"
     verify_binding
@@ -104,7 +104,7 @@ case "${1:-help}" in
     ;;
   clean)
     [[ "${2:-}" == "--destroy-experiment-data" ]] ||
-      fail 'Explicit confirmation required: ./lab.sh clean --destroy-experiment-data'
+      fail 'Explicit confirmation required: bash lab.sh clean --destroy-experiment-data'
     check_prereqs
     check_secret_path
     [[ -f "$SECRETS" ]] || fail "Missing local env file; refuse ambiguous cleanup"
@@ -124,7 +124,7 @@ case "${1:-help}" in
     ;;
   help|*)
     cat <<'HELP'
-Usage: ./lab.sh <command>
+Usage: bash lab.sh <command>
 
   static-test                        Shell and isolation static checks (no Docker)
   up                                 Create private encryption key and start local n8n
