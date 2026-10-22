@@ -15,6 +15,7 @@ The deliverables are reusable infrastructure modules, versioned configurations a
 - [Roadmap](docs/project/roadmap.md) — incremental infrastructure milestones and acceptance gates.
 - [State](docs/project/state.md) — facts, verified baseline and implementation limits.
 - [Decisions](docs/project/decisions.md) — accepted engineering choices and boundaries.
+- [Research guide and index](docs/research/README.md) — rules for research documents, evidence standards and index.
 - [Research: platform landscape](docs/research/2026-10-22-platform-landscape.md) — exploratory comparison of AI research environments, self-hosted deployment tools and templates (not an accepted decision).
 - [Observed environment](docs/current-environment.md) — manually configured reference VM, not clean-VM IaC proof.
 - [USB quick start](bootstrap/README.md) — ordered S0 → S1 operator runbook, carried on USB with `bootstrap/`.
