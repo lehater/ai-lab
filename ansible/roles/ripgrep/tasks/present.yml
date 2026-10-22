@@ -23,7 +23,7 @@
 - name: Mark ownership only if package was absent before this run
   ansible.builtin.copy:
     dest: "{{ ai_lab_ripgrep_marker_path }}"
-    content: "ai-lab-ripgrep-ownership-v1\n"
+    content: "ai-lab-ripgrep-ownership-v1"
     owner: root
     group: root
     mode: '0644'
