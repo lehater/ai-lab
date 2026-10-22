@@ -1,6 +1,6 @@
 # n8n + Codex MCP — disposable experiment
 
-**Status: LOCAL N8N BOOTSTRAP + CODEX 0.163.0 LOGIN + n8n MCP READ PASS (owner-provided outputs); workflow write/execution tests pending.**
+**Status: STAGE A PARTIAL PASS (owner-provided Codex report). Workflow created and first execution returned 8; updating to factor 3 and confirming 12 remain pending.**
 
 Branch-only GitHub Actions static validation (Bash syntax, scoped configuration, Docker Compose parsing) succeeded: https://github.com/lehater/ai-lab/actions/runs/39731909135. Additionally, the owner supplied PASS output for Docker prerequisites, n8n container startup, local loopback binding and HTTP health on `lab-test`. See [recorded 2026-10-22 lab-test evidence](evidence/2026-10-22-lab-test-bootstrap.md). Codex is installed and signed in using ChatGPT; a read-only n8n MCP call succeeded, with [51 discovered tools and the response recorded](evidence/2026-10-22-n8n-mcp-connectivity.md). MCP authoring and workflow execution have **not** yet been demonstrated.
 This is **not** an Infrastructure Core service, persistent AI platform, or a verified S3 module. All code belongs to branch `proposal/workflow-automation-mcp-spike` (draft PR #11); do not merge to `main`.
@@ -13,6 +13,14 @@ This is **not** an Infrastructure Core service, persistent AI platform, or a ver
 - Git stores the Compose configuration and, **only after the real experiment**, sanitized workflow definitions/evidence.
 
 This is a test of agent-driven **workflow authoring and reproducibility**, not an attempt to replace AI Lab bootstrap scripts, Make or CI with n8n.
+
+## Current recovery gate (2026-10-22)
+
+**Do not rerun the original create-workflow task:** workflow `0MfgOrrQXujdLHVM` already exists. Codex reported execution ID `1`, success, and output `{"value":8}`. An attempt to update `assignments.assignments[0].value` failed because n8n's `setNodeParameter` does not accept array indices. The Codex `bwrap` sandbox also fails before local shell commands can run.
+
+See [actual Stage A report](evidence/2026-10-22-stage-a-operator-report.md) and [safe recovery guide](RECOVERY.md). Only resume the update of the **existing** workflow after the sandbox repair. No second execution or output 12 has been verified.
+
+**Do not `git pull` on lab-test yet:** interrupted `apply_patch` may have left partially written local evidence. First inspect `git status --short --branch` in a **normal terminal**, preserve relevant evidence, then reconcile the local checkout and remote experimental branch.
 
 ## Preconditions
 
@@ -111,7 +119,7 @@ The approval mode above prompts for write operations. Keep approval enabled; the
 
 ## Codex authoring task
 
-From the experiment branch checkout, open Codex in `~/projects/ai-lab` and instruct it: **Read `experiments/workflow-automation-n8n/CODEX_TASK.md` and execute Stage A only using the connected n8n MCP tools. Do not change files outside the experiment and do not merge main.** The minimal workflow:
+**Original Stage A task (partially completed):** From the experiment branch checkout, open Codex in `~/projects/ai-lab` and read [CODEX_TASK.md](CODEX_TASK.md). **For the current lab-test state, do not repeat creation: follow [RECOVERY.md](RECOVERY.md) and resume updating existing workflow ID `0MfgOrrQXujdLHVM`.** The original minimal workflow:
 
 - Manual trigger
 - Create a deterministic `value = 4`
