@@ -1,0 +1,44 @@
+---
+- name: Check target platform and action
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['distribution'] == 'Ubuntu'
+      - ansible_facts['distribution_version'] == '24.04'
+      - ansible_facts['architecture'] == 'x86_64'
+      - ansible_connection == 'local'
+      - ai_lab_ripgrep_action in ['present', 'verify', 'absent']
+    fail_msg: >-
+      This first slice supports only the local Ubuntu 24.04 amd64 guest
+      and explicit present, verify, or absent actions.
+
+- name: Discover installed packages without changing them
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Discover AI Lab ownership marker
+  ansible.builtin.stat:
+    path: "{{ ai_lab_ripgrep_marker_path }}"
+    follow: false
+  register: ai_lab_ripgrep_marker
+
+- name: Reject unsafe or tampered ownership marker
+  ansible.builtin.assert:
+    that:
+      - ai_lab_ripgrep_marker.stat.isreg | default(false)
+      - ai_lab_ripgrep_marker.stat.uid == 0
+    fail_msg: >-
+      The ownership marker is not a root-owned regular file.
+      Stop for operator review; do not remove the existing component.
+  when: ai_lab_ripgrep_marker.stat.exists
+
+- name: Install optional ripgrep
+  ansible.builtin.import_tasks: present.yml
+  when: ai_lab_ripgrep_action == 'present'
+
+- name: Verify optional ripgrep
+  ansible.builtin.import_tasks: verify.yml
+  when: ai_lab_ripgrep_action == 'verify'
+
+- name: Remove optional ripgrep when explicitly approved
+  ansible.builtin.import_tasks: absent.yml
+  when: ai_lab_ripgrep_action == 'absent'

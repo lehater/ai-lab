@@ -1,0 +1,49 @@
+---
+- name: Install pinned ripgrep only if missing or previously role-owned
+  ansible.builtin.apt:
+    name: "ripgrep={{ ai_lab_ripgrep_apt_version }}"
+    state: present
+    install_recommends: false
+    update_cache: false
+  become: true
+  when: "'ripgrep' not in ansible_facts.packages or ai_lab_ripgrep_marker.stat.exists"
+
+- name: Preserve already installed unmanaged ripgrep without adopting it
+  ansible.builtin.debug:
+    msg: >-
+      ripgrep already existed outside AI Lab; do not change its version
+      or mark it owned. Only verify its executable.
+  when:
+    - "'ripgrep' in ansible_facts.packages"
+    - not ai_lab_ripgrep_marker.stat.exists
+
+- name: Create isolated ownership directory for newly installed package
+  ansible.builtin.file:
+    path: /var/lib/ai-lab/ansible
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  when:
+    - "'ripgrep' not in ansible_facts.packages"
+    - not ai_lab_ripgrep_marker.stat.exists
+    - not ansible_check_mode
+
+- name: Mark ownership only if package was absent before this run
+  ansible.builtin.copy:
+    dest: "{{ ai_lab_ripgrep_marker_path }}"
+    content: "ai-lab-ripgrep-ownership-v1"
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+  become: true
+  when:
+    - "'ripgrep' not in ansible_facts.packages"
+    - not ai_lab_ripgrep_marker.stat.exists
+    - not ansible_check_mode
+
+- name: Verify installed tool after real apply
+  ansible.builtin.import_tasks: verify.yml
+  when: not ansible_check_mode

@@ -1,0 +1,12 @@
+---
+# The desired action is explicit: present (default), verify, absent.
+ai_lab_ripgrep_action: present
+
+# Ubuntu 24.04 Noble APT release; never silently upgrade to a moving version.
+ai_lab_ripgrep_apt_version: '14.1.0-1'
+
+# Deletion requires separate explicit operator approval.
+ai_lab_ripgrep_allow_remove: false
+
+# Root-owned marker is created only when this role newly installs ripgrep.
+ai_lab_ripgrep_marker_path: /var/lib/ai-lab/ansible/ripgrep.installed
