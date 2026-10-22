@@ -2,26 +2,36 @@
 
 **Optional host UX diagnostic — proposal, not a proven fix for this particular VM.** Clipboard integration belongs to the **VMware/desktop host environment**, not to the Codex CLI installation, the n8n experiment or the S2 Infrastructure Core.
 
-## Symptoms reported on lab-test (2026-10-22)
+## Observed on lab-test (2026-10-22)
 
-When text is highlighted or copied in Codex CLI in an Ubuntu 24.04 VMware guest, Windows sometimes pastes an older value. Copying through a GNOME graphical text editor and then copying again makes the new content appear in Windows. Root cause is **not yet confirmed** by a `$XDG_SESSION_TYPE` check or by controlled copy tests.
+**Operator confirmed the VM must remain in GNOME Wayland:** switching to X11/Xorg had previously broken display scaling, resolution/fullscreen and window handling. X11 is **not an acceptable default remediation**.
 
-Two distinct failure modes must not be conflated:
+Controlled copy test:
 
-- **X11 PRIMARY versus CLIPBOARD.** Selecting text with a mouse may set only PRIMARY; explicit `Copy` or `Ctrl+Shift+C` in a terminal sets CLIPBOARD. These are different selections; Windows uses its normal clipboard.
-- **VMware guest ↔ host synchronization.** Even if the Linux CLIPBOARD is correct, `open-vm-tools-desktop`/VMware may not propagate it to Windows. Broadcom documents limitations with Wayland and recommends X11/Xorg for Workstation/Fusion guest copy/paste.
+1. Codex `/copy` creates the *correct* Ubuntu clipboard text: `Ctrl+V` and `Shift+Insert` paste it **inside the Ubuntu guest**.
+2. Switching to Windows, both paste shortcuts still return an **older** clipboard value.
+3. Pasting that same text into a Linux graphical text editor, selecting it there and using editor `Ctrl+C`, then pasting in Windows **works immediately**.
 
-## Codex built-in copying (no extra software)
+This establishes correct Codex-to-Linux copy but **source-dependent VMware guest-to-host propagation**. It rules out a purely PRIMARY-vs-CLIPBOARD explanation; does **not** yet distinguish Wayland-to-XWayland clipboard bridging, MIME/ownership semantics or VMware's focus tracking.
 
-Before manually selecting text, try the **existing Codex CLI feature** (documented in the official CLI reference):
+## Relevant public evidence and Wayland-only investigation
 
-- **`/copy`** or **Ctrl+O** copies the latest completed agent response to Ubuntu's native clipboard. A copy inside Ubuntu does not by itself prove VMware propagated it to Windows.
-- **`/raw`** toggles more copy-friendly raw scrollback.
-- **`/tui` → Scrollback** switches away from the fullscreen/alternate-screen experience after restarting Codex, so terminal selection is easier.
+- Broadcom's [open-vm-tools known limitations](https://knowledge.broadcom.com/external/article/320995) and [open issue #792](https://github.com/vmware/open-vm-tools/issues/792) document VMware copy/paste shortcomings with Wayland.
+- Participants in [issue #792](https://github.com/vmware/open-vm-tools/issues/792) reported a **one-shot** bridge from Wayland to XWayland as a viable workaround for guest-to-host clipboard transfer: `wl-paste | xclip -selection clipboard`. The evidence is on another VMware/desktop combination; **not yet verified for this Ubuntu GNOME VM**.
+- In [issue #701](https://github.com/vmware/open-vm-tools/issues/701), a user reported that simply focusing a graphical Linux text field after a copy made VMware propagate the clipboard. This should be tested **without recopying** before installing anything.
 
-These commands are not verified on the operator's running `0.163.0` instance yet; their availability is documented upstream. Avoid `/export` for ad hoc cross-VM clipboard tests if the complete conversation could include secrets.
+**Two minimal tests, no session change:**
 
-Primary reference: [Codex CLI developer commands](https://learn.chatgpt.com/docs/developer-commands); [Codex CLI reference](https://learn.chatgpt.com/docs/cli/reference).
+1. After Codex `/copy`, focus an existing GNOME text editor **without using Copy or Paste**, then attempt Windows Ctrl+V. Record whether it updated.
+2. If not, in a normal Ubuntu terminal check `command -v wl-paste` and `command -v xclip`; if both exist, after Codex `/copy` execute:
+
+   ```bash
+   wl-paste --no-newline | xclip -selection clipboard
+   ```
+
+   Then immediately paste on Windows. If one command is missing, the optional test-only packages are `wl-clipboard` and `xclip`; installation requires operator consent and APT. Never copy private secrets into experimental clipboard debugging commands.
+
+If this bridge works, a **user-triggered one-shot clipboard relay** is the candidate solution. Do **not** implement a continuously running Wayland↔XWayland watcher yet: clipboard loops have been reported, and always-on clipboard access has privacy implications. No changes to GNOME session type, guest display settings or VMware VMX settings should be made.
 
 ## Smallest observable test, no host changes
 
@@ -37,7 +47,7 @@ Primary reference: [Codex CLI developer commands](https://learn.chatgpt.com/docs
 
    The returned process list and package status indicate whether GUI guest integration exists; they do **not** alone prove synchronization.
 
-4. If `session=wayland`, consider a **reversible operator choice**: log out; on Ubuntu's login screen select the cogwheel and **Ubuntu on Xorg**, if offered. Log in again, run `echo "$XDG_SESSION_TYPE"` (expect `x11`), then repeat the copy test **without** changing Codex. Broadcom's VMware Workstation Linux-guest guidance explicitly notes Wayland clipboard limitations. Do not edit GDM configuration or disable Wayland globally merely to test.
+4. **Do not propose an Xorg session switch for this VM.** The operator has already tried it and reverted because of scaling, resolution/fullscreen and window-management problems. Keep all proposed workarounds inside the Wayland session.
 5. If already `x11` or still failing under Xorg, verify VMware Workstation **VM Settings → Options → Guest Isolation → Enable copy and paste** and that desktop VMware Tools are running. Review `open-vm-tools-desktop` installation and the VMware guest-integration service before changing settings. Some drag/drop workflows also require `run-vmblock\\x2dfuse.mount`, as documented by Broadcom; do not assume this is the clipboard root cause.
 
 ## Optional diagnostic helpers, only after root cause is known
