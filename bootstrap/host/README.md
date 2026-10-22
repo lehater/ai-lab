@@ -10,6 +10,8 @@ host SSH config is isolated at `~/.config/ai-lab/github-ssh.conf`, uses
 `~/.ssh/config`, Git remotes or the proxy. S0 is still an independent USB
 Shell installer, with its documented manual v2rayN first-launch step.
 
+**Optional GUI host integration diagnosis:** for copy/paste problems between Ubuntu VMware guest and Windows (including Codex CLI), see [clipboard troubleshooting](clipboard.md). This is a proposal/runbook only, not an accepted modification to S1 or the default host bootstrap.
+
 ## Operator entry points
 
 From the checked-out repository after completing S0:
