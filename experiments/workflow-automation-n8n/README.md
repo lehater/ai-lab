@@ -17,7 +17,7 @@ This is a test of agent-driven **workflow authoring and reproducibility**, not a
 ## Preconditions
 
 - Work on `lab-test` (Ubuntu 24.04/VMware) with accepted S0 → S1 → S1-D already installed. Run Codex **inside the same VM** as n8n. Remote Codex execution cannot use this VM's `127.0.0.1` without separately authorized transport.
-- Docker and Compose work; Codex CLI is already installed and logged in **by the operator**. This experiment does not install Codex.
+- Docker and Compose work; **Codex CLI is not part of the accepted lab-test baseline**. Install it separately using this experiment's user-local installer below, then log in as the operator. No existing Codex installation is assumed.
 - A free local TCP port 5678. No shared production n8n instance.
 - No real customer content, real credentials or public webhooks.
 - n8n Docker tag is explicitly `2.44.5` for this experiment. Confirm image pull and record its **actual image ID/digest**; version pinning by tag alone does not guarantee identical bytes.
@@ -42,6 +42,45 @@ The first `up` generates a mode-600 `.env.local` with an n8n encryption key (**o
 Important: this is **HTTP with `N8N_SECURE_COOKIE=false` strictly for loopback-only testing**. Do not route or publish it to a LAN/Internet interface. If the local binding check fails, stop. Do not change the repository's existing Xray/Docker proxy settings (D-011).
 
 Manually open n8n in the VM's browser, create the initial owner account, open **Settings → Instance-level MCP**, enable MCP access, and obtain an **instance-level MCP API key**. The separate **Settings → n8n API** key is not interchangeable. Never paste the key into Git or public logs.
+
+## Install Codex CLI on lab-test (experimental prerequisite)
+
+The VM does **not** contain Codex as part of S0/S1/S1-D. This experiment provides a dedicated setup script. It is **not** a change to Infrastructure Core or permanent host bootstrap.
+
+```bash
+cd ~/projects/ai-lab
+git fetch origin
+git switch proposal/workflow-automation-mcp-spike
+git pull --ff-only origin proposal/workflow-automation-mcp-spike
+
+bash experiments/workflow-automation-n8n/codex-setup.sh install
+bash experiments/workflow-automation-n8n/codex-setup.sh verify
+export PATH="$HOME/.local/bin:$PATH"
+codex --version
+```
+
+The script:
+
+- Supports the tested Ubuntu 24.04 / x86_64 environment; installs **Node.js and npm from Ubuntu APT if missing**, reusing S0's existing APT proxy. This is an explicit **host package** change and is not undone by the n8n `lab.sh clean` command.
+- Uses the official npm package `@openai/codex@0.163.0` (version pinned for this experiment), installing **without root** in `~/.local/share/ai-lab-experiments/codex/`.
+- Sends the npm install traffic through S0's local Xray HTTP proxy at `127.0.0.1:10808`; refuses to replace another executable at `~/.local/bin/codex`.
+- Performs a version/binary smoke check, but **does not authenticate** against OpenAI or prove the n8n MCP connection. An initial npm package download is required, even though Docker image pulls already passed.
+- Can be re-run. It avoids a global `sudo npm install -g`. Other Node.js versions or existing Codex installations require separate review; the script fails rather than silently replacing them.
+
+Next sign in interactively. The CLI supports signing in with the user's ChatGPT account (no API key is needed for that route). If Codex/OpenAI connectivity requires S0's proxy, enable it **in the shell where Codex runs**, while bypassing proxying for local n8n MCP:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+export HTTP_PROXY=http://127.0.0.1:10808
+export HTTPS_PROXY=http://127.0.0.1:10808
+export NO_PROXY=127.0.0.1,localhost
+codex login
+codex login status
+```
+
+If interactive browser login is blocked, inspect `codex login --help` for available alternatives; do not send login tokens to a chat or commit credential files. Browser traffic may require its own proxy settings; shell proxy variables alone do not configure GNOME browsers. Avoid recording `~/.codex/auth.json` in Git.
+
+**Codex setup is pending live verification on lab-test.** Record the observed Node/npm/Codex versions and any failure, not an invented PASS. After successful sign-in, return to the n8n MCP setup below.
 
 ## Configure Codex MCP (local-only, no token in config)
 
@@ -104,16 +143,17 @@ bash experiments/workflow-automation-n8n/lab.sh stop    # volume kept
 bash experiments/workflow-automation-n8n/lab.sh clean --destroy-experiment-data
 ```
 
-`clean` removes only the named experimental Compose project's containers, networks, volume and local key file; it verifies no labeled objects remain. It does **not** delete other Docker resources, Git files, Codex settings or revoke an instance MCP token. Manually remove the `ai_lab_n8n_spike` Codex MCP entry when finished. **Do not run `docker system prune` / `docker volume prune`.**
+`clean` removes only the named experimental Compose project's containers, networks, volume and local key file; it verifies no labeled objects remain. It does **not** delete other Docker resources, Git files, Codex settings, the separately installed experimental Codex CLI/Node/npm, or revoke an instance MCP token. Manually remove the `ai_lab_n8n_spike` Codex MCP entry when finished. **Do not run `docker system prune` / `docker volume prune`.**
 
 ## Verified vs unverified
 
-Static review/quality checks may be performed without Docker. **Live setup, instance MCP access, Codex calls, the two workflow executions and clean-volume replay require running the commands on lab-test**. Record actual PASS/FAIL in the experiment branch. Do not update accepted `main` project-state documents from this experiment.
+Static review/quality checks may be performed without Docker. **Live Codex installation/authentication, instance MCP access, Codex calls, the two workflow executions and clean-volume replay require running the commands on lab-test**. Record actual PASS/FAIL in the experiment branch. Do not update accepted `main` project-state documents from this experiment.
 
 ## Sources
 
 - [Official n8n MCP access](https://docs.n8n.io/connect/connect-to-n8n-mcp-server)
 - [Official n8n MCP tools](https://docs.n8n.io/connect/connect-to-n8n-mcp-server/mcp-server-tools-reference)
 - [Official n8n Codex connection examples](https://docs.n8n.io/connect/connect-to-n8n-mcp-server/mcp-client-examples)
+- [Official Codex installation](https://github.com/openai/codex#readme)
 - [Codex MCP configuration](https://developers.openai.com/codex/mcp)
 - [n8n Docker Compose installation](https://docs.n8n.io/deploy/host-n8n/install-options/install-using-docker-compose)
