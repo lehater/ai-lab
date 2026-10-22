@@ -160,7 +160,8 @@ package from unintended removal, not all shared dependencies.
 | --- | --- | --- |
 | Controller install / localhost inventory on `lab-test` | pipx Ansible 2.21.5 installed using Python 3.12.3; localhost inventory detected. Repeated controller setup, full baseline identity and transitive dependency freeze still open | **PARTIAL PASS, OWNER-REPORTED 2026-10-22** |
 | `--syntax-check` / offline delete guard | Playbook syntax and local inventory passed; uninstall without explicit approval refused | **PASS, OWNER-REPORTED 2026-10-22** |
-| `--check --diff` planned install/removal preview | Review target and predicted changes before modifying packages | **NOT RUN** |
+| `--check --diff` install preview | On `lab-test`: 1 new `ripgrep` predicted, 0 upgrades/removals, no failed tasks; 3 fact-injection deprecations prompted later code fix | **PASS, OWNER-REPORTED 2026-10-22 (OLDER REVISION, PATCH NEEDS RERUN)** |
+| `--check --diff` uninstall preview | Review removal target, ownership marker and predicted changes separately before actual uninstall | **NOT RUN** |
 | First `present` | Install ripgrep; create *only* role ownership marker; `rg --version` works | **NOT RUN** |
 | Second `present` | No role-managed package or marker changes | **NOT RUN** |
 | `verify` and reboot | Package and command persist, readable to operator | **NOT RUN** |
