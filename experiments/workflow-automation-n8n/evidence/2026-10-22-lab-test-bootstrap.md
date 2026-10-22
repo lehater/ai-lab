@@ -38,7 +38,7 @@ PASS: Compose config, container, loopback port and local health.
 | Pulled image digest / ID | **NOT RECORDED** | Pull succeeded, immutable image identity absent |
 | n8n owner and instance-level MCP enablement | **NOT TESTED** | Manual operator action next |
 | Codex CLI 0.163.0 installation / binary | **PASS (operator output)** | Experiment-local `codex-setup.sh verify` reports pinned version; subsequent `codex --version` also returns `codex-cli 0.163.0` |
-| Codex login / authentication | **NOT TESTED** | `codex-setup.sh` explicitly reports authentication not checked; next gate |
+| Codex ChatGPT login / authentication | **PASS (operator output)** | `codex login status` returned `Logged in using ChatGPT`; n8n MCP not tested |
 | Codex MCP authorization and tool discovery | **NOT TESTED** | Agent integration next |
 | Agent-authored workflow create/execute/update/execute | **NOT TESTED** | Stage A main research gate |
 | Git artifact export and clean-instance replay | **NOT TESTED** | Stage B gated on Stage A |
@@ -58,6 +58,16 @@ codex-cli 0.163.0
 
 **Acceptance:** user-local Codex binary installed and starts successfully: **PASS**, as reported by the operator. The complete npm installation transcript, exact Node/npm versions, auth status, and network connection to OpenAI have not been supplied. Treat **authentication and MCP discovery as unverified**.
 
+## Codex authentication evidence (operator output, 2026-10-22)
+
+The owner executed `codex login status` on `lab-test`:
+
+```text
+Logged in using ChatGPT
+```
+
+**Acceptance:** Codex CLI ChatGPT sign-in is confirmed by the operator's status output (**PASS**). No authentication token was shared. This does **not** establish n8n owner setup, instance-level MCP authorization, MCP tool discovery, or workflow execution.
+
 ## Next reproducible checks (on lab-test)
 
 ```bash
@@ -68,6 +78,6 @@ bash experiments/workflow-automation-n8n/lab.sh verify
 ```
 
 Do not display environment secrets, MCP bearer tokens, Docker `inspect` of container env or unsanitized logs.
-Record the generated image ID, Codex version, and exact revision with subsequent Stage A results. The owner still needs to create n8n owner account, enable Instance-level MCP, and issue a **MCP API key** in the local UI.
+Record the generated image ID, Codex version, and exact revision with subsequent Stage A results. The owner still needs to create the n8n owner account if not already configured, enable Instance-level MCP, and issue an **MCP API key** in the local UI. Codex sign-in is already confirmed.
 
 **State boundary:** This is experiment evidence in a feature branch. It does **not** change accepted `main` project status, prove unattended provisioning, certify external network isolation, or validate the MCP workflow integration.
