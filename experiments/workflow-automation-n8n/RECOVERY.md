@@ -64,7 +64,7 @@ sysctl kernel.apparmor_restrict_unprivileged_userns
 # Expected: 1 (unchanged)
 bwrap --unshare-net --ro-bind / / --proc /proc --dev /dev /bin/true
 echo "bwrap exit code: $?"
-codex sandbox linux -- /bin/true
+codex sandbox linux /bin/true
 echo "codex sandbox exit code: $?"
 ```
 
