@@ -1,8 +1,9 @@
 .DEFAULT_GOAL := help
-.PHONY: help host-setup host-verify host-test github-setup github-verify docker-setup docker-verify docker-pull-test docker-test docker-compose-test
+.PHONY: help host-setup host-verify host-test github-setup github-verify docker-setup docker-verify docker-pull-test docker-test docker-compose-test codex-setup codex-verify codex-test
 
 HOST_DIR := bootstrap/host
 DOCKER_DIR := bootstrap/docker
+CODEX_DIR := bootstrap/devtools/codex
 
 help:
 	@printf '%s\n' \
@@ -17,6 +18,9 @@ help:
 	  '  make docker-pull-test  Pull/run hello-world through daemon proxy' \
 	  '  make docker-test     Run offline Docker render/syntax checks' \
 	  '  make docker-compose-test  Run disposable standard Compose bridge smoke' \
+	  '  make codex-setup    (optional) Install user Codex CLI and verify Linux sandbox' \
+	  '  make codex-verify   (optional) Check pinned Codex CLI, bwrap and AppArmor' \
+	  '  make codex-test     (optional) Run offline Codex installer checks' \
 	  '' \
 	  'S0 remains independent: run bootstrap/stage0/bootstrap.sh from USB.' \
 	  'If make is missing after S0, run: bash bootstrap/host/bootstrap.sh'
@@ -53,3 +57,13 @@ docker-test:
 # Standard Compose bridge smoke; one disposable service, no published ports.
 docker-compose-test:
 	@bash $(DOCKER_DIR)/compose-smoke.sh
+
+# Optional developer workstation tool: never a dependency of S0/S1/S1-D.
+codex-setup:
+	@bash $(CODEX_DIR)/setup.sh setup
+
+codex-verify:
+	@bash $(CODEX_DIR)/setup.sh verify
+
+codex-test:
+	@bash $(CODEX_DIR)/tests/test-static.sh
