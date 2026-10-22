@@ -1,0 +1,23 @@
+name: Optional Codex developer tool (static)
+
+on:
+  push:
+    branches:
+      - proposal/optional-codex-devtool
+  pull_request:
+    paths:
+      - 'bootstrap/devtools/codex/**'
+      - 'Makefile'
+      - '.github/workflows/codex-devtool-static.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Offline shell and security checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Codex optional installer contract
+        run: make codex-test
