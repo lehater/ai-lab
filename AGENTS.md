@@ -16,6 +16,10 @@ machine changes are not accepted repository state.
 7. [Stage 0 instructions](bootstrap/stage0/README.md) — offline VMware USB details, if relevant.
 8. [README](README.md) — repository overview.
 
+## Research references (non-normative)
+
+- [Platform landscape, 2026-10-22](docs/research/2026-10-22-platform-landscape.md) — exploratory comparison of infrastructure, workspace, deployment and template solutions; **not** an accepted decision or implementation status.
+
 ## Before starting work
 
 - Check actual `main`, open PRs and working branch. Do not assume what a prior chat completed.
