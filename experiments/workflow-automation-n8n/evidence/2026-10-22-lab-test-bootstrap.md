@@ -37,9 +37,26 @@ PASS: Compose config, container, loopback port and local health.
 | Exact experiment checkout commit SHA | **NOT RECORDED** | Operator did not include `git rev-parse HEAD` in this transcript |
 | Pulled image digest / ID | **NOT RECORDED** | Pull succeeded, immutable image identity absent |
 | n8n owner and instance-level MCP enablement | **NOT TESTED** | Manual operator action next |
+| Codex CLI 0.163.0 installation / binary | **PASS (operator output)** | Experiment-local `codex-setup.sh verify` reports pinned version; subsequent `codex --version` also returns `codex-cli 0.163.0` |
+| Codex login / authentication | **NOT TESTED** | `codex-setup.sh` explicitly reports authentication not checked; next gate |
 | Codex MCP authorization and tool discovery | **NOT TESTED** | Agent integration next |
 | Agent-authored workflow create/execute/update/execute | **NOT TESTED** | Stage A main research gate |
 | Git artifact export and clean-instance replay | **NOT TESTED** | Stage B gated on Stage A |
+
+## Codex CLI installation and execution evidence (operator output, 2026-10-22)
+
+The owner provided these sanitized outputs from `lab-test`:
+
+```text
+PASS: codex-cli 0.163.0 (.../.local/share/ai-lab-experiments/codex/node_modules/@openai/codex/bin/codex.js)
+For this shell: export PATH="$HOME/.local/bin:$PATH"
+Authentication not checked. Start codex and sign in separately.
+$ export PATH="$HOME/.local/bin:$PATH"
+$ codex --version
+codex-cli 0.163.0
+```
+
+**Acceptance:** user-local Codex binary installed and starts successfully: **PASS**, as reported by the operator. The complete npm installation transcript, exact Node/npm versions, auth status, and network connection to OpenAI have not been supplied. Treat **authentication and MCP discovery as unverified**.
 
 ## Next reproducible checks (on lab-test)
 
