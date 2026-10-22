@@ -23,6 +23,7 @@ do_init() {
   command -v openssl >/dev/null || fail "openssl missing."
   [[ ! -L private && ! -L .env ]] || fail "Refusing symlinked local configuration."
   (umask 077; mkdir -p private/backups)
+  chmod 0700 private private/backups
   if [[ ! -e private/db_password.txt && ! -L private/db_password.txt ]]; then
     (umask 077; openssl rand -hex 32 > private/db_password.txt)
   fi
@@ -81,6 +82,7 @@ do_test() {
 
   local backup
   (umask 077; mkdir -p private/backups)
+  chmod 0700 private private/backups
   backup="$(mktemp private/backups/pilot-XXXXXXXX.dump)"
   if ! dc exec -T db pg_dump -Fc -U ai_lab_pilot -d ai_lab_pilot > "${backup}"; then
     rm -f -- "${backup}"
