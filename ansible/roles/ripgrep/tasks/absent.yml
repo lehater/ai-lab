@@ -24,7 +24,7 @@
 - name: Check exact ownership marker content
   ansible.builtin.assert:
     that:
-      - (ai_lab_ripgrep_marker_content.content | b64decode) == 'ai-lab-ripgrep-ownership-v1\n'
+      - (ai_lab_ripgrep_marker_content.content | b64decode) == 'ai-lab-ripgrep-ownership-v1'
     fail_msg: >-
       Ownership marker contents are unexpected; refusing uninstall.
   when: ai_lab_ripgrep_marker.stat.exists
