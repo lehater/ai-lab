@@ -65,6 +65,25 @@ docker image inspect docker.n8n.io/n8nio/n8n:2.44.5 --format '{{.Id}}'
 
 Failed: `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`. This is not a Docker health failure: the operator's earlier `sudo docker` commands already worked. Do not add the Codex user to the `docker` group or grant Docker socket access for this experiment. The operator can separately use `sudo docker image inspect ...` in a normal terminal.
 
+## Subsequent operator diagnostics — clean Git and AppArmor status (2026-10-22)
+
+The operator ran the previously requested read-only checks in a normal `lab-test` terminal:
+
+```text
+$ git status --short --branch
+## proposal/workflow-automation-mcp-spike...origin/proposal/workflow-automation-mcp-spike
+
+$ ls -la experiments/workflow-automation-n8n/evidence/2026-10-22-stage-a/ 2>/dev/null || true
+[no output]
+
+$ sudo aa-status | grep -Ei 'bwrap|unprivileged_userns' || true
+   unprivileged_userns
+```
+
+**Interpretation:** no tracked/untracked Git changes were reported in the ordinary working tree, and the expected Stage A evidence directory was not present. The filtered AppArmor status shows the generic `unprivileged_userns` profile, **not** a loaded named `bwrap` profile. This does not by itself prove that no differently named AppArmor profile attaches to `/usr/bin/bwrap`, and no AppArmor changes have yet been made.
+
+**Next safe gate:** check `/etc/apparmor.d` for profiles attached to `/usr/bin/bwrap`; only if none conflict, install and load the official Ubuntu 24.04 `bwrap-userns-restrict` profile. Then run a system-`bwrap` namespace test and `codex sandbox linux /bin/true`, confirming the global AppArmor setting stays at `1`. Installation and test results are pending.
+
 ## Incomplete local artifacts / Git coordination
 
 Codex intended to write under `evidence/2026-10-22-stage-a/`:
