@@ -38,7 +38,7 @@ do_init() {
   printf '%s\n' "Review POSTGRES_IMAGE in .env and record digest before production/replay claims."
 }
 check_compose() {
-  dc config --format json | python3 -c '
+  dc --profile restore config --format json | python3 -c '
 import json,sys
 c=json.load(sys.stdin)
 ss=c.get("services",{})
