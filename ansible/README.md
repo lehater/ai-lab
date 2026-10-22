@@ -158,12 +158,13 @@ package from unintended removal, not all shared dependencies.
 
 | Case | Expected result | Status |
 | --- | --- | --- |
-| Fresh `lab-test` after S0/S1/S1-D | No changes to baseline; isolated pipx Ansible 2.21.5 install, repeat, exact version, dependency freeze and localhost inventory succeed | **NOT RUN** |
-| `--syntax-check` and `--check --diff` | Syntax valid; preview documents expected changes | **NOT RUN** |
+| Controller install / localhost inventory on `lab-test` | pipx Ansible 2.21.5 installed using Python 3.12.3; localhost inventory detected. Repeated controller setup, full baseline identity and transitive dependency freeze still open | **PARTIAL PASS, OWNER-REPORTED 2026-10-22** |
+| `--syntax-check` / offline delete guard | Playbook syntax and local inventory passed; uninstall without explicit approval refused | **PASS, OWNER-REPORTED 2026-10-22** |
+| `--check --diff` planned install/removal preview | Review target and predicted changes before modifying packages | **NOT RUN** |
 | First `present` | Install ripgrep; create *only* role ownership marker; `rg --version` works | **NOT RUN** |
 | Second `present` | No role-managed package or marker changes | **NOT RUN** |
 | `verify` and reboot | Package and command persist, readable to operator | **NOT RUN** |
-| `absent` without approval | Rejected before package deletion | **NOT RUN** |
+| `absent` without approval | Read-only smoke confirmed explicit approval guard rejects missing consent. Repeat during full role E2E | **PASS IN OFFLINE SMOKE ONLY** |
 | `absent` after this role installed package | Remove package, preserve unrelated APT packages, no `autoremove`; second run no-op | **NOT RUN** |
 | Pre-existing `ripgrep`, **no** AI Lab marker | Install action does not claim ownership; cleanup refuses to remove it | **NOT RUN** |
 | Absent package and absent marker | Repeated approved cleanup is a no-op | **NOT RUN** |
