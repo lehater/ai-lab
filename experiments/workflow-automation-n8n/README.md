@@ -28,6 +28,7 @@ From the experimental branch only:
 
 ```bash
 cd ~/projects/ai-lab
+git fetch origin
 git switch proposal/workflow-automation-mcp-spike
 git rev-parse HEAD
 make docker-verify
