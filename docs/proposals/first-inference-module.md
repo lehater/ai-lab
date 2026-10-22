@@ -88,6 +88,67 @@ host-only exposure is problematic, record failure and return to
 tool/runtime choice. Do not build infrastructure workarounds before
 determining whether the first AI capability is worth deploying.
 
+### Operator commands for Phase A (on `lab-test` only)
+
+Use the current accepted Docker baseline, not the unmerged PostgreSQL
+branch. Check available RAM/disk and that TCP/11434 has no current
+listener **before** running the service:
+
+```bash
+cd ~/projects/ai-lab
+git rev-parse HEAD
+make docker-verify
+free -h
+df -h "$HOME"
+sudo ss -lnt '( sport = :11434 )'
+sudo docker ps -a --format 'table {{.Names}}\t{{.Ports}}'
+```
+
+Only proceed if port 11434 is free and sufficient resources are available.
+These commands create a private, test-only container and cache volume.
+`latest` is acceptable for the **discovery probe only**; record the
+immutable image ID/digest and choose a pinned version for a real module.
+
+```bash
+PROBE="ailab-ollama-probe-$(date +%s)"
+VOLUME="${PROBE}-models"
+sudo docker run -d --name "$PROBE" --restart no \
+  -p 127.0.0.1:11434:11434 \
+  -v "$VOLUME":/root/.ollama ollama/ollama:latest
+sudo docker image inspect ollama/ollama:latest \
+  --format 'Image={{.Id}} RepoDigests={{json .RepoDigests}}'
+sudo docker exec "$PROBE" ollama pull qwen3:1.7b
+sudo docker exec "$PROBE" ollama list
+```
+
+The model pull is the *first unresolved integration boundary*. If it
+fails, record `sudo docker logs "$PROBE" --tail=100` and the failed
+command; do **not** modify shared host proxy settings or introduce a
+forwarder. If it succeeds, run one actual inference:
+
+```bash
+curl --noproxy '*' -fsS --max-time 180 \
+  http://127.0.0.1:11434/api/generate \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"qwen3:1.7b","prompt":"Explain containerization in one short sentence.","stream":false,"think":false}' \
+  | python3 -c 'import json,sys; r=json.load(sys.stdin); answer=r.get("response","").strip(); assert answer, r; print("RESPONSE:",answer); print("TOTAL_DURATION_NS:",r.get("total_duration"))'
+sudo docker port "$PROBE"
+```
+
+Stop and remove **only the probe** after collecting its results:
+
+```bash
+sudo docker logs "$PROBE" --tail=40
+sudo docker rm -f "$PROBE"
+# Optional: delete the model cache only if it is no longer needed:
+# sudo docker volume rm "$VOLUME"
+```
+
+Retain the model volume for repeat inference tests, or remove it
+explicitly when the experiment is complete. Never run generic
+`docker system prune` / `volume prune`. This operator probe is a
+feasibility experiment, **not** an accepted repeatable deployment.
+
 ## Phase B — optional, only after Phase A works
 
 Submit a small implementation PR for a single Compose-based
