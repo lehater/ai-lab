@@ -46,13 +46,15 @@ The depth of these controls grows with **risk, complexity and reuse**, not with 
 
 Record actual pass/fail evidence and remaining gaps in [state](state.md), not a speculative aggregate Enterprise-grade score. **Maturity work continues after S4** without requiring a new numbered final stage.
 
-## Current next infrastructure slice — S2 (proposed, not verified)
+## Current S2 — accepted host-manager first slice; core gates still open
 
 **Accepted baseline:** S0 → first S1 GitHub SSH module → S1-D Docker/Compose are owner-verified in their recorded scopes. The historical S1 setup/replay procedure is retained below as evidence; repeating it is a regression check, **not** a reason to restart the S1 milestone.
 
-The next implementation candidate is [PR #15](https://github.com/lehater/ai-lab/pull/15), a **Draft/UNVERIFIED** local Ansible Core + `ripgrep` lifecycle slice. It is based on the [exploratory comparison of optional component managers](../research/2026-10-22-optional-components-lifecycle.md). No Ansible host-manager decision becomes accepted merely by merging the research.
+**Accepted first host-manager slice:** [merged PR #15](https://github.com/lehater/ai-lab/pull/15) provides a pinned, local Ansible Core controller, localhost inventory and an owner-tested `ripgrep` installation/verify/rerun/cleanup lifecycle. Decision **D-012** accepts Ansible as the S2 mechanism for *new optional host-managed components*. This does **not** retroactively make Ansible necessary to run the existing S0/S1/S1-D bootstrap, replace Compose, or certify the complete S2 milestone.
 
-**Next gate on `lab-test`:** evaluate operator-owned localhost inventory, controller installation, explicit `present / verify / absent`, dry-run limits, rerun/idempotence, ownership safety of pre-existing packages, reboot/teardown and old S0/S1-D regression. Record actual command outputs, version/digest and controlled cleanup before requesting implementation acceptance. A new Codex host option is a separate later slice **only if needed**, informed by [Codex VM findings](../research/2026-10-22-codex-ubuntu-vm-findings.md).
+**Next separately scoped work:** (a) optionally exercise the host-role contract with a practical Ubuntu workstation tool (VS Code), including upstream licensing/repository key provenance, pre-existing installation safety, rerun and removal; **do not** mark it verified before `lab-test` testing; (b) in an independent PR, deliver a disposable **stateful Docker Compose service** with explicit secret handling, persistent data across recreation, a separate-storage backup/restore test, health checks and non-destructive teardown. Continue treating PostgreSQL or other fixture as a **test consumer**, not a general S2-required database.
+
+**Remaining initial Ansible pilot evidence gaps:** negative scenario for a pre-existing unmanaged `ripgrep`, explicit post-reboot package functional verification, repeat controller-bootstrap and pipx dependency freeze; track independently without delaying unrelated S2 work.
 
 ## Historical proposed S2/S3 probes — deferred, not accepted implementation
 
