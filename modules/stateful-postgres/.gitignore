@@ -1,0 +1,4 @@
+# Secret and generated recovery material: NEVER commit to Git.
+.env
+private/
+*.dump

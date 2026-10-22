@@ -1,0 +1,46 @@
+name: ai-lab-s2-pg-pilot
+services:
+  db:
+    image: ${POSTGRES_IMAGE:?POSTGRES_IMAGE is required}
+    restart: "no"
+    environment:
+      POSTGRES_USER: ai_lab_pilot
+      POSTGRES_DB: ai_lab_pilot
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - primary_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ai_lab_pilot -d ai_lab_pilot"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+
+  restore-db:
+    profiles: ["restore"]
+    image: ${POSTGRES_IMAGE:?POSTGRES_IMAGE is required}
+    restart: "no"
+    environment:
+      POSTGRES_USER: ai_lab_pilot
+      POSTGRES_DB: ai_lab_pilot
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - restore_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ai_lab_pilot -d ai_lab_pilot"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+
+secrets:
+  db_password:
+    file: ./private/db_password.txt
+
+volumes:
+  primary_data: {}
+  restore_data: {}
