@@ -330,3 +330,25 @@ is retained in [bootstrap/README.md](../../bootstrap/README.md).
 - **DEFERRED / BLOCKED**: explicitly postponed / prevented by a dependency.
 
 Only change a milestone to VERIFIED with an explicit test and evidence.
+
+## Candidate: optional Codex developer tool (proposal, NOT ACCEPTED)
+
+The branch `proposal/optional-codex-devtool` proposes an **opt-in**
+user-local Codex CLI installation and scoped Ubuntu 24.04
+Bubblewrap/AppArmor repair under `bootstrap/devtools/codex/`.
+It includes `make codex-setup`, `make codex-verify`, offline
+checks, and an evaluation of VS Code with the official Codex extension.
+See [proposal](../proposals/codex-developer-workbench.md) and
+[operator guide](../../bootstrap/devtools/codex/README.md).
+
+**Implementation status:** candidate script and documentation only.
+**Verification status:** NOT TESTED on clean `lab-test`; no accepted
+baseline or milestone changes. Earlier success with Codex CLI `0.163.0`
+and the targeted AppArmor profile was reported from the **separately
+prepared n8n experiment** (draft PR #11), not a clean bootstrap run
+of this generalized installer.
+
+Codex stays optional developer tooling; VS Code installation and any
+inbound SSH server remain deliberately outside the script. This note
+does **not** record an accepted decision; the merge/acceptance gate is
+described in the proposal.
