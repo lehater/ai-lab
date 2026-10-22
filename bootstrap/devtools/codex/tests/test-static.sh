@@ -19,7 +19,7 @@ has 'kernel.apparmor_restrict_unprivileged_userns'
 has 'bwrap-userns-restrict'
 has 'apparmor_parser -r'
 has 'Existing compatible Codex reused'
-has 'run as the operator'
+has 'Run as the operator'
 has 'Refusing unrecognized Codex launcher'
 
 if grep -Eq 'sysctl -w|apparmor_restrict_unprivileged_userns=0|dangerously-bypass-approvals-and-sandbox|docker group|chmod 666 /var/run/docker.sock' "$installer"; then
