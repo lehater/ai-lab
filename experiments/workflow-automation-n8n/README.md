@@ -1,8 +1,8 @@
 # n8n + Codex MCP — disposable experiment
 
-**Status: LOCAL N8N BOOTSTRAP PASS on `lab-test` (owner-provided log); MCP/agent workflow tests pending.**
+**Status: LOCAL N8N BOOTSTRAP + CODEX 0.163.0 LOGIN + n8n MCP READ PASS (owner-provided outputs); workflow write/execution tests pending.**
 
-Branch-only GitHub Actions static validation (Bash syntax, scoped configuration, Docker Compose parsing) succeeded: https://github.com/lehater/ai-lab/actions/runs/39731909135. Additionally, the owner supplied PASS output for Docker prerequisites, n8n container startup, local loopback binding and HTTP health on `lab-test`. See [recorded 2026-10-22 lab-test evidence](evidence/2026-10-22-lab-test-bootstrap.md). Codex/MCP authoring and workflow execution have **not** yet been demonstrated.
+Branch-only GitHub Actions static validation (Bash syntax, scoped configuration, Docker Compose parsing) succeeded: https://github.com/lehater/ai-lab/actions/runs/39731909135. Additionally, the owner supplied PASS output for Docker prerequisites, n8n container startup, local loopback binding and HTTP health on `lab-test`. See [recorded 2026-10-22 lab-test evidence](evidence/2026-10-22-lab-test-bootstrap.md). Codex is installed and signed in using ChatGPT; a read-only n8n MCP call succeeded, with [51 discovered tools and the response recorded](evidence/2026-10-22-n8n-mcp-connectivity.md). MCP authoring and workflow execution have **not** yet been demonstrated.
 This is **not** an Infrastructure Core service, persistent AI platform, or a verified S3 module. All code belongs to branch `proposal/workflow-automation-mcp-spike` (draft PR #11); do not merge to `main`.
 
 ## Purpose and responsibilities
@@ -80,7 +80,7 @@ codex login status
 
 If interactive browser login is blocked, inspect `codex login --help` for available alternatives; do not send login tokens to a chat or commit credential files. Browser traffic may require its own proxy settings; shell proxy variables alone do not configure GNOME browsers. Avoid recording `~/.codex/auth.json` in Git.
 
-**Codex setup is pending live verification on lab-test.** Record the observed Node/npm/Codex versions and any failure, not an invented PASS. After successful sign-in, return to the n8n MCP setup below.
+**Operator-confirmed:** installation/binary check of Codex 0.163.0 and `codex login status` (`Logged in using ChatGPT`) are PASS on lab-test. Node/npm versions remain unrecorded; authentication tokens have not been shared.
 
 ## Configure Codex MCP (local-only, no token in config)
 
@@ -111,7 +111,7 @@ The approval mode above prompts for write operations. Keep approval enabled; the
 
 ## Codex authoring task
 
-Feed Codex the source-controlled instructions in [CODEX_TASK.md](CODEX_TASK.md). The minimal workflow:
+From the experiment branch checkout, open Codex in `~/projects/ai-lab` and instruct it: **Read `experiments/workflow-automation-n8n/CODEX_TASK.md` and execute Stage A only using the connected n8n MCP tools. Do not change files outside the experiment and do not merge main.** The minimal workflow:
 
 - Manual trigger
 - Create a deterministic `value = 4`
@@ -147,7 +147,7 @@ bash experiments/workflow-automation-n8n/lab.sh clean --destroy-experiment-data
 
 ## Verified vs unverified
 
-Static review/quality checks may be performed without Docker. **Live Codex installation/authentication, instance MCP access, Codex calls, the two workflow executions and clean-volume replay require running the commands on lab-test**. Record actual PASS/FAIL in the experiment branch. Do not update accepted `main` project-state documents from this experiment.
+Static CI passed; **owner-observed** local n8n startup, Codex CLI login and a read-only MCP request passed on lab-test. **Creating, modifying and executing a workflow and clean-volume replay remain unverified** and require running Codex on lab-test. Record actual PASS/FAIL in the experiment branch. Do not update accepted `main` project-state documents from this experiment.
 
 ## Sources
 
