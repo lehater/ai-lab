@@ -48,6 +48,17 @@
   loop_control:
     label: root-owned marker validation
 
+- name: Require explicit package version before making repository changes
+  ansible.builtin.assert:
+    that:
+      - ai_lab_vscode_apt_version | length > 0
+    fail_msg: >-
+      Choose the exact APT version after action=prepare. The present action
+      never configures a new repository without a version.
+  when:
+    - ai_lab_vscode_action == 'present'
+    - "'code' not in ansible_facts.packages or ai_lab_vscode_package_mark.stat.exists"
+
 - name: Validate repository ownership when necessary
   ansible.builtin.assert:
     that:
