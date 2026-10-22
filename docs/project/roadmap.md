@@ -46,34 +46,29 @@ The depth of these controls grows with **risk, complexity and reuse**, not with 
 
 Record actual pass/fail evidence and remaining gaps in [state](state.md), not a speculative aggregate Enterprise-grade score. **Maturity work continues after S4** without requiring a new numbered final stage.
 
-## First infrastructure vertical slice
+## Proposed next vertical slice — actual AI inference consumer
 
-Use current S1 Host Bootstrap as the next *small independently testable infrastructure improvement*: configuration in Git → command-driven provisioning → repeat/reboot checks → verification on `lab-test` → saved evidence. Document any necessary operator step rather than describing it as fully unattended IaC.
+**Candidate, not yet accepted:** [first optional local inference module](../proposals/first-inference-module.md).
+Perform a **manual Docker CPU feasibility probe** before building reusable
+services or platform abstractions. Expected result: one local AI model
+successfully generates text in response to a host-local HTTP request;
+record memory, download path, model/image identity, port exposure and
+cleanup. If it fails, preserve the failure and re-evaluate the runtime.
 
-Reusable modules and templates should be built from observed needs, not from a preselected AI scenario. A research project may independently use the lab at any stage for which its prerequisites and checks are available; such use does not change the laboratory mission or prematurely complete a milestone.
+**S2/S3 coupling:** The existing S0 → first S1 SSH slice → S1-D
+baseline permits starting an optional S3 AI-module proof without
+finishing a universal S2 platform first. S2 infrastructure controls
+(configuration, secrets, storage, diagnostics, recovery) are implemented
+only as real modules require them, using ready tools. Generalize after
+confirmed reuse, not before. Full S1 host provisioning remains an
+unverified broader target; do not invent tooling requirements to keep
+it open.
 
-## Next iteration — S1 Host Bootstrap
-
-**Objective:** On the `lab-test` VMware Ubuntu that has completed S0,
-prepare a usable, secure, reproducible development host **without relying
-on machine-local undocumented actions**.
-
-Proposed thin slice:
-
-1. Define `bootstrap/host/` entrypoint and module boundaries:
-   prerequisites, configurable inputs, idempotence, and `verify.sh`.
-2. Configure/verify developer tooling and **GitHub SSH through proxy**,
-   including a user-authorized public-key registration procedure.
-   Public HTTPS clone already works in S0; avoid repeating it.
-3. Keep host networking/apt baseline compatible with S0 and document
-   which settings belong to which stage; do not duplicate proxy installation.
-4. Verify the host module on `lab-test` and rerun it to catch
-   unintended overwrites.
-
-**Acceptance:** from the S0-completed test snapshot, host bootstrap runs
-and passes its stated checks; configuration survives reboot where relevant;
-rerun does not damage existing settings. Record exact commands, output and
-limitations in [state](state.md).
+**Exit to implementation:** confirm a successful, bounded inference
+probe, then propose a single removable Compose module; validate that
+module independently on `lab-test`. State concrete readiness and
+security evidence in [state](state.md). No new mandatory infrastructure
+or runtime is implied by this proposal.
 
 ## S1-D — functional integrated replay verified on lab-test
 

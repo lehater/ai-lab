@@ -318,9 +318,14 @@ is retained in [bootstrap/README.md](../../bootstrap/README.md).
 2. Full S1-D functional installation has been demonstrated; do not
    continue researching mandatory container proxy-only networking
    without a concrete workload (D-011).
-3. Evaluate the next infrastructure increment S2 against an actual
-   research requirement. Preserve repeatability and explicit
-   qualification of all security and portability claims.
+3. Current **unaccepted proposal**: evaluate one local, optional
+   AI inference service as a real consumer of existing Docker/Compose.
+   The candidate is described in a separate proposal/PR; no S2/S3
+   service has been implemented or verified on `lab-test`.
+   Derive infrastructure changes only from confirmed consumer needs.
+4. PostgreSQL Compose acceptance PR #9 remains an unverified proposal;
+   it does not satisfy the requirement for a useful AI module.
+   Preserve explicit security and portability limitations.
 ## Status vocabulary
 
 - **NOT STARTED / NOT IMPLEMENTED**: no committed, verified implementation.
