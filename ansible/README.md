@@ -40,7 +40,7 @@ working S0 APT proxy, and normal Ubuntu package signatures). No new PPA or
 vendor account is required. The Ubuntu 24.04 archive currently provides
 ansible-core 2.16.x; record the **actual installed version** and review its
 maintenance status before treating it as long-term pinned production tooling.
-This proposal does **not** pin a moving Ubuntu APT source.
+The example role **pins the Ubuntu Noble `ripgrep` package to `14.1.0-1`** from the official archive; the Ansible controller package remains unpinned in this first slice and must be recorded at acceptance. If the exact role version disappears from configured APT repositories, the role must fail rather than silently upgrade.
 
 ```sh
 sudo apt-get update
@@ -103,7 +103,7 @@ ansible-playbook playbooks/ripgrep.yml \
   --ask-become-pass
 ```
 
-The role refuses to uninstall an already-installed `ripgrep` **without**
+If `ripgrep` was already installed before the role, the role leaves **its existing version unchanged**, verifies it, and does not create an ownership marker; such a package is deliberately outside AI Lab's management.\n\nThe role refuses to uninstall an already-installed `ripgrep` **without**
 its AI Lab ownership marker. A failed or interrupted install can leave a
 package without a marker; then manual inspection is required, **not**
 automatic removal. The role never uses APT autoremove/purge, never removes
@@ -144,5 +144,5 @@ Official upstream references:
 - https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/apt_module.html
 - https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html
 - https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html
-- https://packages.ubuntu.com/noble/ansible-core
+- https://packages.ubuntu.com/noble/ansible-core\n- https://packages.ubuntu.com/noble/ripgrep
 - https://github.com/BurntSushi/ripgrep
