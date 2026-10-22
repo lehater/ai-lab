@@ -1,6 +1,6 @@
 # Stage A partial execution — operator-provided Codex report (2026-10-22)
 
-**Status: PARTIAL PASS, NOT COMPLETE.** Evidence is an operator-quoted Codex execution report and ordinary terminal diagnostics from `lab-test`. Not independently re-executed by the GitHub-only assistant.
+**Historical snapshot: PARTIAL PASS at the time of this report.** **Later result:** the operator/Codex reported completion of the same workflow (×3 → value 12; execution ID 2) and a passing sandbox smoke test. Those later claims appear in [PR #11](https://github.com/lehater/ai-lab/pull/11) and the [closeout summary](../CLOSEOUT.md); the four local JSON/README artifacts have not yet been independently reviewed or committed. The observations below remain the original chronological partial report; do not interpret its pending steps as current tasks. Evidence is an operator-quoted Codex execution report and ordinary terminal diagnostics from `lab-test`. Not independently re-executed by the GitHub-only assistant.
 
 ## Confirmed by agent report
 
