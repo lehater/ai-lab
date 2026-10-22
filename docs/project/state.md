@@ -16,7 +16,7 @@ It is **not** a substitute for code, tests, or evidence.
 | S0: encryption and installer hardening | **DEFERRED** | Private proxy data is deliberately unencrypted for this functional MVP; physically protect storage; secrets stay out of Git. |
 | S1: reproducible host bootstrap | **IN PROGRESS; FIRST SSH SLICE ACCEPTED ([PR #5](https://github.com/lehater/ai-lab/pull/5))** | After a clean VMware snapshot revert, owner confirmed successful S0 → S1 progression, rerunnable SSH config, GitHub SSH authentication, mocked tests and post-reboot Make checks. Detailed installation transcript not supplied; full S1 host provisioning remains outside this first slice. |
 | S1-D: Docker/Compose Bootstrap | **FUNCTIONAL INTEGRATED REPLAY OWNER-VERIFIED on `lab-test`** | Owner explicitly confirmed restoring `vmware-tools-ready`, reinstalling S0 → S1 → S1-D from repository scripts, and providing the final PASS logs. Docker Engine 29.9.2, Compose v5.6.1, GitHub SSH, daemon proxy, image pulls and Compose lifecycle succeeded. Operator-assisted reproducibility on the specified VMware baseline; not unattended automation, external LAN isolation or package pinning. |
-| S2 candidate: Ansible local optional host components | **PROPOSED, PARTIAL OWNER-TESTED CONTROLLER/SMOKE ONLY (Draft [PR #15](https://github.com/lehater/ai-lab/pull/15))** | On `lab-test` (2026-10-22) user supplied console output for pipx Ansible Core 2.21.5 / Python 3.12.3 controller install and offline smoke PASS (localhost inventory, syntax check, removal refusal without approval). **Actual `ripgrep` lifecycle, reboot, cleanup and baseline regression NOT RUN**; does not complete S2. |
+| S2 candidate: Ansible local optional host components | **PROPOSED, PARTIAL OWNER-VERIFIED INSTALL/RERUN AND REMOVAL PREVIEW ([Draft PR #15](https://github.com/lehater/ai-lab/pull/15))** | On `lab-test` (2026-10-22), Ansible 2.21.5 controller/offline smoke PASS, `ripgrep 14.1.0-1` installed and root-owned marker present, repeated `present` `changed=0 failed=0`, and approved `absent --check --diff` predicted removal of just `ripgrep` with zero upgrades. **Actual removal, post-reboot test, preexisting-package negative case and baseline regression remain NOT VERIFIED**; S2 not complete. |
 | AI platform / model runtime | **NOT STARTED AS REPRODUCIBLE DEPLOYMENT** | No platform deployment code is present in `main` at this checkpoint. |
 | Applications / experiments | **NOT STARTED IN THIS REPOSITORY** | No runnable end-to-end AI application committed yet. |
 
@@ -25,7 +25,7 @@ It is **not** a substitute for code, tests, or evidence.
 This is an **unmerged implementation proposal**, not accepted project evidence.
 Ansible Core was preferred after the exploratory comparison in draft
 [PR #14](https://github.com/lehater/ai-lab/pull/14); this PR contains
-a local inventory, a guarded `pipx` controller setup pinned to **ansible-core 2.21.5** (upstream supported, unlike Ubuntu Noble's 2.16.x archive package), one reusable role, a read-only negative-guard smoke and an E2E plan. **Controller setup and the read-only smoke have now passed according to the operator's `lab-test` console output; optional component lifecycle remains untested.**
+a local inventory, a guarded `pipx` controller setup pinned to **ansible-core 2.21.5** (upstream supported, unlike Ubuntu Noble's 2.16.x archive package), one reusable role, a read-only negative-guard smoke and an E2E plan. **Controller setup, smoke, actual installed package state, rerun idempotence and removal dry-run now have partial owner-reported `lab-test` evidence; completed teardown and post-reboot/regression remain untested.**
 The role manages only `ripgrep` and protects pre-existing packages from
 automatic removal using a root-owned role marker. No Galaxy packages,
 VS Code, Codex sandbox policies, daemon modifications or external cloud
@@ -43,7 +43,7 @@ SHA, snapshot/clone identity, manual actions and limitations **before merge**.
 **Partial owner-reported evidence, 2026-10-22, `alex@lab-test`:**
 - `bash controller-setup.sh` installed `ansible-core 2.21.5` in a user-level pipx environment using **Python 3.12.3**; printed `Controller bootstrap: READY (ansible-playbook [core 2.21.5])`.
 - `bash tests/test-offline.sh` printed `Inventory localhost: PASS`, `playbook: /home/alex/projects/ai-lab/ansible/playbooks/ripgrep.yml` and `PASS: syntax, localhost-only inventory and default removal refusal.`
-- This establishes **operator-reported controller-install and limited static/negative-guard smoke success only**, not role installation, idempotence, post-reboot persistence, negative checks for pre-existing packages, package-removal correctness, or S2 completion.
+- This established **controller-install and limited static/negative-guard smoke success**; later evidence below also confirms installed `ripgrep` state and idempotent rerun. Post-reboot persistence, pre-existing-package negative case, **actual** package-removal correctness and S2 completion remain unverified.
 - The supplied excerpt does **not** show `git rev-parse HEAD`, the source snapshot/clone baseline, a repeated controller install, package version/dependency freeze or actual role apply. Preserve those gaps as open.
 
 **Additional owner-reported check-mode evidence, 2026-10-22, `alex@lab-test`:**
@@ -51,6 +51,13 @@ SHA, snapshot/clone identity, manual actions and limitations **before merge**.
 - `ansible-playbook playbooks/ripgrep.yml --check --diff --ask-become-pass` completed: `ok=5 changed=1 unreachable=0 failed=0 skipped=20`. Apt predicted **one new package (`ripgrep`), zero upgrades and removals**, plus 43 unrelated available upgrades not applied. Role-owned marker creation and real executable verification were **skipped** in check mode.
 - This is **PREVIEW PASS ONLY**, not a real package installation, marker creation, lifecycle acceptance, package upgrade or S2 acceptance. The dry-run emitted **three deprecation warnings** because the platform guard read injected top-level system facts. The branch was then patched to use `ansible_facts['distribution']`, `ansible_facts['distribution_version']` and `ansible_facts['architecture']`; **the patch itself is not yet retested on `lab-test`**.
 
+
+**Additional owner-reported role lifecycle evidence, 2026-10-22, `alex@lab-test`:**
+- Exact working tree revision at start of submitted log: `a8f443eab6720ed84a8bc4d0f9f0d6046c453b1d`. No modified-working-tree diff was supplied.
+- `dpkg-query -W -f='${Status} ${Version}\\n' ripgrep` returned `install ok installed 14.1.0-1`; independent `rg --version` returned `ripgrep 14.1.0`. Root-owned `/var/lib/ai-lab/ansible/ripgrep.installed` existed and its content was `ai-lab-ripgrep-ownership-v1` (no trailing newline). This proves **observed installed state and marker**, not a separately retained transcript of the first `present` invocation.
+- Repeated `ansible-playbook playbooks/ripgrep.yml --ask-become-pass` succeeded with `ok=10 changed=0 failed=0 skipped=15`. The platform guard using explicit `ansible_facts[...]` succeeded without the earlier deprecation warnings in this log.
+- `ansible-playbook playbooks/ripgrep.yml -e ai_lab_ripgrep_action=absent -e ai_lab_ripgrep_allow_remove=true --check --diff --ask-become-pass` completed with `ok=10 changed=1 failed=0 skipped=15`. APT predicted **0 upgrades, 0 installations, exactly 1 removal (`ripgrep`)**. Ownership and approval assertions passed; marker deletion and installed-state verification were correctly skipped during dry-run.
+- **No actual removal was run** in the supplied log. Avoid marking cleanup, repeated cleanup or package absence as PASS until independent observed results. Preexisting-unmanaged-package test, reboot and baseline S0/S1/S1-D regression remain open.
 
 ## First S1 GitHub SSH slice — owner-reported validation (accepted via PR #5)
 
@@ -363,3 +370,4 @@ is retained in [bootstrap/README.md](../../bootstrap/README.md).
 - **DEFERRED / BLOCKED**: explicitly postponed / prevented by a dependency.
 
 Only change a milestone to VERIFIED with an explicit test and evidence.
+
