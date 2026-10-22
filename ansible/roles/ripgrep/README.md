@@ -31,4 +31,13 @@ Package licensing/selection: Ubuntu `ripgrep` package; upstream
 https://github.com/BurntSushi/ripgrep (MIT OR Unlicense). The license of
 a separate optional component must always be reviewed on adoption.
 
-Run from `ansible/` using the commands in [the runbook](../../README.md).
+Controller: pinned upstream-maintained `ansible-core==2.21.5` installed
+into an isolated user-level pipx environment via
+[`controller-setup.sh`](../../controller-setup.sh). Ubuntu 24.04's
+`ansible-core 2.16.x` archive package has reached upstream EOL; this
+candidate intentionally does not adopt it as the long-lived controller.
+The role's exact `ripgrep=14.1.0-1` package remains separate from the
+controller.
+
+Run from `ansible/` using [the runbook](../../README.md) and its
+[`tests/test-offline.sh`](../../tests/test-offline.sh) guard smoke.
