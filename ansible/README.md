@@ -161,10 +161,11 @@ package from unintended removal, not all shared dependencies.
 | Controller install / localhost inventory on `lab-test` | pipx Ansible 2.21.5 installed using Python 3.12.3; localhost inventory detected. Repeated controller setup, full baseline identity and transitive dependency freeze still open | **PARTIAL PASS, OWNER-REPORTED 2026-10-22** |
 | `--syntax-check` / offline delete guard | Playbook syntax and local inventory passed; uninstall without explicit approval refused | **PASS, OWNER-REPORTED 2026-10-22** |
 | `--check --diff` install preview | On `lab-test`: 1 new `ripgrep` predicted, 0 upgrades/removals, no failed tasks; 3 fact-injection deprecations prompted later code fix | **PASS, OWNER-REPORTED 2026-10-22 (OLDER REVISION, PATCH NEEDS RERUN)** |
-| `--check --diff` uninstall preview | Review removal target, ownership marker and predicted changes separately before actual uninstall | **NOT RUN** |
-| First `present` | Install ripgrep; create *only* role ownership marker; `rg --version` works | **NOT RUN** |
-| Second `present` | No role-managed package or marker changes | **NOT RUN** |
-| `verify` and reboot | Package and command persist, readable to operator | **NOT RUN** |
+| `--check --diff` uninstall preview | Ownership guard PASS; APT predicts removal of `ripgrep` only, 0 upgrades/installations; `ok=10 changed=1 failed=0` | **PASS, OWNER-REPORTED 2026-10-22; NO PACKAGE REMOVED** |
+| First `present` / observed installed state | `ripgrep=14.1.0-1` installed; `rg --version` PASS, owned marker exists with expected content; first apply transcript not supplied | **PASS for observed state, OWNER-REPORTED 2026-10-22** |
+| Second `present` | No role-managed package or marker changes; `ok=10 changed=0 failed=0` at `a8f443e` | **PASS, OWNER-REPORTED 2026-10-22** |
+| Independent `rg --version` | `ripgrep 14.1.0` independently observed | **PASS, OWNER-REPORTED 2026-10-22** |
+| Reboot + post-reboot `verify` | Package and command persist after reboot | **NOT RUN** |
 | `absent` without approval | Read-only smoke confirmed explicit approval guard rejects missing consent. Repeat during full role E2E | **PASS IN OFFLINE SMOKE ONLY** |
 | `absent` after this role installed package | Remove package, preserve unrelated APT packages, no `autoremove`; second run no-op | **NOT RUN** |
 | Pre-existing `ripgrep`, **no** AI Lab marker | Install action does not claim ownership; cleanup refuses to remove it | **NOT RUN** |
