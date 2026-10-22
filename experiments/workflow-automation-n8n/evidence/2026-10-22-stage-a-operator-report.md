@@ -107,6 +107,26 @@ The operator provided the APT output from `lab-test`:
 
 **Next validation:** inspect existence of `/etc/apparmor.d/bwrap-userns-restrict`, `sudo aa-status | grep -Ei 'bwrap|unprivileged_userns'`, the unchanged `sysctl kernel.apparmor_restrict_unprivileged_userns`, then host `bwrap --unshare-user --unshare-net --ro-bind / / /bin/true` and `codex sandbox linux /bin/true`. Capture exit codes; never disable AppArmor or bypass Codex sandbox to make the tests pass.
 
+## AppArmor profile loaded and bwrap smoke PASS — 2026-10-22
+
+Operator-supplied terminal output:
+
+```text
+Profile file: PASS
+   bwrap
+   unpriv_bwrap
+   unprivileged_userns
+kernel.apparmor_restrict_unprivileged_userns = 1
+bwrap exit: 0
+Command 'codex' not found, but can be installed with:
+sudo snap install codex
+Codex sandbox exit: 127
+```
+
+**Interpretation:** `/etc/apparmor.d/bwrap-userns-restrict` is present; `aa-status` shows `bwrap` and `unpriv_bwrap`; the global AppArmor userns restriction remains enabled; standalone `bwrap --unshare-user --unshare-net --ro-bind / / /bin/true` returns 0. This **passes the standalone Bubblewrap test**.
+
+`codex sandbox linux /bin/true` was **not actually run**, since this shell could not resolve `codex` (exit 127). Codex was earlier installed successfully to `~/.local/bin/codex`, whose parent directory may not be present on this fresh shell's `PATH`. **Do not install Snap Codex**; export `PATH="$HOME/.local/bin:$PATH"`, run `hash -r`, confirm `command -v codex` and `codex --version`, then retry the Codex-specific sandbox smoke test. Codex's sandbox recovery remains unverified until this last test succeeds.
+
 ## Next acceptance sequence
 
 1. Repair/test Codex sandbox while **retaining** AppArmor restrictions. See [RECOVERY.md](../RECOVERY.md).
