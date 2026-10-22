@@ -1,8 +1,8 @@
 # n8n + Codex MCP — disposable experiment
 
-**Status: STATIC CI PASS on experimental branch; NOT RUN ON `lab-test`.**
+**Status: LOCAL N8N BOOTSTRAP PASS on `lab-test` (owner-provided log); MCP/agent workflow tests pending.**
 
-Branch-only GitHub Actions static validation (Bash syntax, scoped configuration, Docker Compose parsing) succeeded: https://github.com/lehater/ai-lab/actions/runs/39731719920. No container was started in CI; no n8n or Codex MCP integration was exercised.
+Branch-only GitHub Actions static validation (Bash syntax, scoped configuration, Docker Compose parsing) succeeded: https://github.com/lehater/ai-lab/actions/runs/39731909135. Additionally, the owner supplied PASS output for Docker prerequisites, n8n container startup, local loopback binding and HTTP health on `lab-test`. See [recorded 2026-10-22 lab-test evidence](evidence/2026-10-22-lab-test-bootstrap.md). Codex/MCP authoring and workflow execution have **not** yet been demonstrated.
 This is **not** an Infrastructure Core service, persistent AI platform, or a verified S3 module. All code belongs to branch `proposal/workflow-automation-mcp-spike` (draft PR #11); do not merge to `main`.
 
 ## Purpose and responsibilities
