@@ -15,9 +15,11 @@ S0 → S1 → S1-D bootstrap.
   This role establishes a reusable *present → verify → absent* pattern.
 - No third-party Galaxy content, Ubuntu PPA, extra API keys, Docker changes,
   workstation-wide policy changes, or extra background services.
-- A future VS Code role can exercise signed third-party APT sources and
-  graphical checks; Codex/AppArmor requires a separate security review.
-  Neither is claimed to exist here.
+- A **proposed/unverified** opt-in [VS Code role](roles/vscode/README.md)
+  in a separate PR supports signed Microsoft APT setup, exact-version install,
+  read-only verification, and guarded package-only removal. **Do not treat
+  it as accepted or validated on lab-test.**
+- Codex/AppArmor requires a separate security review and is not part of this slice.
 
 Responsibility boundaries:
 
