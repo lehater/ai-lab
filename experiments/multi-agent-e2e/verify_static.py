@@ -22,11 +22,12 @@ def check() -> None:
     reviewer = agents["root-cause-reviewer"]
     assert reviewer["model"].startswith("ollama/")
     assert reviewer["mode"] == "subagent"
-    for action in ("edit", "shell", "subagent", "external_directory"):
-        assert {"action": action, "resource": "*", "effect": "deny"} in reviewer["permissions"] or (
-            action == "external_directory" and
-            {"action": "*", "resource": "*", "effect": "deny"} in reviewer["permissions"]
-        )
+    # Child policy denies *all* actions, then permits local read-only discovery.
+    child_rules = reviewer["permissions"]
+    assert child_rules[0] == {"action": "*", "resource": "*", "effect": "deny"}, child_rules
+    for rule in child_rules[1:]:
+        assert rule["effect"] == "allow" and rule["action"] in ("read", "glob", "grep"), rule
+    assert {rule["action"] for rule in child_rules[1:]} == {"read", "glob", "grep"}
     assert {"action": "subagent", "resource": "*", "effect": "deny"} in agents["pilot-solo"]["permissions"]
     dual_rules = agents["pilot-primary"]["permissions"]
     assert dual_rules[-1] == {"action": "subagent", "resource": "root-cause-reviewer", "effect": "allow"}
