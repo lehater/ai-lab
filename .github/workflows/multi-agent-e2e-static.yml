@@ -5,6 +5,8 @@ on:
     paths:
       - 'experiments/multi-agent-e2e/**'
       - '.github/workflows/multi-agent-e2e-static.yml'
+      - 'docs/proposals/2026-10-27-multi-agent-e2e.md'
+      - 'docs/proposals/multi-agent-e2e-local-handoff.md'
   workflow_dispatch:
 
 permissions:

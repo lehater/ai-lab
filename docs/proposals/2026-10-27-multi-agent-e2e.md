@@ -132,7 +132,7 @@ Task (small coding fix) -> OpenCode primary agent (external model)
 ## 9. Подготовка исполнителем без Ubuntu (2026-10-27)
 
 - **PREPARED:** отдельный `experiments/multi-agent-e2e/fixture/`: задача, один намеренный дефект, 6 независимых unittest, конфигурация OpenCode V2 (без ключей), primary solo/dual и read-only local subagent.
-- **STATIC CHECK:** JSON разобран, Python fixture проверен изолированно: исходный дефект — 1 FAIL из 6, эталонное односимвольное исправление — 6 PASS. Переносимость OpenCode-конфигурации на конкретный установленный binary и скрипт полного static contract требуют подтверждения запуском в локальной среде.
+- **STATIC PASS (GitHub Actions):** [CI run #40506219906](https://github.com/lehater/ai-lab/actions/runs/40506219906) выполнил `verify_static.py` на `ubuntu-24.04`: контракт JSON/прав и Python fixture RED (1 ожидаемый FAIL из 6) → reference GREEN (6 PASS). Это не проверка совместимости с установленным OpenCode, Ollama или моделей.
 - **PREPARED:** [README с Gate 0→1→2](../../experiments/multi-agent-e2e/README.md), [шаблон evidence](../../experiments/multi-agent-e2e/evidence/RESULTS.template.md), [handoff](multi-agent-e2e-local-handoff.md).
 - **NOT TESTED:** фактическая среда Ubuntu/WSL, доступность Ollama, модель, авторизация внешнего провайдера, реальные OpenCode CLI events, стоимость, субагент, все интеграционные Gate 0/1/2.
 - **BLOCKED (плановое ограничение):** удалённый исполнитель не имеет доступа к указанным локальным процессам/ресурсам; разрешение на потенциально платные API/смену конфигурации требуется у оператора.

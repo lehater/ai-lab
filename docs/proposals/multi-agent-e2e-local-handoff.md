@@ -168,8 +168,10 @@ PR: https://github.com/lehater/ai-lab/pull/24
 
 ## Current handoff status
 
-Prepared Git files and local static fixture test are separate from host
-execution. **Gate 0, Gate 1, Gate 2: NOT TESTED on Ubuntu/OpenCode/Ollama.**
+Prepared Git files have an independent **STATIC PASS** from
+[GitHub Actions run #40506219906](https://github.com/lehater/ai-lab/actions/runs/40506219906):
+configuration assertions and fixture RED→GREEN using hosted Ubuntu/Python.
+**Gate 0, Gate 1, Gate 2: NOT TESTED on the target Ubuntu/OpenCode/Ollama.**
 No credentials or hardware status have been inferred from prior chats.
 The code revision above anchors the implementation, not the observed
 branch head that the local agent must record at the start.
