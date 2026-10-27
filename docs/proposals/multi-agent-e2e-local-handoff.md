@@ -166,7 +166,16 @@ PR: https://github.com/lehater/ai-lab/pull/24
 > report accurately and STOP; do not install an alternative orchestrator
 > or broaden the infrastructure scope without an explicit decision.
 
-## Current handoff status
+## Latest local execution checkpoint — 2026-10-27
+
+[Local evidence](../../experiments/multi-agent-e2e/evidence/RESULTS.md)
+records STATIC PASS on checkout `b45e233a352deece3ceed9bf26a2a1bbed6ccdcb`,
+but Gate 0 BLOCKED on the available VMware Ubuntu: no OpenCode/Ollama on
+PATH and no reachable loopback API. Gate 1/2 are blocked; model executions
+NOT TESTED. Resume at Gate 0 only after independent review and owner host /
+provisioning / external-model-cost decisions. No runtime config was changed.
+
+## Original prepared handoff status (before local execution)
 
 Prepared Git files have an independent **STATIC PASS** from
 [GitHub Actions run #40506219906](https://github.com/lehater/ai-lab/actions/runs/40506219906):

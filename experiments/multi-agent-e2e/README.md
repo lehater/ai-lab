@@ -1,6 +1,7 @@
 # Multi-Agent E2E pilot — OpenCode V2 (experimental)
 
-**Status: PREPARED / RUNTIME NOT TESTED.** This is an isolated *research
+**Status: Gate 0 BLOCKED on observed VMware host; model runs NOT TESTED.**
+See [local preflight results](evidence/RESULTS.md). This is an isolated *research
 consumer* of AI Lab, not an infrastructure module or an adopted runtime.
 See [proposal](../../docs/proposals/2026-10-27-multi-agent-e2e.md) and
 [local handoff](../../docs/proposals/multi-agent-e2e-local-handoff.md).

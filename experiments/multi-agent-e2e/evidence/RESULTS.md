@@ -1,0 +1,88 @@
+# Multi-Agent E2E — local preflight, 2026-10-27
+
+**Outcome: BLOCKED at Gate 0; no model requests made.**
+
+- AI Lab execution checkout: `b45e233a352deece3ceed9bf26a2a1bbed6ccdcb`.
+- Branch: `proposal/multi-agent-e2e-first-slice`; fetched from GitHub;
+  local/remote ahead/behind `0/0`, initially clean. Prepared revision
+  `534c92f187a86c3eff7c9070ed059721d3611fdd` is an ancestor.
+- Accepted main inspected: `8584437c23dbb6fbdd8311c8080f6e7cc4f1ee43`.
+  Strategy, decisions and AGENTS.md have no diff against that main.
+  Open PRs observed: #23 and #24. Neither is accepted project state.
+- Observation window: 2026-10-27 approximately 13:04–13:07 UTC.
+- Host: available Ubuntu **VMware** workspace; no WSL host accessed.
+  VM snapshot identity and clean-bootstrap provenance were not established.
+- Ubuntu 24.04.5 LTS; Linux `7.0.0-38-generic`, x86_64.
+- Python 3.12.3; 4 visible vCPUs, AMD Ryzen 9 5950X CPU identifier.
+- RAM 7.7 GiB total, 5.5 GiB available; swap 4.0 GiB unused.
+  Workspace filesystem 98 GiB total, 77 GiB available at observation time.
+- OpenCode edition/version and Ollama version: unavailable (not on PATH).
+- GPU/driver/VRAM: not established; `nvidia-smi` not on PATH does not
+  independently establish absence of physical GPU hardware.
+- Local model/digest/context/tool support: unknown; no inventory available.
+- External provider/model/auth/cost approval: not selected or approved.
+- Fixture config: unchanged; no model substitution or permissions change.
+- Fixture baseline SHA: n/a; disposable runtime clones not created because
+  runtime prerequisites failed. The static verifier used temporary copies.
+
+| Gate | Run | Outcome | Independent runtime tests | Model invocation exit | Seconds |
+| --- | --- | --- | --- | --- | --- |
+| 0 | selected VMware host | BLOCKED | n/a | n/a | n/a |
+| 1 | external solo | BLOCKED | NOT TESTED | not invoked | n/a |
+| 1 | local solo | BLOCKED | NOT TESTED | not invoked | n/a |
+| 2 | primary/local subagent | BLOCKED | NOT TESTED | not invoked | n/a |
+
+BLOCKED describes the gate's known prerequisite failure; the model executions
+and their correctness/trace checks themselves remain NOT TESTED.
+
+## Commands and curated observations
+
+These are reviewed summaries of actual command outputs, not raw sessions.
+No credentials, personal paths, proxy configuration or session exports are included.
+
+| Command | Exit | Observed result |
+| --- | --- | --- |
+| `git fetch origin` (outside sandbox) | 0 | remote main and PR branch fetched |
+| `git switch --track origin/proposal/multi-agent-e2e-first-slice` | 0 | existing remote proposal checked out; no main modification |
+| `git merge-base --is-ancestor 534c92f187a86c3eff7c9070ed059721d3611fdd HEAD` | 0 | expected implementation ancestry |
+| `git rev-list --left-right --count HEAD...origin/proposal/multi-agent-e2e-first-slice` | 0 | `0 0` |
+| `uname -srmo` | 0 | kernel/architecture recorded above |
+| `python3 --version` | 0 | Python 3.12.3 |
+| `free -h` / `df -h .` / `lscpu -J` | 0 each | resources summarized above |
+| `systemd-detect-virt` | 0 | `vmware` |
+| Python `shutil.which` for `opencode`, `ollama`, `nvidia-smi` | 0 | all three returned `None` |
+| `curl --noproxy '*' --connect-timeout 3 --max-time 5 -fsS http://127.0.0.1:11434/api/tags` | 7 | failed to connect; same result outside sandbox |
+| `python3 experiments/multi-agent-e2e/verify_static.py` | 0 | `STATIC PASS: JSON contract; fixture RED (1 expected failure); reference GREEN (6 tests)` |
+
+Initial sandboxed fetch failed because `.git/FETCH_HEAD` was read-only;
+explicitly approved retry succeeded. Loopback curl was also retried outside
+sandbox with approval, ruling out that sandbox as the sole explanation.
+No installation, model pull, credential inspection, config change, port
+publication, model inference, snapshot rollback or infrastructure test ran.
+OpenCode help/model inventory/session commands and `ollama show` were skipped
+because their binaries were unavailable. CLI compatibility remains unverified.
+No API documentation claim was used to justify installation or runtime execution.
+
+## Gate 2 chain audit
+
+Primary model, child model, parent/child correlation, returned child result,
+primary edit, independent post-agent tests: **NOT TESTED**. No event/session
+trace exists, and no narrative is offered as delegation evidence.
+The fixture's deliberate bug remains committed unchanged.
+
+## Owner decisions and next acceptance condition
+
+1. Select an accessible execution host: an already prepared, explicitly
+   authorized WSL2/GPU host if available, or this VMware target with realistic
+   resource limits. Do not infer access to Windows/WSL from this VM.
+2. If provisioning is needed, approve concrete OpenCode V2/Ollama installation
+   steps and model download size/resources separately, before running them.
+3. Choose and authorize external provider, exact model, auth mechanism type,
+   quota and possible cost before any external-model request.
+4. Resume the existing handoff at Gate 0: prove actual V2 CLI compatibility,
+   reachable loopback Ollama, installed tool-capable model/digest/context and
+   feasible resources. Then run independent Gate 1 baselines before Gate 2.
+
+Independent ChatGPT review should check that these observations justify the
+BLOCKED outcomes and select the smallest host/provisioning decision. It must
+not treat STATIC PASS as an E2E pass or accept the runtime architecture yet.
