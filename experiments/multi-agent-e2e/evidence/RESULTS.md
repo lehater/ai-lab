@@ -86,3 +86,41 @@ The fixture's deliberate bug remains committed unchanged.
 Independent ChatGPT review should check that these observations justify the
 BLOCKED outcomes and select the smallest host/provisioning decision. It must
 not treat STATIC PASS as an E2E pass or accept the runtime architecture yet.
+
+
+## WSL2 continuation — operator-supplied observations, 2026-10-27
+
+**Provenance:** terminal output supplied by the owner in ChatGPT; **not**
+executed or independently measured by the GitHub-only reviewer. These results
+supplement the earlier VMware BLOCKED record; they do not retroactively change
+that VMware result. WSL2 clone was confirmed clean at initial checkout of
+`fdd39420c67a961e189282155762c1ab63c3638e`.
+
+| Check | Observed on WSL2 | Assessment |
+| --- | --- | --- |
+| Kernel | `6.18.40.1-microsoft-standard-WSL2` | WSL2 confirmed |
+| Ollama | `0.40.5`; loopback `127.0.0.1:11434/api/tags` responds | Local API reachable |
+| Local models | `qwen3-coder:30b` digest `06c1097efce0...` (tools); `gpt-oss:20b` digest `f38aa0c53da5...` (tools/thinking) | Present; full digests in operator's local Ollama output |
+| GPU | NVIDIA RTX PRO 4000 Blackwell, 24467 MiB VRAM, 4021 MiB in use at sample | GPU visible; model load memory not measured |
+| OpenCode | `opencode v2.2.0`; `opencode run --help` available | CLI visible |
+| Project config | `OPENCODE_CONFIG="$PWD/opencode.json" opencode models` listed `ollama/qwen3-coder:30b` and `ollama/gpt-oss:20b` | Provider discovery PASS with explicit config |
+| Agent config | `opencode debug agents` listed `pilot-solo`, `pilot-primary`, `root-cause-reviewer`; reviewer shows `providerID: ollama` and `qwen3-coder:30b` | Definitions parsed; tool permissions not runtime-proven |
+| Standalone invocation | `opencode run --standalone --agent pilot-solo --model ollama/qwen3-coder:30b ...` → `Error: Model unavailable: ollama/qwen3-coder:30b` | **FAIL** for this invocation; root cause NOT DIAGNOSED |
+| Shared-server invocation | Same `pilot-solo`/`ollama/qwen3-coder:30b`, no `--standalone`, prompt `Ответь одним словом READY. Не используй инструменты.` → `READY` | **PASS: one local inference reply only**; delay reported, unmeasured |
+| Working directory status | `git status --short` produced no changes after invocation | No tracked changes observed |
+
+**WSL2 Gate 0 assessment:** local OpenCode↔Ollama model discovery and one
+simple inference **PASS** using the non-standalone server. **Partial**
+readiness only: measured agent tool-calling, effective permission enforcement,
+local coding baseline, GPU/RAM during actual model load, and trace export are
+**NOT TESTED**. External-model authentication/cost is **BLOCKED pending owner
+selection and approval**. Gate 1 local coding task and Gate 2 still **NOT
+TESTED**.
+
+**Next local-agent task:** use WSL2, sync the latest branch, preserve the
+original failed fixture, create disposable clones and attempt only Gate 1
+`local` from a fresh fixture with `opencode run` **without**
+`--standalone`; collect sanitized evidence, independent tests and diff.
+Preserve the standalone failure separately, without claiming a diagnosed bug.
+Never run cloud Gate 1, Gate 2, paid/remote calls or infrastructure changes
+without explicit owner consent.

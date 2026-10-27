@@ -1,6 +1,6 @@
 # Multi-Agent E2E pilot — OpenCode V2 (experimental)
 
-**Status: Gate 0 BLOCKED on observed VMware host; model runs NOT TESTED.**
+**Status: VMware Gate 0 BLOCKED; WSL2 local inference PASS (operator-reported); agent coding NOT TESTED.**
 See [local preflight results](evidence/RESULTS.md). This is an isolated *research
 consumer* of AI Lab, not an infrastructure module or an adopted runtime.
 See [proposal](../../docs/proposals/2026-10-27-multi-agent-e2e.md) and
@@ -119,6 +119,18 @@ python3 -m unittest discover -s tests -v  # expected exit 1: exactly one failure
 Use a *new OpenCode session for each clone*. The task is
 `TASK.md`; **no modifications to TASK.md/tests/config** during a run.
 
+## WSL2 execution note (2026-10-27)
+
+The operator observed `Error: Model unavailable: ollama/qwen3-coder:30b`
+when starting `opencode run --standalone`, but the *same* local model
+returned `READY` without `--standalone`. **Do not assume why**:
+the separate private server may differ in model discovery, but no root
+cause was proven. For the selected WSL2 host start with regular
+`opencode run` and record `opencode --version`, the mode and actual
+result. The commands below reflect that **WSL2 workaround**, not a
+claim about other installations. Do not use `--auto`; handle permission
+prompts explicitly. This smoke reply is NOT Gate 1 completion.
+
 ## Gate 1 — independent solo baselines
 
 Operator sets verified, permitted model IDs:
@@ -134,14 +146,14 @@ respective disposable clones:
 
 ```bash
 cd "$RUN_ROOT/cloud"
-opencode run --standalone --agent pilot-solo --model "$PILOT_EXTERNAL_MODEL" \
+opencode run --agent pilot-solo --model "$PILOT_EXTERNAL_MODEL" \
   --format json "$(cat TASK.md)" > "$RUN_ROOT/evidence/raw/cloud.events.jsonl"
 # Independently, after the agent finishes:
 python3 -m unittest discover -s tests -v
 git diff --check && git diff -- scheduler.py && git status --short
 
 cd "$RUN_ROOT/local"
-opencode run --standalone --agent pilot-solo --model "$PILOT_LOCAL_MODEL" \
+opencode run --agent pilot-solo --model "$PILOT_LOCAL_MODEL" \
   --format json "$(cat TASK.md)" > "$RUN_ROOT/evidence/raw/local.events.jsonl"
 python3 -m unittest discover -s tests -v
 git diff --check && git diff -- scheduler.py && git status --short
@@ -158,7 +170,7 @@ Only after both solo baselines are assessed, and external calls approved:
 
 ```bash
 cd "$RUN_ROOT/dual"
-opencode run --standalone --agent pilot-primary --model "$PILOT_EXTERNAL_MODEL" \
+opencode run --agent pilot-primary --model "$PILOT_EXTERNAL_MODEL" \
   --format json "$(cat TASK.md)
 Gate 2: invoke root-cause-reviewer BEFORE changing any file. Use its
 reported analysis and then fix scheduler.py yourself. Report both

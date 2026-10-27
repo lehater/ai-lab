@@ -151,3 +151,20 @@ Gate 1 external/local и Gate 2 **BLOCKED**, модельные прогоны *
 Дальнейшая установка и платные вызовы не разрешены этим результатом.
 Следующий шаг — независимое ревью и выбор доступного execution host, затем
 возврат к Gate 0. Принятые архитектурные решения не меняются.
+
+## 11. Продолжение в WSL2 — данные от оператора (2026-10-27)
+
+На другой среде (WSL2, отдельно от VMware) оператор подтвердил локальную
+доступность Ollama 0.40.5, GPU NVIDIA RTX PRO 4000 Blackwell и OpenCode
+v2.2.0. При явной загрузке `opencode.json` обнаружены две модели Ollama
+и целевые агенты. Одно сообщение `READY` получено от
+`ollama/qwen3-coder:30b` через `opencode run` **без `--standalone`**.
+Вариант с `--standalone` вернул `Model unavailable`; причина не
+определена. Источник — показанные оператором терминальные логи;
+этот Git-коммит не исполнял OpenCode.
+
+**Итог:** локальный inference smoke PASS, Gate 1 local coding **NOT
+TESTED**, Gate 1 external/Gate 2 **BLOCKED** до проверки провайдера и
+разрешения затрат. Следующее минимальное действие: один изолированный
+локальный coding baseline, независимые тесты и очищенные events.
+Подробности: [RESULTS.md](../../experiments/multi-agent-e2e/evidence/RESULTS.md).

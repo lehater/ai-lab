@@ -166,6 +166,35 @@ PR: https://github.com/lehater/ai-lab/pull/24
 > report accurately and STOP; do not install an alternative orchestrator
 > or broaden the infrastructure scope without an explicit decision.
 
+## WSL2 continuation task — updated after owner's inference smoke
+
+**Operator-supplied WSL2 observations:** Ollama `0.40.5` and OpenCode V2
+`v2.2.0` are running on WSL2 with NVIDIA GPU; explicit
+`OPENCODE_CONFIG=<absolute-fixture-opencode.json>` makes OpenCode discover
+`ollama/qwen3-coder:30b`. The `pilot-solo` model replied `READY` via
+`opencode run` **without `--standalone`**. With `--standalone`, the
+CLI instead reported `Model unavailable` (cause unknown). These are
+**operator-reported** observations, not independent GitHub checks.
+
+**Next task for the local AI agent:** after a safe `git fetch` and
+`git pull --ff-only` on this branch, read
+`experiments/multi-agent-e2e/evidence/RESULTS.md` and the runbook.
+Use the **WSL2 checkout**, not the VMware VM. Verify local model discovery
+under the actual cloned fixture; preserve any unsaved work. Create a
+disposable seed and three clones using the runbook; execute **only**
+Gate 1 LOCAL baseline with `opencode run --agent pilot-solo --model
+ollama/qwen3-coder:30b --format json` (no `--standalone`) against the
+fixed `TASK.md`. Handle prompts explicitly, never `--auto`. Keep raw
+OpenCode events and sessions private; independently run tests, inspect the
+diff and confirm only `scheduler.py` changed. Record exit code,
+model/session identity, execution duration, GPU usage if sampled, PASS/FAIL
+with limitations, and useful sanitized evidence. If the CLI model or
+tool permissions differ, stop and record `BLOCKED`; do not silently
+weaken restrictions. Update the branch's existing evidence, docs and PR;
+commit/push only after operator authorization. **Stop before external-model
+Gate 1 or Gate 2; no external costs have been approved.** Do not modify
+`main` or merge PR #24.
+
 ## Latest local execution checkpoint — 2026-10-27
 
 [Local evidence](../../experiments/multi-agent-e2e/evidence/RESULTS.md)
