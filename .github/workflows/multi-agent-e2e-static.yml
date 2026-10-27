@@ -1,0 +1,22 @@
+name: Multi-Agent E2E static fixture
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/multi-agent-e2e/**'
+      - '.github/workflows/multi-agent-e2e-static.yml'
+      - 'docs/proposals/2026-10-27-multi-agent-e2e.md'
+      - 'docs/proposals/multi-agent-e2e-local-handoff.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fixture-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate agent config and fixture red/green behavior
+        run: python3 experiments/multi-agent-e2e/verify_static.py

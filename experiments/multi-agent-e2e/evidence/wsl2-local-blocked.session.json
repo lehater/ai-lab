@@ -1,0 +1,55 @@
+{
+  "info": {
+    "id": "ses_e825acb02ffeNxM0xxYE4dczL5",
+    "projectID": "430f08e77a3ba9760fee94b6dcbb7c76dbb47106",
+    "agent": "pilot-solo",
+    "model": {
+      "id": "qwen3-coder:30b",
+      "providerID": "ollama",
+      "variant": "default"
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "reasoning": 0,
+      "cache": {
+        "read": 0,
+        "write": 0
+      }
+    },
+    "outcome": "failed",
+    "time": {
+      "created": 1793109341635,
+      "updated": 1793109341721,
+      "idle": 1793109341729
+    },
+    "subpath": "experiments",
+    "location": {
+      "directory": "/[redacted:session-directory:ses_e825acb02ffeNxM0xxYE4dczL5]"
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_17da535e0001awTD8N3wzDmbvL",
+      "time": {
+        "created": 1793109341664
+      },
+      "type": "agent-switched",
+      "agent": "pilot-solo",
+      "previous": "pilot-solo"
+    },
+    {
+      "id": "msg_17da53621001CawTsEjB3q3I6a",
+      "time": {
+        "created": 1793109341729
+      },
+      "type": "idle",
+      "outcome": "failed",
+      "error": {
+        "type": "unknown",
+        "message": "Agent not found: \"pilot-solo\""
+      }
+    }
+  ]
+}
