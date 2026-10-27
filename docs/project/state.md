@@ -18,6 +18,22 @@ See [curated evidence](../../experiments/multi-agent-e2e/evidence/RESULTS.md).
 This is proposal evidence, not accepted runtime deployment or new S2/S3/S4
 acceptance. Existing infrastructure verification statuses below are unchanged.
 
+
+
+## Independent WSL2 attempt — 2026-10-27
+
+Execution HEAD `96d7c51ff4f30bcb08743c5be37450a520f28407`.
+OpenCode v2.2.0 / Ollama 0.40.5 / GPU / installed qwen3-coder:30b confirmed.
+**Gate 0 local and Gate 1 local BLOCKED:** debug lists pilot-solo with expected
+restrictions, but regular non-standalone run returns `Agent not found:
+"pilot-solo"` (exit 1, 0.461 s, zero tokens/tools). Independent tests remain
+known-red 5/6; disposable diff empty. No retry or runtime config changes.
+External Gate 1/Gate 2 not executed or authorized. See
+[reviewed evidence](../../experiments/multi-agent-e2e/evidence/RESULTS.md).
+Next step is independent review of shared-server directory/config propagation;
+root cause unknown. Do not execute another gate before that review and a
+separate authorization. Infrastructure acceptance and main remain unchanged.
+
 ## Delivery status
 
 **Long-term target, NOT a verified status:** Enterprise-grade, scenario-independent research infrastructure with repeatable IaC deployment, reusable modules/templates, appropriate security, observability and recovery. The checks below establish only their specific limited scope; Stage 0 still includes a documented manual operator step.

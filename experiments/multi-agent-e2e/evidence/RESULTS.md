@@ -124,3 +124,89 @@ original failed fixture, create disposable clones and attempt only Gate 1
 Preserve the standalone failure separately, without claiming a diagnosed bug.
 Never run cloud Gate 1, Gate 2, paid/remote calls or infrastructure changes
 without explicit owner consent.
+
+
+## WSL2 independent local baseline attempt — 2026-10-27 13:54–13:56 UTC
+
+**Gate 0 local: BLOCKED at runtime agent resolution. Gate 1 local: BLOCKED;
+correctness/tool-use NOT TESTED.** Earlier VMware and operator-smoke records
+above remain historical observations. No external model or Gate 2 was run.
+
+- Clean initial HEAD `fdd39420c67a961e189282155762c1ab63c3638e`; fetch and
+  pull --ff-only advanced to expected execution HEAD
+  `96d7c51ff4f30bcb08743c5be37450a520f28407`. Prepared revision is an ancestor.
+  Accepted origin/main remains `8584437c23dbb6fbdd8311c8080f6e7cc4f1ee43`;
+  AGENTS/strategy/decisions have no diff against it. Open PRs: #23, #24 (draft).
+- Actual host: Ubuntu 24.04.3 LTS, WSL2 kernel
+  `6.18.40.1-microsoft-standard-WSL2`, Python 3.12.3; 62 GiB RAM total,
+  60 GiB available, 16 GiB unused swap; workspace 948 GiB free.
+- OpenCode `v2.2.0`, Ollama client/server `0.40.5`; loopback API reachable
+  outside sandbox. No auth credentials inspected; local API used without auth.
+- NVIDIA RTX PRO 4000 Blackwell: 24467 MiB VRAM, 3021 MiB used in preflight,
+  GPU utilization 8%; nvidia-smi 595.79, driver 596.59, CUDA 13.2.
+  No model-load or peak GPU sample exists because inference never started.
+- Installed `qwen3-coder:30b`: digest
+  `06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca`,
+  18,556,700,761 bytes, Q4_K_M, 30.5B, advertised context 262144,
+  completion/tools capabilities. `ollama ps` empty before attempt;
+  effective inference context and memory feasibility remain unmeasured.
+- With `OPENCODE_CONFIG=<LOCAL>/opencode.json`, `opencode models` listed
+  `ollama/qwen3-coder:30b`. `opencode debug agents` parsed `pilot-solo` with
+  fixture edit/shell restrictions and subagent deny. This is config inspection,
+  not proof of runtime permission enforcement. No permissions were weakened.
+- Static verifier exit 0: fixture RED (1 expected failure), reference GREEN
+  (6 tests). One seed and three independent clones were created as documented;
+  all initial HEADs `5945e675f14acbe40fdb22d233e62dcf4e323fc5`.
+  Only local was attempted; cloud/dual untouched. Source fixture unchanged.
+
+### Exact attempt and observed evidence
+
+From the disposable local clone, with the original TASK.md string passed as
+one argument (Python subprocess, no shell substitution):
+
+```bash
+OPENCODE_CONFIG=<LOCAL>/opencode.json opencode run --agent pilot-solo \
+  --model ollama/qwen3-coder:30b --format json "<exact contents of TASK.md>"
+```
+
+No `--standalone`, `--auto`, alternate model, prompt retry or fallback.
+Start `2026-10-27T13:55:41.300483+00:00`; monotonic wall duration **0.461 s**;
+CLI exit **1**. stderr empty. The sole JSON event reports
+`Agent not found: "pilot-solo"`.
+
+- [Actual error event](wsl2-local-blocked.events.jsonl).
+- [Manually reviewed sanitized session export](wsl2-local-blocked.session.json),
+  exported with `opencode session export ses_e825acb02ffeNxM0xxYE4dczL5 --sanitize`
+  (exit 0). Selected agent/model are recorded, outcome failed, cost 0,
+  input/output/reasoning/cache tokens all 0; no tool or model reply events.
+  Export contains `subpath: experiments` despite the subprocess cwd being the
+  disposable local clone. This discrepancy is a diagnostic clue only;
+  shared-server directory/config behavior has **not** been diagnosed.
+- Independent `python3 -m unittest discover -s tests -v` before and after:
+  exit **1**, **5/6 PASS**, only `test_touching_boundary_is_not_overlap` FAIL.
+  6/6 acceptance **not achieved**; this is the unchanged known-red fixture,
+  not evidence of model coding failure.
+- Independent `git diff --check`: exit 0; `git diff -- scheduler.py` empty;
+  `git status --short` empty. No tool invocation or file change occurred.
+  Tracked TASK/config/tests match seed; Python cache files are ignored.
+
+Sandbox initially denied Git metadata writes, OpenCode log writes, GPU access
+and loopback API. Explicitly approved outside-sandbox commands established
+actual host availability and produced the error above. No host configuration,
+server restart, install, model pull or credential change was attempted.
+Raw evidence and disposable clones remain private under the temporary run
+root; only the reviewed small error event/session export are committed.
+
+**Stop condition honored:** agent/config resolution failure, no runtime retry.
+Gate 1 external and Gate 2 remain BLOCKED (not authorized), execution NOT TESTED.
+Previous standalone model-discovery failure remains undiagnosed and was not
+repeated. Review questions: why does debug see the configured agent while the
+shared-server run cannot resolve it, and why does export report `experiments`
+instead of the disposable cwd? Review directory/config propagation before
+separately authorizing another fresh local attempt. Do not weaken permissions
+or substitute standalone as an unverified fix. No architecture acceptance.
+
+Official CLI documentation and Ollama integration were consulted read-only:
+[OpenCode CLI](https://dev.opencode.ai/v2/docs/cli/commands),
+[Ollama integration](https://docs.ollama.com/integrations/opencode).
+Installed V2 help/config inspection governed this run; no V1 config copied.

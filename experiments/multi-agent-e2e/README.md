@@ -1,6 +1,6 @@
 # Multi-Agent E2E pilot — OpenCode V2 (experimental)
 
-**Status: VMware Gate 0 BLOCKED; WSL2 local inference PASS (operator-reported); agent coding NOT TESTED.**
+**Status: WSL2 Gate 1 local BLOCKED: shared-server run cannot resolve pilot-solo; coding/tool-use NOT TESTED.**
 See [local preflight results](evidence/RESULTS.md). This is an isolated *research
 consumer* of AI Lab, not an infrastructure module or an adopted runtime.
 See [proposal](../../docs/proposals/2026-10-27-multi-agent-e2e.md) and
